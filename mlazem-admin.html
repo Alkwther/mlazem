@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>إدارة الكوثر</title>
+<link rel="manifest" href="manifest-admin.json">
+<link rel="icon" type="image/png" href="admin-icon-192.png">
+<link rel="apple-touch-icon" href="admin-apple-touch-icon.png">
+<meta name="theme-color" content="#1b2a4a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="إدارة الكوثر">
+<meta name="application-name" content="إدارة الكوثر">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ================= إعدادات Firebase =================
+   1) من Firebase Console > Project settings > Your apps > Web app انسخ firebaseConfig والصقه هنا
+   2) اكتب بريد حساب المدير (نفس البريد الذي أنشأته في Authentication)
+   3) الصق نفس القيمتين في ملف مصمم الملازم mlazem-designer.html */
+const FIREBASE_CONFIG={apiKey:"AIzaSyAu5dC00S2wBoStEQ8fGPOjaL38n432FoU",authDomain:"mlazem-designer.firebaseapp.com",projectId:"mlazem-designer",storageBucket:"mlazem-designer.firebasestorage.app",messagingSenderId:"649809636754",appId:"1:649809636754:web:b2fc5b2ba3b9b6ca7e654b",measurementId:"G-DMZGQN0MXK"};
+const ADMIN_EMAIL="admin@mlazem.app";
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Cairo,sans-serif;background:#eef1f6;color:#1d2430;padding-bottom:80px}
+button,input,select{font-family:inherit;font-size:15px}
+.hidden{display:none!important}
+.top{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,#1b2a4a,#3949ab);color:#fff;padding:12px 14px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 10px #0003}
+.top h1{font-size:16px;font-weight:800;flex:1}
+.top button{background:rgba(255,255,255,.15);color:#fff;border:0;border-radius:10px;padding:6px 10px;font-weight:700;font-size:13px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;box-shadow:0 -2px 12px #0002;z-index:10}
+.nav button{flex:1;border:0;background:none;padding:8px 2px 10px;font-size:11.5px;font-weight:700;color:#6b7585;display:flex;flex-direction:column;align-items:center;gap:2px}
+.nav button i{font-style:normal;font-size:20px}
+.nav button.on{color:#3949ab}
+.view{padding:12px;max-width:760px;margin:0 auto}
+.card{background:#fff;border-radius:14px;padding:12px;margin-bottom:12px;box-shadow:0 1px 4px #0001}
+.card h2{font-size:15px;color:#1b2a4a;margin-bottom:8px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.st{background:#fff;border-radius:14px;padding:12px;box-shadow:0 1px 4px #0001}
+.st small{color:#6b7585;font-weight:700;font-size:12px}
+.st b{display:block;font-size:22px;font-weight:900;color:#1b2a4a}
+.st.g b{color:#2e7d32}.st.b b{color:#1e88e5}.st.o b{color:#ef6c00}.st.p b{color:#8e24aa}
+.in,select.in{width:100%;border:1.5px solid #d6dce6;border-radius:10px;padding:9px 10px;background:#fbfcfe}
+label.f{display:block;font-size:13px;color:#5b6575;margin:8px 0 3px;font-weight:600}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row>*{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;padding:10px 12px;font-weight:700;background:#e8eef7;color:#1b2a4a;cursor:pointer;text-decoration:none}
+.btn.primary{background:#3949ab;color:#fff}.btn.green{background:#2e7d32;color:#fff}.btn.red{background:#fdecea;color:#c62828}.btn.wa{background:#25d366;color:#fff}
+.btn.sm{padding:6px 10px;font-size:13px;flex:0 0 auto}
+.btn:disabled{opacity:.5}
+.seg{display:flex;background:#e3e8f0;border-radius:12px;padding:4px;margin-bottom:12px;overflow-x:auto}
+.seg button{flex:1;border:0;background:none;padding:7px 8px;border-radius:9px;font-weight:800;color:#5b6575;white-space:nowrap;font-size:13px}
+.seg button.on{background:#fff;color:#3949ab;box-shadow:0 1px 4px #0002}
+.item{display:flex;gap:10px;align-items:center;padding:10px;border-bottom:1px solid #eef1f6;cursor:pointer}
+.item:last-child{border-bottom:0}
+.av{width:42px;height:42px;border-radius:50%;background:#e8eaf6;color:#3949ab;display:flex;align-items:center;justify-content:center;font-weight:900;flex:0 0 42px}
+.item .mid{flex:1;min-width:0}.item .mid b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.muted{color:#6b7585;font-size:12.5px}
+.amt{font-weight:900;white-space:nowrap}.amt.p{color:#2e7d32}.amt.n{color:#c62828}
+.tag{display:inline-block;font-size:11px;font-weight:800;padding:1px 8px;border-radius:10px;background:#eef1f6;color:#5b6575}
+.tag.off{background:#fdecea;color:#c62828}.tag.used{background:#e8f5e9;color:#2e7d32}.tag.new{background:#e3f2fd;color:#1565c0}
+.code{font-family:monospace;font-size:17px;font-weight:800;letter-spacing:1px;direction:ltr}
+.modal{position:fixed;inset:0;background:#0008;z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:#fff;width:100%;max-width:640px;max-height:94vh;overflow:auto;border-radius:18px 18px 0 0;padding:14px}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:16px}
+.bal{font-size:32px;font-weight:900;color:#2e7d32;text-align:center}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.chips button{border:1.5px solid #c5cae9;background:#fff;border-radius:20px;padding:6px 12px;font-weight:800;color:#3949ab}
+#login{position:fixed;inset:0;z-index:80;background:linear-gradient(160deg,#1b2a4a,#3949ab);display:flex;align-items:center;justify-content:center;padding:18px}
+#login .box{background:#fff;border-radius:20px;padding:20px;width:100%;max-width:400px}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1d2430;color:#fff;padding:10px 16px;border-radius:12px;z-index:90;font-size:14px;text-align:center}
+.hero-a{background:linear-gradient(135deg,#0b1f45,#1b3a7a 60%,#2c55b3);color:#fff;border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 8px 22px rgba(11,31,69,.25)}
+.hero-a small{color:#c3d1ef;font-weight:700}.hero-a>b{display:block;font-size:40px;font-weight:900;line-height:1.2}.hero-a .row span{font-size:13px;font-weight:700;flex:0 0 auto}
+.pw{font-family:monospace;direction:ltr;display:inline-block;background:#fff8e1;border:1px solid #ffe08a;border-radius:8px;padding:1px 8px;font-weight:800;color:#7a5200}
+.bar{height:8px;border-radius:5px;background:#3949ab;margin-top:4px}
+pre{background:#1d2430;color:#d6e2ff;border-radius:10px;padding:10px;font-size:11.5px;overflow:auto;direction:ltr;text-align:left;max-height:260px}
+</style>
+</head>
+<body>
+
+<div id="login">
+ <div class="box">
+  <h2 style="text-align:center;color:#1b2a4a">👑 إدارة الاشتراكات</h2>
+  <div class="muted" style="text-align:center;margin-bottom:8px">مصمم الملازم — مطبعة الكوثر</div>
+  <div id="loginBody"></div>
+ </div>
+</div>
+
+<div class="top"><h1>👑 إدارة مصمم الملازم<br><small style="font-weight:600;font-size:11px;color:#ffd98a">صمم ملازمك باحترافية ويانه</small></h1><button onclick="logout()">خروج</button></div>
+
+<!-- HOME -->
+<div class="view" id="vHome">
+ <div class="hero-a"><small>المشتركين</small><b id="sDes">0</b><div class="row" style="margin-top:6px"><span>🎨 مصممين: <b id="sDesD">0</b></span><span>👨‍🏫 أساتذة: <b id="sDesT">0</b></span><span>⛔ موقوف: <b id="sDesOff">0</b></span></div></div>
+ <div class="seg" id="perSeg"></div>
+ <div class="stats">
+  <div class="st b"><small>صفحات مُضافة</small><b id="sPages">0</b></div>
+  <div class="st g"><small>صافي الإيراد (خصم − إرجاع)</small><b id="sSpent">0</b></div>
+  <div class="st o"><small>صفحات مُرجعة (محذوفة)</small><b id="sRef">0</b></div>
+  <div class="st"><small>ملازم محفوظة PDF</small><b id="sKinds">0</b></div>
+  <div class="st g"><small>شحن بالأكواد</small><b id="sCodes">0</b></div>
+  <div class="st g"><small>شحن مباشر من الإدارة</small><b id="sManual">0</b></div>
+  <div class="st p"><small>مجموع أرصدة المشتركين</small><b id="sBal">0</b></div>
+  <div class="st"><small>أكواد غير مستخدمة</small><b id="sUnused" style="font-size:15px">-</b></div>
+ </div>
+ <div class="card"><h2>👥 آخر المشتركين</h2><div id="lastDes"></div></div>
+ <div class="card"><h2>🏆 الأكثر استخداماً بالفترة</h2><div id="topDes"></div></div>
+</div>
+
+<!-- DESIGNERS -->
+<div class="view hidden" id="vDes">
+ <div class="row" style="margin-bottom:8px"><input class="in" id="dSearch" placeholder="🔍 بحث بالاسم أو الرقم أو المحافظة" oninput="renderDes()"><button class="btn primary" style="flex:0 0 auto" onclick="openAddDes()">➕ مشترك</button></div>
+ <div class="row" style="margin-bottom:10px"><select class="in" id="dRole" onchange="renderDes()"><option value="">الكل</option><option value="designer">🎨 المصممين</option><option value="teacher">👨‍🏫 الأساتذة</option></select>
+  <label class="btn" style="flex:0 0 auto"><input type="checkbox" id="showPw" onchange="renderDes()" style="width:18px;height:18px"> 🔑 إظهار الأرقام السرية</label></div>
+ <div class="card" style="padding:0" id="desList"></div>
+</div>
+
+<!-- CODES -->
+<div class="view hidden" id="vCodes">
+ <div class="card">
+  <h2>🎟️ توليد أكواد شحن</h2>
+  <label class="f">قيمة الكود</label>
+  <div class="chips" id="tierChips"></div>
+  <div class="row">
+   <div><label class="f">مبلغ مخصص</label><input class="in" id="cAmount" inputmode="numeric" value="5000"></div>
+   <div><label class="f">عدد الأكواد</label><input class="in" id="cCount" inputmode="numeric" value="1"></div>
+  </div>
+  <button class="btn green" style="width:100%;margin-top:10px" onclick="genCodes()">توليد الأكواد</button>
+  <div id="newCodes"></div>
+ </div>
+ <div class="seg"><button class="on" data-f="new" onclick="codeFilter(this)">غير مستخدمة</button><button data-f="used" onclick="codeFilter(this)">مستخدمة</button><button data-f="all" onclick="codeFilter(this)">الكل</button></div>
+ <div class="card" style="padding:0" id="codeList"></div>
+</div>
+
+<!-- BOOKLETS -->
+<div class="view hidden" id="vBk">
+ <input class="in" id="bSearch" style="margin-bottom:10px" placeholder="🔍 بحث باسم الأستاذ أو المصمم أو الملزمة أو رقمها" oninput="renderBk()">
+ <div class="card" style="padding:0" id="bkList"></div>
+</div>
+
+<!-- TRANSACTIONS -->
+<div class="view hidden" id="vTx">
+ <div class="seg" id="perSeg2"></div>
+ <div class="seg" id="typeSeg"></div>
+ <div class="card" style="padding:0" id="txList"></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="view hidden" id="vSet">
+ <div class="card">
+  <h2>💵 سعر الصفحة</h2>
+  <input class="in" id="price" inputmode="numeric">
+  <div class="muted" style="margin-top:6px;line-height:1.8">• يُخصم السعر من رصيد المشترك عند إضافة كل صفحة، ويرجع عند حذفها.<br>• بعد حفظ الملزمة PDF تُثبّت صفحاتها ولا تُرجع.<br>• السعر الجديد يُطبّق على الملازم الجديدة فقط.</div>
+  <label class="f">صفحات مجانية لكل مصمم جديد (تجربة)</label>
+  <input class="in" id="trial" inputmode="numeric">
+  <button class="btn green" style="width:100%;margin-top:10px" onclick="savePrice()">💾 حفظ الإعدادات</button>
+ </div>
+ <div class="card">
+  <h2>🔒 قواعد الحماية (Firestore Rules)</h2>
+  <div class="muted">انسخها والصقها في Firebase Console > Firestore Database > Rules ثم اضغط Publish.</div>
+  <pre id="rulesTxt"></pre>
+  <button class="btn primary" style="width:100%" onclick="copyTxt($('#rulesTxt').textContent)">📋 نسخ القواعد</button>
+ </div>
+</div>
+
+<div class="nav">
+ <button class="on" data-v="vHome"><i>📊</i>الرئيسية</button>
+ <button data-v="vDes"><i>👥</i>المشتركين</button>
+ <button data-v="vBk"><i>📚</i>الملازم</button>
+ <button data-v="vCodes"><i>🎟️</i>الأكواد</button>
+ <button data-v="vTx"><i>🧾</i>الحركات</button>
+ <button data-v="vSet"><i>⚙️</i>الإعدادات</button>
+</div>
+
+<!-- designer sheet -->
+<div class="modal hidden" id="desM"><div class="sheet" id="desSheet"></div></div>
+<!-- add designer -->
+<div class="modal hidden" id="addM"><div class="sheet">
+ <div class="sheet-h"><b>➕ إضافة مشترك</b><button class="btn sm" onclick="$('#addM').classList.add('hidden')">✕</button></div>
+ <label class="f">الاسم</label><input class="in" id="nName">
+ <label class="f">رقم الهاتف (يستخدمه لتسجيل الدخول)</label><input class="in" id="nPhone" inputmode="tel" dir="ltr">
+ <label class="f">كلمة المرور</label><input class="in" id="nPass" dir="ltr" placeholder="6 أحرف على الأقل">
+ <label class="f">النوع</label><select class="in" id="nRole"><option value="designer">🎨 مصمم</option><option value="teacher">👨‍🏫 أستاذ</option></select>
+ <label class="f">المحافظة</label><select class="in" id="nGov"></select>
+ <label class="f">رصيد ابتدائي (اختياري)</label><input class="in" id="nBal" inputmode="numeric" value="0">
+ <button class="btn green" style="width:100%;margin-top:12px" id="nGo" onclick="addDes()">إنشاء الحساب</button>
+</div></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const fmt=n=>Math.round(n||0).toLocaleString('en');
+const normD=s=>String(s||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+const phoneEmail=p=>normD(p).replace(/\D/g,'')+'@mlazem.app';
+const tdate=t=>t&&t.seconds?new Date(t.seconds*1000):null;
+const dstr=t=>{const d=tdate(t);return d?d.toLocaleString('ar-IQ',{dateStyle:'short',timeStyle:'short'}):'—'};
+function toast(m,t=2600){const d=document.createElement('div');d.className='toast';d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.remove(),t)}
+async function copyTxt(t){try{await navigator.clipboard.writeText(t);toast('تم النسخ ✓')}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();toast('تم النسخ ✓')}}
+
+const RULES=`rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function signed() { return request.auth != null; }
+    function isAdmin() { return signed() && request.auth.token.email == '${(ADMIN_EMAIL||'ADMIN_EMAIL').toLowerCase()}'; }
+    function cfg() { return get(/databases/$(db)/documents/settings/main).data; }
+    function bk(id) { return /databases/$(db)/documents/booklets/$(id); }
+    function cd(id) { return /databases/$(db)/documents/codes/$(id); }
+    function me() { return /databases/$(db)/documents/designers/$(request.auth.uid); }
+    function uf(d) { return d.get('usedFree', 0); }
+
+    match /settings/{id} {
+      allow read: if signed();
+      allow write: if isAdmin();
+    }
+
+    // passwords — readable by the admin only (and by the owner)
+    match /secrets/{uid} {
+      allow read: if isAdmin() || (signed() && request.auth.uid == uid);
+      allow create, update: if isAdmin() || (signed() && request.auth.uid == uid);
+      allow delete: if isAdmin();
+    }
+
+    match /designers/{uid} {
+      allow read: if isAdmin() || (signed() && request.auth.uid == uid);
+      allow create: if isAdmin() || (signed() && request.auth.uid == uid
+        && request.resource.data.balance == 0 && request.resource.data.totalPages == 0
+        && request.resource.data.totalSpent == 0 && request.resource.data.usedFree == 0
+        && request.resource.data.active == true);
+      allow delete: if isAdmin();
+      allow update: if isAdmin() || (signed() && request.auth.uid == uid && resource.data.active == true
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['balance','totalPages','totalSpent','usedFree','lastCode','lastBooklet','updatedAt'])
+        && request.resource.data.balance >= 0
+        && uf(request.resource.data) >= uf(resource.data)
+        && (uf(request.resource.data) == uf(resource.data) || uf(request.resource.data) <= cfg().trialPages)
+        && (
+          // stats only
+          (request.resource.data.balance == resource.data.balance && uf(request.resource.data) == uf(resource.data)
+            && request.resource.data.get('lastCode','') == resource.data.get('lastCode',''))
+          ||
+          // redeem an unused activation code: + exactly its amount
+          (request.resource.data.get('lastCode','') != resource.data.get('lastCode','')
+            && get(cd(request.resource.data.lastCode)).data.used == false
+            && getAfter(cd(request.resource.data.lastCode)).data.usedBy == uid
+            && request.resource.data.balance == resource.data.balance + get(cd(request.resource.data.lastCode)).data.amount
+            && uf(request.resource.data) == uf(resource.data))
+          ||
+          // pay for added pages / refund deleted pages: must match the booklet ledger exactly
+          (request.resource.data.lastBooklet is string
+            && request.resource.data.get('lastCode','') == resource.data.get('lastCode','')
+            && get(bk(request.resource.data.lastBooklet)).data.uid == uid
+            && getAfter(bk(request.resource.data.lastBooklet)).data.amountPaid - get(bk(request.resource.data.lastBooklet)).data.amountPaid == resource.data.balance - request.resource.data.balance
+            && getAfter(bk(request.resource.data.lastBooklet)).data.freePages - get(bk(request.resource.data.lastBooklet)).data.freePages == uf(request.resource.data) - uf(resource.data))
+        ));
+    }
+
+    // every booklet: pages charged, pages saved as PDF (non-refundable), teacher lock
+    match /booklets/{bid} {
+      allow read: if isAdmin() || (signed() && resource.data.uid == request.auth.uid);
+      allow create: if signed() && bid.matches(request.auth.uid + '_.*')
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.charged == 0 && request.resource.data.exported == 0
+        && request.resource.data.amountPaid == 0 && request.resource.data.freePages == 0
+        && request.resource.data.teacher == '' && request.resource.data.price == cfg().pricePerPage;
+      allow delete: if isAdmin();
+      allow update: if isAdmin() || (signed() && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.price == resource.data.price
+        && (resource.data.teacher == '' || (request.resource.data.teacher == resource.data.teacher && request.resource.data.teacherPhone == resource.data.teacherPhone))
+        && request.resource.data.exported >= resource.data.exported
+        && request.resource.data.exported <= request.resource.data.charged
+        && request.resource.data.amountPaid >= 0
+        && request.resource.data.freePages >= resource.data.freePages
+        && request.resource.data.amountPaid >= (request.resource.data.charged - request.resource.data.freePages) * request.resource.data.price
+        && request.resource.data.amountPaid - resource.data.amountPaid == get(me()).data.balance - getAfter(me()).data.balance
+        && request.resource.data.freePages - resource.data.freePages == uf(getAfter(me()).data) - uf(get(me()).data));
+    }
+
+    match /codes/{code} {
+      allow get: if signed();
+      allow list, create, delete: if isAdmin();
+      allow update: if isAdmin() || (signed() && resource.data.used == false
+        && (resource.data.get('forUid','') == '' || resource.data.forUid == request.auth.uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['used','usedBy','usedAt','usedByName'])
+        && request.resource.data.used == true && request.resource.data.usedBy == request.auth.uid
+        && getAfter(me()).data.lastCode == code);
+    }
+
+    match /transactions/{id} {
+      allow read: if isAdmin() || (signed() && resource.data.uid == request.auth.uid);
+      allow create: if isAdmin() || (signed() && request.resource.data.uid == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+  }
+}`;
+
+let BK=[],FB,DES=[],CODES=[],TX=[],PER='month',TXTYPE='all',CF='new',PRICE=150,unsubs=[];
+const PERS=[['day','اليوم'],['week','الأسبوع'],['month','الشهر'],['year','السنة'],['all','الكل']];
+const TIERS=[5000,10000,25000,50000,100000];
+const TOPUP=[5000,10000,15000,20000,25000,30000,40000,50000];
+const GOVS=['بغداد','البصرة','نينوى','أربيل','النجف','كربلاء','بابل','ذي قار','ميسان','واسط','الديوانية','المثنى','الأنبار','ديالى','صلاح الدين','كركوك','دهوك','السليمانية','حلبجة'];
+let SECRETS={};
+const waTo=(ph,msg)=>`https://wa.me/964${normD(ph).replace(/\D/g,'').replace(/^0/,'')}?text=${encodeURIComponent(msg)}`;
+function perStart(p){const d=new Date();d.setHours(0,0,0,0);if(p==='week')d.setDate(d.getDate()-6);else if(p==='month')d.setDate(1);else if(p==='year'){d.setMonth(0,1)}else if(p==='all')return new Date(2020,0,1);return d}
+
+/* ---- navigation ---- */
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('on',x===b));
+ ['vHome','vDes','vBk','vCodes','vTx','vSet'].forEach(v=>$('#'+v).classList.toggle('hidden',v!==b.dataset.v));window.scrollTo(0,0)});
+function segs(){
+ const mk=(el,list,cur,cb)=>{el.innerHTML=list.map(([k,l])=>`<button class="${k===cur?'on':''}" data-k="${k}">${l}</button>`).join('');el.querySelectorAll('button').forEach(b=>b.onclick=()=>cb(b.dataset.k))};
+ mk($('#perSeg'),PERS,PER,k=>{PER=k;segs();loadTx()});mk($('#perSeg2'),PERS,PER,k=>{PER=k;segs();loadTx()});
+ mk($('#typeSeg'),[['all','الكل'],['export','حفظ'],['code','أكواد'],['admin','شحن إدارة'],['deduct','خصم إدارة']],TXTYPE,k=>{TXTYPE=k;segs();renderTx()});
+}
+
+/* ---- login ---- */
+function loginView(){
+ const b=$('#loginBody');
+ if(!FIREBASE_CONFIG.apiKey||!FIREBASE_CONFIG.projectId||!ADMIN_EMAIL){b.innerHTML=`<div class="card" style="background:#fff4e5;line-height:1.9">⚠️ الصق إعدادات Firebase (FIREBASE_CONFIG) وبريد المدير (ADMIN_EMAIL) في أعلى هذا الملف أولاً.</div>`;return}
+ b.innerHTML=`<label class="f">بريد المدير</label><input class="in" id="lEmail" dir="ltr" value="${esc(ADMIN_EMAIL)}">
+  <label class="f">كلمة المرور</label><input class="in" id="lPass" type="password" dir="ltr">
+  <button class="btn primary" style="width:100%;margin-top:12px;padding:12px" id="lGo">دخول</button><div class="muted" id="lErr" style="color:#c62828;text-align:center;margin-top:6px"></div>`;
+ $('#lGo').onclick=async()=>{try{await FB.auth.signInWithEmailAndPassword($('#lEmail').value.trim(),$('#lPass').value)}catch(e){$('#lErr').textContent='بيانات الدخول غير صحيحة'}};
+}
+function logout(){FB.auth.signOut()}
+
+/* ---- data ---- */
+function startData(){
+ unsubs.forEach(u=>u());unsubs=[];
+ unsubs.push(FB.db.collection('designers').onSnapshot(q=>{DES=q.docs.map(d=>({id:d.id,...d.data()}));renderDes();renderHome()},e=>toast('خطأ بالصلاحيات — تأكد من نشر القواعد')));
+ unsubs.push(FB.db.collection('codes').orderBy('createdAt','desc').limit(500).onSnapshot(q=>{CODES=q.docs.map(d=>({id:d.id,...d.data()}));renderCodes();renderHome()}));
+ FB.db.doc('settings/main').get().then(async s=>{let v=s.exists?s.data():{};
+  if(!s.exists||v.pricePerPage==null||v.trialPages==null){v={pricePerPage:v.pricePerPage||150,trialPages:v.trialPages!=null?v.trialPages:3};await FB.db.doc('settings/main').set(v,{merge:true})}
+  PRICE=+v.pricePerPage;$('#price').value=PRICE;$('#trial').value=v.trialPages});
+ unsubs.push(FB.db.collection('secrets').onSnapshot(q=>{SECRETS={};q.docs.forEach(d=>SECRETS[d.id]=d.data());renderDes()}));
+ unsubs.push(FB.db.collection('booklets').orderBy('lastAt','desc').limit(500).onSnapshot(q=>{BK=q.docs.map(d=>({id:d.id,...d.data()}));renderBk()}));
+ loadTx();
+}
+async function loadTx(){
+ try{const q=await FB.db.collection('transactions').where('at','>=',perStart(PER)).orderBy('at','desc').limit(3000).get();
+  TX=q.docs.map(d=>({id:d.id,...d.data()}));renderHome();renderTx()}catch(e){console.error(e);toast('تعذّر تحميل الحركات')}
+}
+
+/* ---- home ---- */
+function renderHome(){
+ let pages=0,spent=0,ref=0,refPg=0,codes=0,manual=0,exps=0;const per={};
+ TX.forEach(t=>{const u=per[t.uid]=per[t.uid]||{name:t.name,pages:0,amt:0};
+  if(t.type==='page'){pages+=t.pages||0;spent+=-(t.amount||0);u.pages+=t.pages||0;u.amt+=-(t.amount||0)}
+  else if(t.type==='refund'){ref+=t.amount||0;refPg+=t.pages||0;u.pages-=t.pages||0;u.amt-=t.amount||0}
+  else if(t.type==='export')exps++;
+  else if(t.type==='code')codes+=t.amount||0;else if(t.type==='admin')manual+=t.amount||0});
+ $('#sPages').textContent=fmt(pages);$('#sSpent').textContent=fmt(spent-ref);$('#sRef').textContent=fmt(refPg);$('#sKinds').textContent=fmt(exps);
+ $('#sCodes').textContent=fmt(codes);$('#sManual').textContent=fmt(manual);
+ $('#sDes').textContent=DES.length;$('#sDesD').textContent=DES.filter(d=>d.role!=='teacher').length;$('#sDesT').textContent=DES.filter(d=>d.role==='teacher').length;$('#sDesOff').textContent=DES.filter(d=>d.active===false).length;
+ $('#sBal').textContent=fmt(DES.reduce((a,d)=>a+(d.balance||0),0));
+ const un=CODES.filter(c=>!c.used);$('#sUnused').textContent=`${un.length} كود — ${fmt(un.reduce((a,c)=>a+c.amount,0))}`;
+ const last=[...DES].sort((a,b)=>(tdate(b.createdAt)||0)-(tdate(a.createdAt)||0)).slice(0,6);
+ $('#lastDes').innerHTML=last.length?last.map(desRow).join(''):'<div class="muted">لا يوجد مشتركين بعد</div>';
+ const top=Object.entries(per).filter(([,x])=>x.pages>0).sort((a,b)=>b[1].pages-a[1].pages).slice(0,10);const mx=top.length?top[0][1].pages:1;
+ $('#topDes').innerHTML=top.length?top.map(([id,x])=>`<div style="margin:8px 0" onclick="openDes('${id}')"><div class="row"><b>${esc(x.name||'')}</b><span class="muted" style="flex:0 0 auto">${fmt(x.pages)} صفحة — ${fmt(x.amt)} د.ع</span></div><div class="bar" style="width:${Math.max(4,x.pages/mx*100)}%"></div></div>`).join(''):'<div class="muted">لا يوجد استخدام بهذه الفترة</div>';
+}
+
+/* ---- designers ---- */
+const roleTxt=r=>r==='teacher'?'👨‍🏫 أستاذ':'🎨 مصمم';
+function desRow(d){const pw=$('#showPw')&&$('#showPw').checked&&SECRETS[d.id]?` <span class="pw">🔑 ${esc(SECRETS[d.id].password)}</span>`:'';
+ return `<div class="item" onclick="openDes('${d.id}')"><div class="av">${esc((d.name||'?')[0])}</div>
+  <div class="mid"><b>${esc(d.name)} ${d.active===false?'<span class="tag off">موقوف</span>':''}</b><span class="muted">${roleTxt(d.role)} • ${esc(d.gov||'—')} • <span dir="ltr">${esc(d.phone)}</span></span>${pw}</div>
+  <span class="amt ${d.balance>0?'p':''}">${fmt(d.balance)}</span></div>`}
+function renderDes(){
+ const q=normD($('#dSearch').value.trim()).toLowerCase(),role=$('#dRole').value;
+ const list=DES.filter(d=>(!role||(role==='teacher'?d.role==='teacher':d.role!=='teacher'))&&(!q||[(d.name||''),(d.phone||''),(d.gov||'')].join(' ').toLowerCase().includes(q))).sort((a,b)=>(tdate(b.createdAt)||0)-(tdate(a.createdAt)||0));
+ $('#desList').innerHTML=list.length?list.map(desRow).join(''):'<div class="muted" style="padding:14px">لا يوجد مشتركين</div>';
+ if($('#lastDes'))renderHome();
+}
+async function openDes(id){
+ const d=DES.find(x=>x.id===id);if(!d)return;const S=$('#desSheet');const sec=SECRETS[id];
+ S.innerHTML=`<div class="sheet-h"><b>${esc(d.name)}</b><button class="btn sm" onclick="$('#desM').classList.add('hidden')">✕</button></div>
+  <div class="muted" style="text-align:center">${roleTxt(d.role)} • ${esc(d.gov||'—')} • <span dir="ltr">${esc(d.phone)}</span></div>
+  <div style="text-align:center;margin:8px 0">🔑 الرقم السري: ${sec?`<span class="pw">${esc(sec.password)}</span> <button class="btn sm" onclick="copyTxt('${esc(sec.password)}')">📋</button>`:'<span class="muted">غير متوفر (حساب قديم)</span>'}</div>
+  <div class="muted" style="text-align:center">الرصيد الحالي</div><div class="bal">${fmt(d.balance)} د.ع</div>
+  <div class="row muted" style="text-align:center"><span>📄 ${fmt(d.totalPages)} صفحة</span><span>🎁 ${d.usedFree||0} مجانية</span><span>💸 ${fmt(d.totalSpent)} د.ع</span><span>📅 ${dstr(d.createdAt)}</span></div>
+  <div class="card" style="background:#f6f8fb;margin-top:10px">
+   <b>💰 إضافة رصيد (من 5,000 إلى 50,000)</b><div class="chips">${TOPUP.map(t=>`<button onclick="$('#adjAmt').value=${t}">${fmt(t)}</button>`).join('')}</div>
+   <input class="in" id="adjAmt" inputmode="numeric" placeholder="المبلغ">
+   <button class="btn primary" style="width:100%;margin-top:8px" onclick="codeFor('${id}')">🎟️ إنشاء كود تفعيل وإرساله للمشترك</button>
+   <div class="row" style="margin-top:8px"><button class="btn green" onclick="adjust('${id}',1)">➕ إضافة مباشرة</button><button class="btn red" onclick="adjust('${id}',-1)">➖ خصم</button></div>
+   <input class="in" id="adjNote" style="margin-top:6px" placeholder="ملاحظة (اختياري) — مثال: دفع نقداً">
+   <div id="codeOut"></div>
+  </div>
+  <div class="row"><button class="btn ${d.active===false?'green':'red'}" onclick="toggleActive('${id}')">${d.active===false?'✅ تفعيل الحساب':'⛔ إيقاف الحساب'}</button>
+   <a class="btn wa" href="${waTo(d.phone,'أهلاً '+(d.name||''))}" target="_blank">💬 واتساب</a></div>
+  <h3 style="margin:14px 0 6px;font-size:15px">سجل الحركات</h3><div id="dTx"><div class="muted">جاري التحميل...</div></div>`;
+ $('#desM').classList.remove('hidden');
+ try{const q=await FB.db.collection('transactions').where('uid','==',id).limit(300).get();
+  const rows=q.docs.map(x=>x.data()).sort((a,b)=>(b.at?.seconds||0)-(a.at?.seconds||0));
+  $('#dTx').innerHTML=rows.length?rows.map(txRow).join(''):'<div class="muted">لا توجد حركات</div>'}catch(e){$('#dTx').innerHTML='<div class="muted">تعذّر التحميل</div>'}
+}
+function readAmt(){const amt=Math.round(+normD($('#adjAmt').value).replace(/\D/g,''));if(!amt){toast('اختر أو اكتب المبلغ');return 0}
+ if(amt<5000||amt>50000){toast('المبلغ يجب أن يكون من 5,000 إلى 50,000');return 0}return amt}
+async function codeFor(id){
+ const d=DES.find(x=>x.id===id),amt=readAmt();if(!amt)return;
+ const code=rnd12();
+ try{await FB.db.doc('codes/'+code).set({amount:amt,used:false,forUid:id,forName:d.name||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  const msg=`أهلاً ${d.name||''} 👋\nكود تفعيل رصيدك في مصمم الملازم:\n${code}\nالقيمة: ${fmt(amt)} دينار\n\nافتح البرنامج ← حسابي ← أدخل الكود ← تفعيل`;
+  $('#codeOut').innerHTML=`<div class="card" style="background:#e8f5e9;margin:10px 0 0;text-align:center"><div class="muted">كود ${fmt(amt)} دينار — مخصص لـ ${esc(d.name)} فقط</div><div class="code" style="font-size:22px;margin:6px 0">${code}</div>
+   <div class="row"><a class="btn wa" target="_blank" href="${waTo(d.phone,msg)}">💬 إرسال بالواتساب</a><button class="btn" onclick='copyTxt(${JSON.stringify(msg)})'>📋 نسخ</button></div></div>`;
+  toast('تم إنشاء الكود ✓')}catch(e){toast('خطأ — تأكد من القواعد والإنترنت')}
+}
+async function adjust(id,sign){
+ const amt=sign>0?readAmt():Math.round(+normD($('#adjAmt').value).replace(/\D/g,''));if(!amt){if(sign<0)toast('اكتب المبلغ');return}
+ const note=$('#adjNote').value.trim();
+ if(!confirm(`${sign>0?'إضافة':'خصم'} ${fmt(amt)} دينار؟`))return;
+ const ref=FB.db.doc('designers/'+id);
+ try{await FB.db.runTransaction(async tx=>{const s=await tx.get(ref);const x=s.data();const nb=(x.balance||0)+sign*amt;if(nb<0)throw new Error('الرصيد لا يكفي للخصم');
+   tx.update(ref,{balance:nb,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+   tx.set(FB.db.collection('transactions').doc(),{uid:id,name:x.name||'',type:sign>0?'admin':'deduct',amount:sign*amt,note,balanceAfter:nb,at:firebase.firestore.FieldValue.serverTimestamp()})});
+  toast('تم ✓');setTimeout(()=>openDes(id),400);loadTx();
+  if(sign>0){const d=DES.find(x=>x.id===id);setTimeout(()=>{if(confirm('إرسال إشعار للمشترك بالواتساب؟'))window.open(waTo(d.phone,`أهلاً ${d.name||''} 👋\nتمت إضافة ${fmt(amt)} دينار إلى رصيدك في مصمم الملازم.`),'_blank')},700)}}catch(e){toast(e.message||'خطأ')}
+}
+async function toggleActive(id){const d=DES.find(x=>x.id===id);await FB.db.doc('designers/'+id).update({active:d.active===false});toast(d.active===false?'تم التفعيل':'تم الإيقاف');setTimeout(()=>openDes(id),400)}
+function openAddDes(){['nName','nPhone','nPass'].forEach(i=>$('#'+i).value='');$('#nBal').value=0;$('#nGov').innerHTML='<option value="">اختر المحافظة</option>'+GOVS.map(g=>`<option>${g}</option>`).join('');$('#addM').classList.remove('hidden')}
+async function addDes(){
+ const name=$('#nName').value.trim(),ph=normD($('#nPhone').value).replace(/\D/g,''),pw=$('#nPass').value,bal=Math.round(+normD($('#nBal').value)||0);
+ if(!name||ph.length<10||pw.length<6){toast('أكمل الاسم والرقم وكلمة المرور (6 أحرف)');return}
+ $('#nGo').disabled=true;
+ try{
+  const sec=firebase.apps.find(a=>a.name==='sec')||firebase.initializeApp(FIREBASE_CONFIG,'sec');
+  const c=await sec.auth().createUserWithEmailAndPassword(phoneEmail(ph),pw);const uid=c.user.uid;await sec.auth().signOut();
+  await FB.db.doc('designers/'+uid).set({name,phone:ph,gov:$('#nGov').value,role:$('#nRole').value,balance:bal,totalPages:0,totalSpent:0,usedFree:0,active:true,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  await FB.db.doc('secrets/'+uid).set({password:pw,phone:ph,name,at:firebase.firestore.FieldValue.serverTimestamp()});
+  if(bal>0)await FB.db.collection('transactions').add({uid,name,type:'admin',amount:bal,note:'رصيد ابتدائي',balanceAfter:bal,at:firebase.firestore.FieldValue.serverTimestamp()});
+  $('#addM').classList.add('hidden');toast('تم إنشاء حساب '+name+' ✓');
+  const msg=`أهلاً ${name} 👋\nتم إنشاء حسابك في مصمم الملازم\nرقم الدخول: ${ph}\nالرقم السري: ${pw}`;copyTxt(msg);setTimeout(()=>{if(confirm('إرسال بيانات الدخول للمشترك بالواتساب؟'))window.open(waTo(ph,msg),'_blank')},600);
+ }catch(e){toast(e.code&&e.code.includes('email-already')?'هذا الرقم مسجّل مسبقاً':'خطأ: '+(e.message||e),4000)}
+ $('#nGo').disabled=false;
+}
+
+/* ---- booklets (each locked to one teacher) ---- */
+const serialOf=id=>'B-'+String(id).slice(-6).toUpperCase();
+function renderBk(){const q=normD(($('#bSearch')||{}).value||'').trim().toLowerCase();
+ const l=BK.filter(b=>!q||[b.teacher,b.designer,b.title,serialOf(b.id),b.teacherPhone].join(' ').toLowerCase().includes(q));
+ $('#bkList').innerHTML=l.length?l.map(b=>`<div class="item" onclick="openDes('${b.uid}')"><div class="av">📚</div><div class="mid"><b>${esc(b.title||'—')}</b>
+  <span class="muted">👨‍🏫 ${esc(b.teacher||'— لم يُحدد بعد')} ${b.teacherPhone?'('+esc(b.teacherPhone)+')':''} • ✏️ ${esc(b.designer||'')}</span><br><span class="muted">${serialOf(b.id)} • حُفظت ${b.exports||1} مرة • آخر حفظ ${dstr(b.lastAt)}</span></div>
+  <div style="text-align:center"><span class="amt">${b.charged||0} ص</span><br><span class="muted">${fmt(b.amountPaid)} د.ع</span><br><span class="tag ${b.exported?'used':'new'}">${b.exported?'محفوظة '+b.exported:'قيد التصميم'}</span></div></div>`).join(''):'<div class="muted" style="padding:14px">لا توجد ملازم محفوظة بعد</div>'}
+
+/* ---- codes ---- */
+function rnd12(){const a=new Uint32Array(3);crypto.getRandomValues(a);let s=String(1+a[0]%9);for(let i=1;i<12;i++){s+=String(a[i%3]%10);a[i%3]=Math.floor(a[i%3]/10)||crypto.getRandomValues(new Uint32Array(1))[0]}return s}
+function tierChips(){$('#tierChips').innerHTML=TIERS.map(t=>`<button onclick="$('#cAmount').value=${t}">${fmt(t)}</button>`).join('')}
+async function genCodes(){
+ const amt=Math.round(+normD($('#cAmount').value).replace(/\D/g,'')),n=Math.min(50,Math.max(1,+normD($('#cCount').value)||1));
+ if(!amt){toast('اكتب قيمة الكود');return}
+ const batch=FB.db.batch(),made=[];
+ for(let i=0;i<n;i++){const code=rnd12();made.push(code);batch.set(FB.db.doc('codes/'+code),{amount:amt,used:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()})}
+ try{await batch.commit();
+  const txt=made.map(c=>`${c.replace(/(\d{4})(?=\d)/g,'$1-')}  (${fmt(amt)} د.ع)`).join('\n');
+  $('#newCodes').innerHTML=`<div class="card" style="background:#e8f5e9;margin-top:10px"><b>تم توليد ${n} كود:</b>${made.map(c=>`<div class="code" style="margin:4px 0">${c}</div>`).join('')}
+   <div class="row" style="margin-top:6px"><button class="btn" onclick="copyTxt(${JSON.stringify('أكواد شحن مصمم الملازم:\n'+txt)})">📋 نسخ</button><a class="btn wa" target="_blank" href="https://wa.me/?text=${encodeURIComponent('كود شحن مصمم الملازم:\n'+txt)}">واتساب</a></div></div>`;
+  toast('تم توليد الأكواد ✓')}catch(e){toast('خطأ — تأكد من القواعد والإنترنت')}
+}
+function codeFilter(b){CF=b.dataset.f;document.querySelectorAll('#vCodes .seg button').forEach(x=>x.classList.toggle('on',x===b));renderCodes()}
+function renderCodes(){
+ const list=CODES.filter(c=>CF==='all'||(CF==='new'?!c.used:c.used));
+ $('#codeList').innerHTML=list.length?list.map(c=>`<div class="item" style="cursor:default"><div class="mid"><div class="code">${c.id}</div>
+  <span class="muted">${c.forName?'🔒 لـ '+esc(c.forName)+' • ':''}${c.used?`استخدمه ${esc(c.usedByName||'')} — ${dstr(c.usedAt)}`:'أُنشئ '+dstr(c.createdAt)}</span></div>
+  <div style="text-align:center"><b class="amt">${fmt(c.amount)}</b><br><span class="tag ${c.used?'used':'new'}">${c.used?'مستخدم':'جديد'}</span></div>
+  ${c.used?'':`<button class="btn sm" onclick="copyTxt('${c.id}')">📋</button><button class="btn sm red" onclick="delCode('${c.id}')">✕</button>`}</div>`).join(''):'<div class="muted" style="padding:14px">لا توجد أكواد</div>';
+}
+async function delCode(id){if(!confirm('حذف الكود '+id+'؟'))return;await FB.db.doc('codes/'+id).delete();toast('تم الحذف')}
+
+/* ---- transactions ---- */
+const TN={page:'إضافة صفحات',refund:'إرجاع صفحات',export:'حفظ PDF',code:'شحن بكود',admin:'شحن من الإدارة',deduct:'خصم من الإدارة'},KN={pdf:'PDF',word:'Word',print:'طباعة'};
+function txRow(t){return `<div class="item" style="cursor:default"><div class="mid"><b>${TN[t.type]||t.type}${t.kind?' '+KN[t.kind]:''}${t.pages?' — '+t.pages+' صفحة':''}${t.free?' (🎁 '+t.free+' مجانية)':''}</b>${t.teacher?'<span class="muted"> 👨‍🏫 '+esc(t.teacher)+'</span>':''}
+ <span class="muted">${esc(t.name||'')} ${t.title?'• '+esc(t.title):''}${t.note?' • '+esc(t.note):''}${t.code?' • '+t.code:''} • ${dstr(t.at)}</span></div><span class="amt ${t.amount>0?'p':'n'}">${t.amount>0?'+':''}${fmt(t.amount)}</span></div>`}
+function renderTx(){const l=TX.filter(t=>TXTYPE==='all'||t.type===TXTYPE);
+ $('#txList').innerHTML=l.length?l.map(txRow).join(''):'<div class="muted" style="padding:14px">لا توجد حركات بهذه الفترة</div>'}
+
+/* ---- settings ---- */
+async function savePrice(){const p=Math.round(+normD($('#price').value)),t=Math.max(0,Math.round(+normD($('#trial').value)||0));if(!p){toast('اكتب السعر');return}
+ await FB.db.doc('settings/main').set({pricePerPage:p,trialPages:t},{merge:true});PRICE=p;toast('تم حفظ الإعدادات ✓')}
+
+/* ---- init ---- */
+(function(){
+ $('#rulesTxt').textContent=RULES;tierChips();segs();
+ if(!FIREBASE_CONFIG.apiKey||!FIREBASE_CONFIG.projectId||!ADMIN_EMAIL||!window.firebase){loginView();return}
+ firebase.initializeApp(FIREBASE_CONFIG);FB={auth:firebase.auth(),db:firebase.firestore()};
+ FB.auth.onAuthStateChanged(u=>{
+  if(!u){$('#login').classList.remove('hidden');loginView();unsubs.forEach(x=>x());unsubs=[];return}
+  if(u.email!==ADMIN_EMAIL.trim().toLowerCase()){toast('هذا الحساب ليس حساب المدير');FB.auth.signOut();return}
+  $('#login').classList.add('hidden');startData();
+ });
+ loginView();
+})();
+/* ===== التحديث التلقائي: كل مستخدم يحصل على آخر نسخة عند فتح البرنامج ===== */
+(function(){
+ if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+ if(!/^https?:$/.test(location.protocol))return;
+ const KEY='upd:'+location.pathname;let base=null;
+ async function hash(){try{const r=await fetch(location.pathname+'?u='+Date.now(),{cache:'no-store'});if(!r.ok)return null;const t=await r.text();let x=0;for(let i=0;i<t.length;i++)x=(x*31+t.charCodeAt(i))|0;return String(x)}catch(e){return null}}
+ function bar(done){if(document.getElementById('updBar'))return;const d=document.createElement('div');d.id='updBar';
+  d.style.cssText='position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;padding:12px 18px;border-radius:14px;font:800 14px Cairo,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.3);display:flex;gap:10px;align-items:center;max-width:94vw;direction:rtl;cursor:pointer';
+  d.innerHTML=done?'✨ تم تحديث البرنامج إلى آخر نسخة':'✨ يتوفر تحديث جديد للبرنامج <span style="background:#fff;color:#15803d;border-radius:9px;padding:4px 10px">تحديث الآن</span>';
+  d.onclick=()=>done?d.remove():location.reload();document.body.appendChild(d);if(done)setTimeout(()=>d.remove(),5000)}
+ (async()=>{base=await hash();if(!base)return;let old=null;try{old=localStorage.getItem(KEY)}catch(e){}
+  if(old&&old!==base)setTimeout(()=>bar(true),1200);try{localStorage.setItem(KEY,base)}catch(e){}})();
+ async function check(){if(!base)return;const n=await hash();if(n&&n!==base)bar(false)}
+ setInterval(check,5*60*1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
+})();
+</script>
+</body>
+</html>
