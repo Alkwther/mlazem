@@ -446,6 +446,26 @@ body.editing .mybar{display:none}
 .mj .acts{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
 .mj .acts .btn{padding:6px 9px;font-size:12.5px}
 body:has(.modal:not(.hidden)) #instBar,body:has(.modal:not(.hidden)) #updBar{display:none!important}
+
+#dlCard{margin:0 0 14px}
+.dl{background:linear-gradient(135deg,#ffd54f,#ffb300);color:#0b1f45;border-radius:22px;padding:14px;box-shadow:0 14px 34px rgba(255,179,0,.3);display:flex;gap:12px;align-items:center}
+.dl img{width:58px;height:58px;border-radius:15px;flex:0 0 auto;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.dl b{display:block;font-size:16px}.dl small{display:block;font-size:12.5px;font-weight:700;opacity:.8;margin-top:2px}
+.dlgo{display:block;width:100%;margin-top:10px;border:0;border-radius:16px;padding:14px;font:900 16px Cairo,sans-serif;color:#fff;background:#0b1f45;box-shadow:0 8px 20px rgba(11,31,69,.35);cursor:pointer}
+.dlgo.and{background:linear-gradient(135deg,#16a34a,#15803d)}
+.dlgo.ios{background:linear-gradient(135deg,#111827,#374151)}
+.dlok{background:rgba(34,197,94,.15);border:1.5px solid rgba(34,197,94,.5);color:#bbf7d0;border-radius:16px;padding:10px 14px;font-weight:800;font-size:13.5px;text-align:center}
+#instM{position:fixed;inset:0;z-index:10000;background:rgba(8,16,36,.72);display:flex;align-items:flex-end;justify-content:center;direction:rtl}
+#instM .in2{background:#fff;color:#141c2e;border-radius:26px 26px 0 0;padding:20px 18px 22px;max-width:520px;width:100%;max-height:92vh;overflow:auto;font-family:Cairo,sans-serif}
+#instM h3{font-size:19px;text-align:center;margin-bottom:4px}
+#instM .sub{text-align:center;color:#64748b;font-size:13px;font-weight:700;margin-bottom:12px}
+.stp{display:flex;gap:12px;align-items:center;background:#f5f7fb;border:1.5px solid #e6ebf3;border-radius:16px;padding:11px 12px;margin-top:9px}
+.stp .n{flex:0 0 34px;height:34px;border-radius:50%;background:#2563eb;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:16px}
+.stp .tx2{flex:1;font-weight:700;font-size:14.5px;line-height:1.7}
+.stp .ic{flex:0 0 46px;height:46px;border-radius:12px;background:#fff;border:1.5px solid #e2e8f0;display:flex;align-items:center;justify-content:center}
+.warn{background:#fff7ed;border:1.5px solid #fdba74;color:#9a3412;border-radius:14px;padding:11px 12px;font-weight:800;font-size:13.5px;line-height:1.8}
+#iosArrow{position:fixed;bottom:8px;left:50%;margin-left:-26px;z-index:10001;font-size:46px;animation:bob 1s ease-in-out infinite;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(12px)}}
 </style>
 </head>
 <body>
@@ -569,6 +589,7 @@ body:has(.modal:not(.hidden)) #instBar,body:has(.modal:not(.hidden)) #updBar{dis
    <p>منصة تصميم الملازم الدراسية — عربي و English</p>
    <div class="feats"><span>✨ رسوم بالوصف</span><span>🔤 أكثر من 30 خط</span><span>🏷️ تأشيرات على الرسوم</span><span>📕 PDF بدقة عالية</span><span>🎁 أول <b id="trialTxt">3</b> صفحات مجاناً</span></div>
   </div>
+  <div id="dlCard"></div>
   <div class="box2"><div id="authBody"></div></div>
 
  </div>
@@ -578,6 +599,7 @@ body:has(.modal:not(.hidden)) #instBar,body:has(.modal:not(.hidden)) #updBar{dis
  <div class="sheet">
   <div class="sheet-h"><b>👤 حسابي</b><button class="btn sm" onclick="$('#acct').classList.add('hidden')">✕</button></div>
   <div id="acctMsg"></div>
+  <button class="btn" id="acDl" style="width:100%;margin-bottom:10px" onclick="INST.open()">📲 تنزيل البرنامج على جهازك</button>
   <div style="text-align:center"><b id="acName" style="font-size:17px"></b><div class="muted" id="acInfo"></div></div>
   <div class="muted" style="text-align:center;margin-top:8px">رصيدك الآن</div>
   <div class="bal" id="acBal"></div>
@@ -1873,29 +1895,81 @@ function initAuth(){
  async function check(){if(!base)return;const n=await hash();if(n&&n!==base)bar(false)}
  setInterval(check,5*60*1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
 })();
-/* ===== تثبيت البرنامج كتطبيق (يفتح بشاشة كاملة بدون رابط) ===== */
+/* ===== تنزيل البرنامج: أندرويد بضغطة + خطوات الآيفون ===== */
 (function(){
- const standalone=()=>window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
- if(standalone()||!/^https?:$/.test(location.protocol))return;
- const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);let deferred=null;
- window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;show()});
- window.addEventListener('appinstalled',()=>{const b=document.getElementById('instBar');if(b)b.remove();try{localStorage.setItem('mlz_inst','1')}catch(e){}});
- function show(){if(document.getElementById('instBar'))return;let dis=0;try{dis=+localStorage.getItem('mlz_inst_x')||0}catch(e){}if(Date.now()-dis<3*864e5)return;
+ const ua=navigator.userAgent;
+ const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+ const ios=/iphone|ipad|ipod/i.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
+ const ipad=/ipad/i.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
+ const android=/android/i.test(ua);
+ const inApp=/FBAN|FBAV|FB_IAB|Instagram|WhatsApp|Line\/|Snapchat|TikTok|; wv\)/i.test(ua);
+ const iosSafari=ios&&/Safari/i.test(ua)&&!/CriOS|FxiOS|EdgiOS|OPiOS|GSA|YaBrowser/i.test(ua)&&!inApp;
+ const web=/^https?:$/.test(location.protocol);
+ const ICON=(document.querySelector('link[rel=apple-touch-icon]')||{}).href||'icon-192.png';
+ const URL0=location.origin+location.pathname;
+ let deferred=null;
+ const was=()=>{try{return localStorage.getItem('mlz_inst')==='1'}catch(e){return false}};
+ const SHARE='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>';
+ const PLUS='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/></svg>';
+ const DOTS='<svg width="26" height="26" viewBox="0 0 24 24" fill="#111827"><circle cx="12" cy="5" r="2.2"/><circle cx="12" cy="12" r="2.2"/><circle cx="12" cy="19" r="2.2"/></svg>';
+ const stp=(n,html,ic)=>`<div class="stp"><div class="n">${n}</div><div class="tx2">${html}</div>${ic?`<div class="ic">${ic}</div>`:''}</div>`;
+ const copyBtn=`<button class="dlgo" style="background:#2563eb" id="instCopy">📋 نسخ رابط البرنامج</button>`;
+ function close(){const m=document.getElementById('instM');if(m)m.remove();const a=document.getElementById('iosArrow');if(a)a.remove()}
+ function sheet(html,arrow){close();const m=document.createElement('div');m.id='instM';
+  m.innerHTML=`<div class="in2">${html}<button class="dlgo" id="instOk" style="margin-top:14px">تمام 👍</button></div>`;
+  m.onclick=e=>{if(e.target===m)close()};document.body.appendChild(m);
+  document.getElementById('instOk').onclick=close;
+  const c=document.getElementById('instCopy');if(c)c.onclick=async()=>{try{await navigator.clipboard.writeText(URL0)}catch(e){const t=document.createElement('textarea');t.value=URL0;document.body.appendChild(t);t.select();try{document.execCommand('copy')}catch(_){}t.remove()}c.textContent='✅ تم نسخ الرابط'};
+  if(arrow){m.firstChild.style.paddingBottom='86px';const a=document.createElement('div');a.id='iosArrow';a.textContent='⬇️';document.body.appendChild(a)}}
+ function iosSteps(){
+  const head=`<h3>🍎 تنزيل البرنامج على ${ipad?'الآيباد':'الآيفون'}</h3><div class="sub">مجاناً — يصير أيقونة على شاشتك ويفتح مثل التطبيق</div>`;
+  if(!iosSafari){sheet(head+`<div class="warn">⚠️ التنزيل على الآيفون يشتغل بس من متصفح <b>Safari</b> (البوصلة 🧭)</div>
+   ${stp(1,'انسخ رابط البرنامج من الزر الأزرق')}${stp(2,'افتح متصفح <b>Safari</b> 🧭 والصق الرابط فوق')}${stp(3,'بعدها تطلعلك خطوات التنزيل')}
+   <div style="margin-top:10px">${copyBtn}</div>`);return}
+  sheet(head+stp(1,`اضغط زر <b>المشاركة</b> ${ipad?'فوق بالشريط':'بأسفل الشاشة بالنص'}`,SHARE)+
+   stp(2,'انزل لتحت واختار <b>«إضافة إلى الشاشة الرئيسية»</b><br><span style="color:#64748b;font-size:12.5px">Add to Home Screen</span>',PLUS)+
+   stp(3,'اضغط <b>«إضافة»</b> فوق',`<b style="color:#2563eb;font-size:13px">إضافة</b>`)+
+   stp(4,'افتح البرنامج من أيقونته على شاشتك 🎉',`<img src="${ICON}" style="width:40px;height:40px;border-radius:10px">`),!ipad)}
+ function androidSteps(){
+  const head=`<h3>🤖 تنزيل البرنامج على الأندرويد</h3><div class="sub">مجاناً — يصير أيقونة على شاشتك ويفتح مثل التطبيق</div>`;
+  if(inApp){sheet(head+`<div class="warn">⚠️ أنت فاتح الرابط من داخل تطبيق (واتساب / فيسبوك). لازم تفتحه بـ <b>Chrome</b></div>
+   ${stp(1,'اضغط النقاط الثلاث <b>⋮</b> فوق',DOTS)}${stp(2,'اختار <b>«فتح في Chrome»</b> أو <b>«فتح في المتصفح»</b>')}${stp(3,'بعدها اضغط زر <b>⬇️ تنزيل البرنامج</b> الأخضر')}
+   <div style="margin-top:10px">${copyBtn}</div>`);return}
+  sheet(head+stp(1,'اضغط النقاط الثلاث <b>⋮</b> فوق بمتصفح Chrome',DOTS)+
+   stp(2,'اختار <b>«تثبيت التطبيق»</b> أو <b>«إضافة إلى الشاشة الرئيسية»</b>',PLUS)+
+   stp(3,'اضغط <b>«تثبيت»</b>',`<b style="color:#16a34a;font-size:13px">تثبيت</b>`)+
+   stp(4,'افتح البرنامج من أيقونته على شاشتك 🎉',`<img src="${ICON}" style="width:40px;height:40px;border-radius:10px">`))}
+ function pcSteps(){sheet(`<h3>💻 تنزيل البرنامج على اللابتوب</h3><div class="sub">يفتح بنافذة لوحده مثل البرامج</div>`+
+   stp(1,'افتح الرابط بمتصفح <b>Chrome</b> أو <b>Edge</b>')+stp(2,'اضغط أيقونة التثبيت <b>⊕</b> بآخر شريط الرابط فوق، أو <b>⋮</b> ← «حفظ ومشاركة» ← «تثبيت»')+
+   stp(3,'اضغط <b>«تثبيت»</b> — ويصير عندك أيقونة على سطح المكتب'))}
+ async function open(){
+  if(standalone()){toast('✅ البرنامج منزّل وأنت فاتحه من أيقونته');return}
+  if(!web){toast('افتح البرنامج من الرابط حتى تنزّله');return}
+  if(deferred){try{deferred.prompt();const r=await deferred.userChoice;deferred=null;if(r.outcome==='accepted'){try{localStorage.setItem('mlz_inst','1')}catch(e){}card();toast('⏳ جاري التنزيل... راح تطلع أيقونة البرنامج على شاشتك')}}catch(e){android?androidSteps():pcSteps()}return}
+  if(ios)iosSteps();else if(android)androidSteps();else pcSteps()}
+ function card(){
+  const box=document.getElementById('dlCard');if(!box)return;
+  if(standalone()||!web){box.innerHTML='';box.style.display='none';return}
+  const t=ios?{b:`نزّل البرنامج على ${ipad?'الآيباد':'الآيفون'}`,btn:'🍎 شوف خطوات التنزيل على الآيفون',c:'ios'}:android?{b:'نزّل البرنامج على الأندرويد',btn:'⬇️ تنزيل البرنامج',c:'and'}:{b:'نزّل البرنامج على اللابتوب',btn:'💻 تنزيل البرنامج',c:''};
+  box.innerHTML=`<div class="dl"><img src="${ICON}"><div style="flex:1"><b>📲 ${t.b}</b><small>مجاناً • يفتح بشاشة كاملة مثل التطبيقات • بدون رابط</small></div></div>
+   ${was()?'<div class="dlok" style="margin-top:8px">✅ إذا نزّلته قبل، افتحه من أيقونته على شاشتك</div>':''}
+   <button class="dlgo ${t.c}" id="dlGo">${t.btn}</button>`;
+  document.getElementById('dlGo').onclick=open}
+ function show(){if(document.getElementById('instBar')||standalone()||!web)return;const au=document.getElementById('auth');if(au&&!au.classList.contains('hidden'))return;
+  let dis=0;try{dis=+localStorage.getItem('mlz_inst_x')||0}catch(e){}if(Date.now()-dis<3*864e5)return;
   const d=document.createElement('div');d.id='instBar';
   d.style.cssText='position:fixed;left:10px;right:10px;bottom:132px;z-index:9998;background:linear-gradient(135deg,#0b1f45,#2c55b3);color:#fff;border-radius:18px;padding:12px 14px;display:flex;gap:10px;align-items:center;box-shadow:0 12px 30px rgba(0,0,0,.35);font:700 14px Cairo,sans-serif;direction:rtl;max-width:520px;margin:0 auto';
-  d.innerHTML='<img src="'+(document.querySelector('link[rel=apple-touch-icon]')||{}).href+'" style="width:44px;height:44px;border-radius:12px"><div style="flex:1;line-height:1.5">📲 ثبّت البرنامج على جهازك<br><span style="font-weight:600;font-size:12px;color:#c3d1ef">يفتح بشاشة كاملة مثل التطبيقات — بدون رابط</span></div><button id="instGo" style="border:0;background:#ffd36b;color:#3a2600;font:900 14px Cairo,sans-serif;border-radius:12px;padding:10px 14px">تثبيت</button><button id="instX" style="border:0;background:none;color:#fff;font-size:20px">✕</button>';
+  d.innerHTML=`<img src="${ICON}" style="width:44px;height:44px;border-radius:12px"><div style="flex:1;line-height:1.5">📲 نزّل البرنامج على جهازك<br><span style="font-weight:600;font-size:12px;color:#c3d1ef">يفتح بشاشة كاملة مثل التطبيقات</span></div><button id="instGo" style="border:0;background:#ffd36b;color:#3a2600;font:900 14px Cairo,sans-serif;border-radius:12px;padding:10px 14px">${ios?'الخطوات':'تنزيل'}</button><button id="instX" style="border:0;background:none;color:#fff;font-size:18px;padding:4px">✕</button>`;
   document.body.appendChild(d);
   document.getElementById('instX').onclick=()=>{d.remove();try{localStorage.setItem('mlz_inst_x',Date.now())}catch(e){}};
-  document.getElementById('instGo').onclick=async()=>{
-   if(deferred){deferred.prompt();const r=await deferred.userChoice;deferred=null;if(r.outcome==='accepted')d.remove();return}
-   const m=document.createElement('div');m.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(8,16,36,.7);display:flex;align-items:flex-end;justify-content:center;direction:rtl';
-   m.innerHTML='<div style="background:#fff;border-radius:22px 22px 0 0;padding:20px;max-width:520px;width:100%;font:700 15px Cairo,sans-serif;line-height:2;color:#141c2e">'+(ios?
-    '<b style="font-size:17px">📲 التثبيت على الآيفون</b><br>1️⃣ افتح البرنامج من متصفح <b>Safari</b><br>2️⃣ اضغط زر المشاركة <b>⬆️</b> أسفل الشاشة<br>3️⃣ اختر <b>إضافة إلى الشاشة الرئيسية</b><br>4️⃣ اضغط <b>إضافة</b>':
-    '<b style="font-size:17px">📲 التثبيت على الجهاز</b><br>1️⃣ اضغط <b>⋮</b> (القائمة) أعلى Chrome<br>2️⃣ اختر <b>تثبيت التطبيق</b> أو <b>إضافة إلى الشاشة الرئيسية</b><br>3️⃣ اضغط <b>تثبيت</b><br>بعدها افتح البرنامج من أيقونته الصفراء')+
-    '<button style="width:100%;margin-top:12px;border:0;background:#2563eb;color:#fff;font:800 15px Cairo,sans-serif;border-radius:12px;padding:12px">تمام</button></div>';
-   m.onclick=e=>{if(e.target===m||e.target.tagName==='BUTTON')m.remove()};document.body.appendChild(m)};
- }
- setTimeout(()=>{if(!deferred)show()},ios?2500:6000);
+  document.getElementById('instGo').onclick=()=>{open()}}
+ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;card();show()});
+ window.addEventListener('appinstalled',()=>{try{localStorage.setItem('mlz_inst','1')}catch(e){}const b=document.getElementById('instBar');if(b)b.remove();card();if(typeof toast==='function')toast('✅ تم تنزيل البرنامج — افتحه من أيقونته على شاشتك',4000)});
+ window.INST={open,card,show};
+ const acB=document.getElementById('acDl');if(acB&&standalone())acB.style.display='none';
+ card();
+ // بعد تسجيل الدخول: شريط صغير للي ما نزّل البرنامج
+ const au=document.getElementById('auth');if(au)new MutationObserver(()=>{if(au.classList.contains('hidden'))setTimeout(()=>{if(ios||deferred||android)show()},2500)}).observe(au,{attributes:true,attributeFilter:['class']});
 })();
 </script>
 </body>
