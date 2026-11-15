@@ -466,6 +466,38 @@ body:has(.modal:not(.hidden)) #instBar,body:has(.modal:not(.hidden)) #updBar{dis
 .warn{background:#fff7ed;border:1.5px solid #fdba74;color:#9a3412;border-radius:14px;padding:11px 12px;font-weight:800;font-size:13.5px;line-height:1.8}
 #iosArrow{position:fixed;bottom:8px;left:50%;margin-left:-26px;z-index:10001;font-size:46px;animation:bob 1s ease-in-out infinite;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(12px)}}
+
+#pdfV{position:fixed;inset:0;z-index:9000;background:#1f2937;display:flex;flex-direction:column}
+#pdfV .vh{background:linear-gradient(135deg,#0b1f45,#2c55b3);color:#fff;padding:12px 12px 10px}
+#pdfV .ok{background:#22c55e;color:#fff;border-radius:14px;padding:10px 12px;font-weight:900;text-align:center;font-size:15px}
+#pdfV .fn{font-size:13px;color:#c8d6f5;text-align:center;margin-top:6px;word-break:break-all;direction:rtl}
+#pdfV .va{display:flex;gap:6px;margin-top:9px}#pdfV .va .btn{flex:1;padding:10px 4px;font-size:13px}
+#pdfV .vb{flex:1;overflow:auto;padding:12px 10px 30px;-webkit-overflow-scrolling:touch}
+#pdfV .vb img{display:block;width:100%;max-width:700px;margin:0 auto 6px;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+#pdfV .vb .pn{color:#cbd5e1;font-size:12px;text-align:center;margin-bottom:14px}
+
+.sh-btn{width:40px;height:40px;border-radius:13px;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;flex:0 0 40px;cursor:pointer;padding:0}
+#auth .sh-auth{position:absolute;top:14px;left:14px;width:44px;height:44px;border-radius:14px;z-index:2}
+.shg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.shg a,.shg button{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#141c2e;font:800 12.5px Cairo,sans-serif;background:none;border:0;cursor:pointer}
+.shg i{width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:26px;color:#fff;box-shadow:0 6px 14px rgba(0,0,0,.15)}
+#obM{z-index:95}
+
+/* ===== رأس مضغوط ===== */
+.top{padding:6px 10px 0;border-radius:0 0 18px 18px}
+.brand{gap:8px}
+.top .logo{width:36px;height:36px;flex:0 0 36px;border-radius:11px}.top .logo svg{width:21px;height:21px}
+.bt{line-height:1.25}.bt b{font-size:15px}.bt small{font-size:10.5px;display:block;overflow:hidden;text-overflow:ellipsis}
+.wa-btn,.sh-btn{width:34px;height:34px;flex:0 0 34px;border-radius:11px}.wa-btn svg,.sh-btn svg{width:18px;height:18px}
+.chip{height:34px;padding:0 10px;font-size:12px;border-radius:11px}
+.mybar{gap:6px;margin:6px auto 0}
+.mybar button{padding:6px 4px;font-size:12.5px;border-radius:10px}
+.tabs{margin:6px auto 0;padding:3px;gap:4px;border-radius:12px 12px 0 0}
+.tab{padding:6px 4px;font-size:12.5px;border-radius:9px}
+#vPreview{padding-top:8px}
+.pnav{margin-bottom:5px;gap:5px}.pnav .btn{padding:7px 9px;font-size:12px}.pnav select{padding:7px 8px;font-size:13px;height:auto}
+.phint{flex-wrap:nowrap;margin-bottom:4px;font-size:11px}.phint>span:first-child{flex:1;min-width:0;line-height:1.4}.phint>span:last-child{white-space:nowrap}.phint .btn{padding:6px 8px;font-size:11.5px}
+#pgInfo{font-size:11px;margin-bottom:4px!important}
 </style>
 </head>
 <body>
@@ -475,6 +507,7 @@ body:has(.modal:not(.hidden)) #instBar,body:has(.modal:not(.hidden)) #updBar{dis
   <div class="logo"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5C4.7 19 4 18.3 4 17.5v-12Z" fill="#0b1f45"/><path d="M13 4h5.5c.8 0 1.5.7 1.5 1.5v12c0 .8-.7 1.5-1.5 1.5H13V4Z" fill="#0b1f45" opacity=".75"/><path d="M6.5 8h2.5M6.5 11h2.5M15.5 8H18M15.5 11H18" stroke="#ffd36b" stroke-width="1.6" stroke-linecap="round"/><path d="M12 19.5 17.8 13.7l1.6 1.6-5.8 5.8H12v-1.6Z" fill="#fff"/></svg></div>
   <div class="bt"><b>مصمم الملازم</b><small>صمم ملازمك باحترافية ويانه ✨</small></div>
   <a class="wa-btn" id="waTop" target="_blank" title="تواصل عبر واتساب"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.3-.8-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8 0-1.4.7-2 1-2.3.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2Z"/></svg></a>
+  <button class="sh-btn" onclick="shareApp()" title="مشاركة البرنامج"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
   <button class="chip" id="chip" onclick="openAcct()">👤 حسابي</button>
  </div>
  <div class="mybar"><button class="mb-new" onclick="mineNew()">➕ ملزمة جديدة</button><button class="mb-mine" onclick="openMine()">📁 ملازمي</button></div>
@@ -582,6 +615,7 @@ body:has(.modal:not(.hidden)) #instBar,body:has(.modal:not(.hidden)) #updBar{dis
 
 <!-- AUTH -->
 <div id="auth" class="ui">
+ <button class="sh-btn sh-auth" onclick="shareApp()" title="مشاركة البرنامج"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
  <div class="wrap">
   <div class="hero">
    <div class="logo"><svg width="44" height="44" viewBox="0 0 24 24" fill="none"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5C4.7 19 4 18.3 4 17.5v-12Z" fill="#0b1f45"/><path d="M13 4h5.5c.8 0 1.5.7 1.5 1.5v12c0 .8-.7 1.5-1.5 1.5H13V4Z" fill="#0b1f45" opacity=".75"/><path d="M6.5 8h2.5M6.5 11h2.5M15.5 8H18M15.5 11H18" stroke="#ffd36b" stroke-width="1.6" stroke-linecap="round"/><path d="M12 19.5 17.8 13.7l1.6 1.6-5.8 5.8H12v-1.6Z" fill="#fff"/></svg></div>
@@ -808,7 +842,7 @@ function bindInfo(){
   (S.coverImg?`<button class="btn red sm" onclick="S.coverImg=null;save();bindInfo()">حذف</button>`:'');
  fontPicker('#bfList','#bfName','bodyFont');fontPicker('#hfList','#hfName','headFont');renderProjects();const fn=$('#frName');if(fn)fn.textContent=frameName();
  const L=S.lock;['teacher','phone'].forEach(k=>{const el=document.querySelector(`#vInfo [data-k=${k}]`);el.disabled=!!L;if(L)el.value=L[k==='teacher'?'teacher':'phone']||''});
- $('#lockNote').innerHTML=L?`<div class="card" style="background:#fff8e1;border:1.5px solid #ffca28;margin:10px 0 0;line-height:1.9;font-size:13.5px">🔒 هذه الملزمة مرتبطة بالأستاذ <b>${esc(L.teacher)}</b> — رقمها <b dir="ltr" style="display:inline-block;white-space:nowrap">${serialOf(L.id)}</b><br>لا يمكن تغيير اسم الأستاذ بعد الحفظ. لتصميم ملزمة لأستاذ آخر اضغط <b>«نسخ لأستاذ جديد»</b> من قائمة ملازمي (تُحسب كملزمة جديدة).</div>`:'';
+ $('#lockNote').innerHTML=L?`<div class="card" style="background:#fff8e1;border:1.5px solid #ffca28;margin:10px 0 0;line-height:1.9;font-size:13.5px">🔒 هذه الملزمة مرتبطة بالأستاذ <b>${esc(L.teacher)}</b> — رقمها <b dir="ltr" style="display:inline-block;white-space:nowrap">${serialOf(L.id)}</b><br>✅ تگدر تعدّلها وتحفظها PDF مرات بنفس اسم الأستاذ بدون خصم.<br>⚠️ تغيير اسم الأستاذ يحسبها ملزمة جديدة وينخصم سعر صفحاتها.<button class="btn" style="width:100%;margin-top:8px" onclick="changeTeacher()">🔁 تغيير اسم الأستاذ</button></div>`:'';
 }
 function fontPicker(box,nameEl,key){
  const b=$(box);const f=FONTS.find(x=>x.n===S[key]);$(nameEl).textContent=f?f.ar:S[key];
@@ -1241,7 +1275,7 @@ function openCoverSheet(kind){
   :`<label class="f">عنوان الملزمة</label><input class="in" id="cf_title" value="${v('title')}">
   <div class="row"><div><label class="f">المادة</label><input class="in" id="cf_subject" value="${v('subject')}"></div><div><label class="f">الصف</label><input class="in" id="cf_grade" value="${v('grade')}"></div></div>`}
   <div class="row"><div><label class="f">اسم الأستاذ</label><input class="in" id="cf_teacher" value="${esc(tT()||'')}" ${L?'disabled':''}></div><div><label class="f">رقم الهاتف</label><input class="in" id="cf_phone" inputmode="tel" value="${esc(tP()||'')}" ${L?'disabled':''}></div></div>
-  ${L?'<div class="muted">🔒 اسم الأستاذ ورقمه مقفلان لهذه الملزمة</div>':''}
+  ${L?'<div class="muted">🔒 اسم الأستاذ مقفل — تغييره يحسبها ملزمة جديدة <button class="btn sm" onclick="$(\'#obM\').classList.add(\'hidden\');changeTeacher()">🔁 تغيير</button></div>':''}
   <label class="f">سطر إضافي</label><input class="in" id="cf_extra" value="${v('extra')}">
   ${!B?`<label class="f">صورة صغيرة داخل التصميم (اختياري)</label><div class="seg" style="align-items:center">${S.coverImg?`<img src="${S.coverImg.src}" style="max-width:70px;max-height:70px;border-radius:8px">`:''}<button class="btn sm" id="cbIn">🖼️ ${S.coverImg?'تغيير':'إضافة'}</button>${S.coverImg?'<button class="btn sm red" id="cbInDel">حذف</button>':''}</div>`:''}
  </div>
@@ -1355,6 +1389,7 @@ window.addEventListener('resize',()=>{if(!$('#vPreview').classList.contains('hid
 /* ========== PDF export ========== */
 function overlay(msg){let o=$('#ovl');if(!o){o=document.createElement('div');o.id='ovl';o.className='overlay';document.body.appendChild(o)}o.innerHTML='<div class="spin"></div><div>'+msg+'</div>';return o}
 const fname=ext=>(S.title||'ملزمة').replace(/[\\/:*?"<>|]/g,'')+ext;
+const pdfName=()=>{const t=((S.lock?S.lock.teacher:S.teacher)||'').trim(),sb=(S.subject||S.title||'ملزمة').trim();return ([t,sb].filter(Boolean).join(' - ')||'ملزمة').replace(/[\\/:*?"<>|]/g,'').replace(/\s+/g,' ')+'.pdf'};
 function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
 async function capturePage(p,q){return html2canvas(p,{scale:q,useCORS:true,backgroundColor:'#ffffff',logging:false,windowWidth:1000,scrollX:0,scrollY:0})}
 async function exportPDF(){
@@ -1366,28 +1401,65 @@ async function exportPDF(){
  const o=overlay('جاري التأكد من الصفحات والرصيد...');
  if(!IS_ADMIN){await liveSyncNow();if(LIVE.err){o.remove();toast('تعذّر الاتصال — تأكد من الإنترنت');return}
   if(LIVE.unpaid>0){o.remove();lowBalance(LIVE.unpaid);return}}
- if(!S.lock&&!confirm(`سيتم ربط هذه الملزمة باسم الأستاذ:\n${teacher}\n\nلا يمكن تغيير اسم الأستاذ بعد الحفظ.\nمتابعة؟`)){o.remove();return}
+ if(!S.lock&&!confirm(`سيتم ربط هذه الملزمة باسم الأستاذ:\n${teacher}\n\n✅ تگدر تعدّلها وتحفظها مرات بنفس اسم الأستاذ بدون خصم.\n⚠️ إذا غيّرت اسم الأستاذ بعدين، تنحسب ملزمة جديدة وينخصم سعر صفحاتها.\n\nمتابعة؟`)){o.remove();return}
  EXPORT_ID=S.bid||('adm_'+Date.now().toString(36));
  const nPages=await renderPages();
  const q=+$('#q').value;const pages=[...document.querySelectorAll('#pages .page')];
  document.body.classList.add('exporting');window.scrollTo(0,0);
  try{
-  const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:'mm',format:'a4',orientation:'portrait',compress:true});
+  PREV=[];const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:'mm',format:'a4',orientation:'portrait',compress:true});
   for(let i=0;i<pages.length;i++){
    o.innerHTML=`<div class="spin"></div><div>جاري تصدير الصفحة ${i+1} من ${pages.length}</div><div style="font-size:13px;opacity:.8">لا تغلق الصفحة</div>`;
    await new Promise(r=>setTimeout(r,30));
    const cv=await capturePage(pages[i],q);
    if(i>0)pdf.addPage('a4','portrait');
-   pdf.addImage(cv.toDataURL('image/jpeg',.94),'JPEG',0,0,210,297,undefined,'FAST');cv.width=cv.height=0;
+   pdf.addImage(cv.toDataURL('image/jpeg',.94),'JPEG',0,0,210,297,undefined,'FAST');
+   try{const tw=900,sc=document.createElement('canvas');sc.width=tw;sc.height=Math.round(cv.height*tw/cv.width);sc.getContext('2d').drawImage(cv,0,0,sc.width,sc.height);PREV.push(sc.toDataURL('image/jpeg',.82));sc.width=sc.height=0}catch(e){}
+   cv.width=cv.height=0;
   }
   const blob=pdf.output('blob');
   let ok=true;
   if(!IS_ADMIN){o.innerHTML='<div class="spin"></div><div>جاري تثبيت الملزمة...</div>';ok=await markExported(nPages,teacher)}
   if(ok){
    if(!S.lock){S.lock={id:EXPORT_ID,uid:ME?ME.id:'',teacher,phone:(S.phone||'').trim(),at:Date.now()};saveNow();bindInfo()}
-   window._lastPdf=blob;download(blob,fname('.pdf'));toast('تم حفظ ملف PDF ✓')}
+   const nm=pdfName();window._lastPdf=blob;download(blob,nm);EXP_DONE={blob,nm,n:pages.length};}
  }catch(e){console.error(e);toast('حدث خطأ أثناء التصدير — جرّب دقة أقل',4000)}
  EXPORT_ID=null;document.body.classList.remove('exporting');o.remove();renderPages();statusBar();
+ if(EXP_DONE){const d=EXP_DONE;EXP_DONE=null;openPdfView(d.blob,d.nm,d.n)}
+}
+let PREV=[],EXP_DONE=null;
+function openPdfView(blob,nm,n){
+ const old=$('#pdfV');if(old)old.remove();
+ const v=document.createElement('div');v.id='pdfV';v.className='ui';
+ const url=URL.createObjectURL(blob);
+ v.innerHTML=`<div class="vh"><div class="ok">✅ تم حفظ الملف</div><div class="fn">📕 <bdi>${esc(nm)}</bdi><br>${n} صفحة</div>
+  <div class="va"><button class="btn green" id="pvShare">📤 إرسال</button><a class="btn" id="pvOpen" href="${url}" target="_blank" rel="noopener">📂 فتح بتطبيق PDF</a><button class="btn" id="pvDl">⬇️ تحميل مرة ثانية</button><button class="btn red" id="pvX">✕</button></div></div>
+  <div class="vb">${PREV.map((src,i)=>`<img src="${src}"><div class="pn">صفحة ${i+1} من ${PREV.length}</div>`).join('')||'<div class="pn" style="padding:40px">تم الحفظ — افتح الملف من التنزيلات</div>'}</div>`;
+ document.body.appendChild(v);
+ $('#pvX').onclick=()=>{v.remove();PREV=[];setTimeout(()=>URL.revokeObjectURL(url),60000)};
+ $('#pvDl').onclick=()=>download(blob,nm);
+ const file=new File([blob],nm,{type:'application/pdf'});
+ $('#pvShare').onclick=async()=>{try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:nm})}else{download(blob,nm);toast('تم التحميل — أرسله من التنزيلات')}}catch(e){}};
+}
+/* تغيير اسم الأستاذ لملزمة محفوظة = ملزمة جديدة (ينخصم سعر صفحاتها) */
+async function changeTeacher(){
+ if(!S.lock){toast('اسم الأستاذ يتغيّر من خانة اسم الأستاذ');return}
+ const n=LIVE.n||pagesList().length||0,old=S.lock.teacher;
+ const freeLeft=IS_ADMIN?0:Math.max(0,TRIAL-((ME&&ME.usedFree)||0)),payP=Math.max(0,n-freeLeft),cost=IS_ADMIN?0:payP*PRICE;
+ const nt=prompt(`🔁 تغيير اسم الأستاذ\n\nالملزمة محفوظة PDF باسم: ${old}\nتغيير الاسم يعتبرها ملزمة جديدة:\n${n} صفحة × ${PRICE} = ${fmt(n*PRICE)} دينار${freeLeft?` (منها ${Math.min(freeLeft,n)} مجانية)`:''}\n\nالملزمة القديمة تبقى محفوظة بـ «ملازمي».\n\nاكتب اسم الأستاذ الجديد:`,'');
+ if(nt==null)return;const name=nt.trim();if(!name){toast('اكتب اسم الأستاذ');return}
+ if(name===old){toast('نفس اسم الأستاذ — تگدر تحفظها بدون خصم');return}
+ if(!IS_ADMIN&&ME&&(ME.balance||0)<cost){lowBalance(payP-Math.floor((ME.balance||0)/PRICE));return}
+ const ph=prompt('رقم هاتف الأستاذ الجديد (اختياري):','');
+ if(!confirm(`تأكيد:\nملزمة جديدة باسم الأستاذ: ${name}\nسيتم خصم ${fmt(cost)} دينار من رصيدك.\nمتابعة؟`))return;
+ clearTimeout(saveT);saveNow();
+ const d=JSON.parse(JSON.stringify(S));delete d.lock;delete d.bid;d.pid=uid();d.teacher=name;d.phone=(ph||'').trim();
+ S=Object.assign(sample(),d);saveNow();bindInfo();renderTopics();renderProjects();
+ const o=overlay('جاري إنشاء الملزمة باسم الأستاذ الجديد...');
+ try{await liveSyncNow()}finally{o.remove()}
+ if(LIVE.err){toast('تعذّر الاتصال — تأكد من الإنترنت',4000);return}
+ if(LIVE.unpaid>0){lowBalance(LIVE.unpaid);return}
+ popup('✅','تم تغيير اسم الأستاذ',`صارت ملزمة جديدة باسم <b>${esc(name)}</b>${cost?`<br>تم خصم <b>${fmt(cost)}</b> دينار`:''}<br>الملزمة القديمة باسم <b>${esc(old)}</b> باقية بـ «ملازمي».<br><button class="btn pdf" style="width:100%;margin-top:12px" onclick="$('#popM').classList.add('hidden');exportPDF()">📕 احفظها PDF الآن</button>`);
 }
 async function markExported(n,teacher){
  const bref=FB.db.doc('booklets/'+S.bid);
@@ -1895,6 +1967,27 @@ function initAuth(){
  async function check(){if(!base)return;const n=await hash();if(n&&n!==base)bar(false)}
  setInterval(check,5*60*1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
 })();
+/* ===== مشاركة البرنامج ===== */
+function shareApp(){
+ const url=APP_URL,txt='✨ مصمم الكوثر — صمّم ملازمك باحترافية ويانه\n📕 أغلفة احترافية، +30 خط، إطارات، رسوم بالوصف، وحفظ PDF جاهز للطباعة\n🎁 أول 3 صفحات مجاناً\n📲 يشتغل على الأندرويد والآيفون واللابتوب:\n',full=txt+url;
+ const tryNative=async()=>{try{await navigator.share({title:'مصمم الكوثر',text:txt,url});return true}catch(e){return e&&e.name==='AbortError'}};
+ const sheet=()=>{const e=encodeURIComponent;
+  $('#obBody').innerHTML=`<div class="sheet-h"><b>🔗 مشاركة البرنامج</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
+  <div class="muted">شارك البرنامج ويه المصممين والأساتذة</div>
+  <div class="shg">
+   <a href="https://wa.me/?text=${e(full)}" target="_blank" rel="noopener"><i style="background:#25d366">💬</i>واتساب</a>
+   <a href="https://t.me/share/url?url=${e(url)}&text=${e(txt)}" target="_blank" rel="noopener"><i style="background:#229ed9">✈️</i>تليگرام</a>
+   <a href="https://www.facebook.com/sharer/sharer.php?u=${e(url)}" target="_blank" rel="noopener"><i style="background:#1877f2">f</i>فيسبوك</a>
+   <a href="sms:?&body=${e(full)}"><i style="background:#64748b">✉️</i>رسالة</a>
+   <button id="shCopy"><i style="background:#2563eb">📋</i>نسخ الرابط</button>
+   ${navigator.share?'<button id="shMore"><i style="background:#0b1f45">⋯</i>برامج أخرى</button>':''}
+  </div>
+  <div class="inp" style="margin-top:14px;direction:ltr;font-size:13px;word-break:break-all;background:#f5f7fb;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px">${url}</div>`;
+  $('#shCopy').onclick=async()=>{try{await navigator.clipboard.writeText(full)}catch(_){const t=document.createElement('textarea');t.value=full;document.body.appendChild(t);t.select();try{document.execCommand('copy')}catch(__){}t.remove()}toast('✅ تم نسخ الرابط — الصقه وين ما تريد')};
+  const m=$('#shMore');if(m)m.onclick=()=>{$('#obM').classList.add('hidden');tryNative()};
+  $('#obM').classList.remove('hidden')};
+ sheet();
+}
 /* ===== تنزيل البرنامج: أندرويد بضغطة + خطوات الآيفون ===== */
 (function(){
  const ua=navigator.userAgent;
