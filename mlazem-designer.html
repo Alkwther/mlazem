@@ -498,6 +498,17 @@ body:has(.modal:not(.hidden)) #instBar,body:has(.modal:not(.hidden)) #updBar{dis
 .pnav{margin-bottom:5px;gap:5px}.pnav .btn{padding:7px 9px;font-size:12px}.pnav select{padding:7px 8px;font-size:13px;height:auto}
 .phint{flex-wrap:nowrap;margin-bottom:4px;font-size:11px}.phint>span:first-child{flex:1;min-width:0;line-height:1.4}.phint>span:last-child{white-space:nowrap}.phint .btn{padding:6px 8px;font-size:11.5px}
 #pgInfo{font-size:11px;margin-bottom:4px!important}
+
+#askM{position:fixed;inset:0;z-index:10050;background:rgba(8,16,36,.62);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:22px;direction:rtl}
+#askM .ak{background:#fff;color:#141c2e;border-radius:24px;padding:22px 20px 18px;width:100%;max-width:380px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.35);font-family:Cairo,sans-serif;animation:akIn .18s ease-out}
+@keyframes akIn{from{transform:scale(.92);opacity:0}to{transform:none;opacity:1}}
+#askM .ai{font-size:44px;line-height:1}
+#askM h3{font-size:18px;margin:10px 0 6px;line-height:1.6}
+#askM p{font-size:14px;color:#475569;font-weight:700;line-height:1.8;white-space:pre-line}
+#askM input{width:100%;margin-top:12px;border:2px solid #dfe6f1;border-radius:14px;padding:12px;font:700 15px Cairo,sans-serif;text-align:center}
+#askM .ab2{display:flex;gap:10px;margin-top:16px}
+#askM .ab2 button{flex:1;border:0;border-radius:14px;padding:13px;font:900 16px Cairo,sans-serif;cursor:pointer}
+#askM .y{background:#2563eb;color:#fff}#askM .y.red{background:#e11d48}#askM .n{background:#eef2f7;color:#334155}
 </style>
 </head>
 <body>
@@ -812,12 +823,25 @@ function renderProjects(){const L=$('#projList');if(!L)return;
  L.innerHTML=PJ.map(p=>`<div class="pj ${p.id===S.pid?'cur':''}"><div><b>${p.locked?'🔒 ':''}${esc(p.title||'بدون عنوان')}</b><span class="muted">${p.teacher?esc(p.teacher)+' • ':''}${new Date(p.at).toLocaleDateString('ar-IQ')}</span></div>
   ${p.id===S.pid?'<span class="muted">مفتوحة</span>':`<button class="btn sm" onclick="openProject('${p.id}')">فتح</button>`}
   <button class="btn sm" onclick="dupProject('${p.id}')" title="نسخ لأستاذ جديد">نسخ لأستاذ جديد</button><button class="btn sm red" onclick="delProject('${p.id}')">✕</button></div>`).join('')}
+async function openProjectNoSave(id){const raw=await DB.get('p:'+id);if(!raw)return;S=Object.assign(sample(),JSON.parse(raw));S.pid=id;DB.set('lastPid',id);bindInfo();renderTopics();renderProjects();liveSoon(300)}
 async function openProject(id){clearTimeout(saveT);saveNow();const raw=await DB.get('p:'+id);if(!raw)return;S=Object.assign(sample(),JSON.parse(raw));S.pid=id;DB.set('lastPid',id);bindInfo();renderTopics();renderProjects();toast('تم فتح: '+S.title);liveSoon(300)}
 async function dupProject(id){clearTimeout(saveT);saveNow();const raw=await DB.get('p:'+id);if(!raw)return;const d=JSON.parse(raw);d.pid=uid();delete d.lock;delete d.bid;d.teacher='';d.phone='';d.title=(d.title||'')+' (نسخة)';S=Object.assign(sample(),d);saveNow();bindInfo();renderTopics();showTab('vInfo');toast('نسخة جديدة — اكتب اسم الأستاذ الجديد')}
-async function delProject(id){const p=PJ.find(x=>x.id===id);if(!confirm('حذف الملزمة "'+(p&&p.title)+'" نهائياً؟\n\nسيُرجع رصيد الصفحات التي لم تُحفظ PDF بعد.'))return;
- try{const raw=await DB.get('p:'+id);const d=raw&&JSON.parse(raw);if(d&&d.bid&&FB&&ME&&!IS_ADMIN&&d.bid.startsWith(ME.id+'_')){const r=await setPages(d.bid,0);if(r.refund)toast('تم إرجاع '+fmt(r.refund)+' دينار إلى رصيدك')}}catch(e){console.warn(e)}
- PJ=PJ.filter(x=>x.id!==id);try{DB.db.transaction('kv','readwrite').objectStore('kv').delete('p:'+id)}catch(e){}DB.set('projects',PJ);
- if(id===S.pid){if(PJ.length){await openProject(PJ[0].id)}else{S=blankProject();saveNow();bindInfo();renderTopics()}}renderProjects()}
+/* ===== نافذة سؤال داخل البرنامج (بدل نوافذ المتصفح) ===== */
+function ask(title,o={}){return new Promise(res=>{const old=document.getElementById('askM');if(old)old.remove();
+ const m=document.createElement('div');m.id='askM';
+ m.innerHTML=`<div class="ak"><div class="ai">${o.icon||(o.danger?'🗑️':'❓')}</div><h3>${title}</h3>${o.msg?`<p>${o.msg}</p>`:''}${o.input!=null?`<input id="askIn" value="${esc(o.input)}" placeholder="${esc(o.ph||'')}" ${o.tel?'inputmode="tel" dir="ltr"':''}>`:''}
+  <div class="ab2"><button class="y ${o.danger?'red':''}" id="askY">${o.yes||'نعم'}</button><button class="n" id="askN">${o.no||'لا'}</button></div></div>`;
+ document.body.appendChild(m);const inp=document.getElementById('askIn');
+ const done=v=>{m.remove();res(v)};
+ document.getElementById('askY').onclick=()=>done(o.input!=null?inp.value:true);
+ document.getElementById('askN').onclick=()=>done(o.input!=null?null:false);
+ m.onclick=e=>{if(e.target===m)done(o.input!=null?null:false)};
+ if(inp){setTimeout(()=>inp.focus(),50);inp.onkeydown=e=>{if(e.key==='Enter')done(inp.value)}}})}
+async function delProject(id){const p=PJ.find(x=>x.id===id);
+ if(!await ask('هل تريد حذف الملزمة؟',{danger:true,msg:'«'+esc((p&&p.title)||'بدون عنوان')+'»'+(p&&p.teacher?'\nالأستاذ: '+esc(p.teacher):'')}))return;
+ if(id===S.pid){clearTimeout(saveT);clearTimeout(liveT)}
+ PJ=PJ.filter(x=>x.id!==id);try{DB.db.transaction('kv','readwrite').objectStore('kv').delete('p:'+id)}catch(e){}DB.set('projects',PJ);toast('🗑️ تم حذف الملزمة');
+ if(id===S.pid){if(PJ.length){await openProjectNoSave(PJ[0].id)}else{S=blankProject();saveNow();bindInfo();renderTopics()}}renderProjects();if(typeof renderPages==='function')renderPages()}
 function blankProject(){return Object.assign(sample(),{pid:uid(),title:'ملزمة جديدة',subject:'',teacher:'',phone:'',extra:'',coverImg:null,topics:[{id:uid(),unit:'',title:'',color:'#1e88e5',blocks:[{id:uid(),type:'text',text:''}]}]})}
 
 /* ========== tabs ========== */
@@ -877,7 +901,7 @@ function renderTopics(){
   const hb=c.querySelectorAll('.topic-h button');
   hb[0].onclick=()=>{move(S.topics,ti,-1);renderTopics()};
   hb[1].onclick=()=>{move(S.topics,ti,1);renderTopics()};
-  hb[2].onclick=()=>{if(confirm('حذف الموضوع "'+t.title+'"؟')){S.topics.splice(ti,1);save();renderTopics()}};
+  hb[2].onclick=async()=>{if(await ask('هل تريد حذف الموضوع؟',{danger:true,msg:'«'+esc(t.title)+'»'})){S.topics.splice(ti,1);save();renderTopics()}};
   swatches(c.querySelector('.sw'),t.color,col=>{t.color=col;save();renderTopics()});
   const bx=c.querySelector('.blks');t.blocks.forEach((b,bi)=>bx.appendChild(blockEditor(t,b,bi)));
   const ab=c.querySelectorAll('.add .btn');
@@ -981,7 +1005,7 @@ function blockEditor(t,b,bi){
  const bb=d.querySelectorAll('.blk-bar button');
  bb[0].onclick=()=>{move(t.blocks,bi,-1);renderTopics()};
  bb[1].onclick=()=>{move(t.blocks,bi,1);renderTopics()};
- bb[2].onclick=()=>{if(confirm('حذف هذا الجزء؟')){t.blocks.splice(bi,1);save();renderTopics()}};
+ bb[2].onclick=async()=>{if(await ask('هل تريد حذف هذا الجزء؟',{danger:true})){t.blocks.splice(bi,1);save();renderTopics()}};
  return d;
 }
 function addChapter(){const used=S.topics.map(t=>t.color);const c=PALETTE.find(p=>!used.includes(p))||PALETTE[S.topics.length%PALETTE.length];
@@ -1401,7 +1425,7 @@ async function exportPDF(){
  const o=overlay('جاري التأكد من الصفحات والرصيد...');
  if(!IS_ADMIN){await liveSyncNow();if(LIVE.err){o.remove();toast('تعذّر الاتصال — تأكد من الإنترنت');return}
   if(LIVE.unpaid>0){o.remove();lowBalance(LIVE.unpaid);return}}
- if(!S.lock&&!confirm(`سيتم ربط هذه الملزمة باسم الأستاذ:\n${teacher}\n\n✅ تگدر تعدّلها وتحفظها مرات بنفس اسم الأستاذ بدون خصم.\n⚠️ إذا غيّرت اسم الأستاذ بعدين، تنحسب ملزمة جديدة وينخصم سعر صفحاتها.\n\nمتابعة؟`)){o.remove();return}
+ if(!S.lock){o.style.display='none';const go=await ask('حفظ الملزمة PDF باسم الأستاذ',{icon:'📕',msg:`👨‍🏫 ${esc(teacher)}\n\n✅ تگدر تعدّلها وتحفظها مرات بنفس اسم الأستاذ بدون خصم.\n⚠️ إذا غيّرت اسم الأستاذ بعدين، تنحسب ملزمة جديدة.`,yes:'حفظ PDF',no:'إلغاء'});o.style.display='';if(!go){o.remove();return}}
  EXPORT_ID=S.bid||('adm_'+Date.now().toString(36));
  const nPages=await renderPages();
  const q=+$('#q').value;const pages=[...document.querySelectorAll('#pages .page')];
@@ -1446,12 +1470,12 @@ async function changeTeacher(){
  if(!S.lock){toast('اسم الأستاذ يتغيّر من خانة اسم الأستاذ');return}
  const n=LIVE.n||pagesList().length||0,old=S.lock.teacher;
  const freeLeft=IS_ADMIN?0:Math.max(0,TRIAL-((ME&&ME.usedFree)||0)),payP=Math.max(0,n-freeLeft),cost=IS_ADMIN?0:payP*PRICE;
- const nt=prompt(`🔁 تغيير اسم الأستاذ\n\nالملزمة محفوظة PDF باسم: ${old}\nتغيير الاسم يعتبرها ملزمة جديدة:\n${n} صفحة × ${PRICE} = ${fmt(n*PRICE)} دينار${freeLeft?` (منها ${Math.min(freeLeft,n)} مجانية)`:''}\n\nالملزمة القديمة تبقى محفوظة بـ «ملازمي».\n\nاكتب اسم الأستاذ الجديد:`,'');
+ const nt=await ask('🔁 تغيير اسم الأستاذ',{icon:'👨‍🏫',msg:`الملزمة محفوظة PDF باسم: ${esc(old)}\nتغيير الاسم يعتبرها ملزمة جديدة:\n${n} صفحة × ${PRICE} = ${fmt(n*PRICE)} دينار${freeLeft?` (منها ${Math.min(freeLeft,n)} مجانية)`:''}\nالملزمة القديمة تبقى بـ «ملازمي».`,input:'',ph:'اسم الأستاذ الجديد',yes:'التالي',no:'إلغاء'});
  if(nt==null)return;const name=nt.trim();if(!name){toast('اكتب اسم الأستاذ');return}
  if(name===old){toast('نفس اسم الأستاذ — تگدر تحفظها بدون خصم');return}
  if(!IS_ADMIN&&ME&&(ME.balance||0)<cost){lowBalance(payP-Math.floor((ME.balance||0)/PRICE));return}
- const ph=prompt('رقم هاتف الأستاذ الجديد (اختياري):','');
- if(!confirm(`تأكيد:\nملزمة جديدة باسم الأستاذ: ${name}\nسيتم خصم ${fmt(cost)} دينار من رصيدك.\nمتابعة؟`))return;
+ const ph=await ask('رقم هاتف الأستاذ الجديد',{icon:'📞',msg:'اختياري — تگدر تتركه فارغ',input:'',ph:'07xxxxxxxxx',tel:1,yes:'التالي',no:'تخطي'});
+ if(!await ask('تأكيد تغيير الأستاذ',{icon:'⚠️',msg:`ملزمة جديدة باسم: ${esc(name)}\nسيتم خصم ${fmt(cost)} دينار من رصيدك`,yes:'نعم، متابعة',no:'لا'}))return;
  clearTimeout(saveT);saveNow();
  const d=JSON.parse(JSON.stringify(S));delete d.lock;delete d.bid;d.pid=uid();d.teacher=name;d.phone=(ph||'').trim();
  S=Object.assign(sample(),d);saveNow();bindInfo();renderTopics();renderProjects();
@@ -1575,7 +1599,7 @@ $('#fbar').querySelectorAll('.fbbtns button').forEach(b=>{b.onpointerdown=e=>e.p
  if(c==='ok'){commitEl(ACT);ACT.blur();endEditing();return}
  if(c==='b'){document.execCommand('bold');commitEl(ACT);return}if(c==='u'){document.execCommand('underline');commitEl(ACT);return}
  if(c==='m'){wrapTag('mark');return}if(c==='ic'){wrapTag('span','ic');return}
- const host=hostOf(ACT);if(c==='del'){if(confirm('حذف هذا السطر؟'))deleteLine(host,false);return}
+ const host=hostOf(ACT);if(c==='del'){ask('هل تريد حذف هذا السطر؟',{danger:true}).then(y=>{if(y)deleteLine(host,false)});return}
  if(c==='up'||c==='dn'){commitEl(ACT);const d=host.dataset;ED={ti:+d.t,bi:+d.b,ln:+d.ln,ln2:+d.ln2};ACT.blur();document.body.classList.remove('editing');$('#fbar').classList.add('hidden');ACT=null;await edMove(c==='up'?-1:1);ED=null}}});
 
 /* ================= إطارات الصفحات ================= */
@@ -1704,7 +1728,7 @@ function edCommit(){const t=S.topics[ED.ti],b=t.blocks[ED.bi];const lines=b.text
 async function edSave(){const f=edCommit();if(!f)return;closeEd();await refreshPages(f)}
 async function edSaveAdd(){const f=edCommit();if(!f)return;const keep=['nl','li','q','a'].includes(ED.type)?ED.type:'p';const n=keep==='nl'?nextN($('#edNum').value):'';const {ti,bi,ln2}=ED;
  await refreshPages(f);newLine(ti,bi,ln2,keep,n)}
-async function edDelete(){if(!confirm('حذف هذا السطر؟'))return;const t=S.topics[ED.ti],b=t.blocks[ED.bi];const lines=b.text.split('\n');lines.splice(ED.ln,ED.ln2-ED.ln+1);b.text=lines.join('\n');save();renderTopics();closeEd();await refreshPages()}
+async function edDelete(){if(!await ask('هل تريد حذف هذا السطر؟',{danger:true}))return;const t=S.topics[ED.ti],b=t.blocks[ED.bi];const lines=b.text.split('\n');lines.splice(ED.ln,ED.ln2-ED.ln+1);b.text=lines.join('\n');save();renderTopics();closeEd();await refreshPages()}
 async function edMove(dir){const t=S.topics[ED.ti],b=t.blocks[ED.bi];const items=parseItemsLn(b.text);const i=items.findIndex(x=>x.ln===ED.ln);const j=i+dir;if(i<0||j<0||j>=items.length){toast(dir<0?'هذا أول سطر':'هذا آخر سطر');return}
  const A=dir<0?items[j]:items[i],B=dir<0?items[i]:items[j];const L=b.text.split('\n');
  const a=L.slice(A.ln,A.ln2+1),mid=L.slice(A.ln2+1,B.ln),bb=L.slice(B.ln,B.ln2+1);
@@ -1735,7 +1759,7 @@ function addImageHere(){const a=pageAnchor();pTarget={kind:'insert',topicId:S.to
 function popupChoice(){$('#obBody').innerHTML=`<div class="sheet-h"><b>🖼️ إضافة صورة</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
  <button class="btn orange" style="width:100%;padding:14px" onclick="$('#obM').classList.add('hidden');const T=pTarget;pickFile(img=>{pTarget=T;applyPick(img)})">📷 من الجهاز (المعرض / الكاميرا)</button>
  <button class="btn primary" style="width:100%;padding:14px;margin-top:8px" onclick="$('#obM').classList.add('hidden');const T=pTarget;openPicker(T)">✨ توليد رسم بالوصف</button>`;$('#obM').classList.remove('hidden')}
-async function newTopicHere(){const name=prompt(isEN()?'Lesson title:':'اسم الموضوع الجديد:');if(name==null)return;
+async function newTopicHere(){const name=await ask(isEN()?'New lesson':'موضوع جديد',{icon:'📘',input:'',ph:isEN()?'Lesson title':'اسم الموضوع',yes:isEN()?'Add':'إضافة',no:isEN()?'Cancel':'إلغاء'});if(name==null)return;
  const used=S.topics.map(t=>t.color);const c=PALETTE.find(p=>!used.includes(p))||PALETTE[S.topics.length%PALETTE.length];
  const ti=(()=>{const pg=pagesList()[CURP];const el=pg&&[...pg.querySelectorAll('[data-t]')].pop();return el?+el.dataset.t+1:S.topics.length})();
  S.topics.splice(ti,0,{id:uid(),title:name.trim()||(isEN()?'New lesson':'موضوع جديد'),color:c,blocks:[{id:uid(),type:'text',text:ZW}]});save();
@@ -1750,7 +1774,7 @@ function openTopicSheet(ti){const t=S.topics[ti];const isCh=typeof t.unit==='str
   <div class="row" style="margin-top:14px"><button class="btn green" id="obSave">✅ حفظ</button><button class="btn red" id="obDel">🗑️ حذف الموضوع</button></div>`;
  let col=t.color;const sw=()=>swatches($('#obSw'),col,c=>{col=c;sw()});sw();
  $('#obSave').onclick=async()=>{t.title=$('#obTitle').value.trim();if(isCh)t.unit=$('#obUnit').value.trim();t.color=col;save();renderTopics();$('#obM').classList.add('hidden');await refreshPages({t:ti,b:-1,ln:-1})};
- $('#obDel').onclick=async()=>{if(!confirm('حذف الموضوع "'+t.title+'" بكل محتواه؟'))return;S.topics.splice(ti,1);save();renderTopics();$('#obM').classList.add('hidden');await refreshPages()};
+ $('#obDel').onclick=async()=>{if(!await ask('هل تريد حذف الموضوع؟',{danger:true,msg:'«'+esc(t.title)+'» بكل محتواه'}))return;S.topics.splice(ti,1);save();renderTopics();$('#obM').classList.add('hidden');await refreshPages()};
  $('#obM').classList.remove('hidden')}
 function openImgSheet(ti,bi){const t=S.topics[ti],b=t.blocks[bi];
  $('#obBody').innerHTML=`<div class="sheet-h"><b>🖼️ الصورة</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
@@ -1764,7 +1788,7 @@ function openImgSheet(ti,bi){const t=S.topics[ti],b=t.blocks[bi];
  $('#obAnn').onclick=()=>{close();openAnn(t,b)};
  $('#obRep').onclick=()=>{close();pickFile(img=>{pTarget={kind:'block',topicId:t.id,blockId:b.id};applyPick(img)})};
  $('#obGen').onclick=()=>{close();openPicker({kind:'block',topicId:t.id,blockId:b.id})};
- $('#obDel').onclick=async()=>{if(!confirm('حذف الصورة؟'))return;t.blocks.splice(bi,1);save();renderTopics();close();await refreshPages()};
+ $('#obDel').onclick=async()=>{if(!await ask('هل تريد حذف الصورة؟',{danger:true}))return;t.blocks.splice(bi,1);save();renderTopics();close();await refreshPages()};
  $('#obSave').onclick=async()=>{b.caption=$('#obCap').value;b.width=+$('#obW').value;save();renderTopics();close();await refreshPages()};
  $('#obM').classList.remove('hidden')}
 
@@ -1827,7 +1851,7 @@ async function doRegister(){
   if(!snap.exists)await ensureProfile(c.user,info);
   try{localStorage.setItem('mlz_phone',ph);localStorage.removeItem('mlz_pending')}catch(e){}}
  catch(e){$('#aErr').textContent=authErr(e)+(e.code?' ('+e.code+')':'')}busy(false)}
-function logout(){if(confirm('تسجيل الخروج من هذا الجهاز؟')){$('#acct').classList.add('hidden');FB.auth.signOut()}}
+async function logout(){if(await ask('تسجيل الخروج من هذا الجهاز؟',{icon:'🚪',yes:'خروج',no:'لا'})){$('#acct').classList.add('hidden');FB.auth.signOut()}}
 
 /* ---- account ---- */
 function freeLeft(){return Math.max(0,TRIAL-((ME&&ME.usedFree)||0))}
