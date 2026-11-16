@@ -589,6 +589,32 @@ body.fs.editing #fsBar{display:none}
 .agrid button i{font-style:normal;font-size:24px;line-height:1.1}
 .agrid button.on{border-color:#2563eb;background:#eef4ff}
 .ash{font-weight:900;color:#0b1f45;margin-top:14px;font-size:14px}
+
+.nui .hb{width:42px;height:42px;flex:0 0 42px;border-radius:14px}
+.nui .hb.sq{background:rgba(255,255,255,.14)}
+.nui .chip{height:42px;max-width:86px;border-radius:14px}
+.nui .bt{min-width:0;flex:1}.nui .bt b,.nui .bt small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.abar{grid-template-columns:1fr 1.5fr 1fr!important;gap:6px;margin-top:8px}
+.ab3{flex-direction:row!important;justify-content:center;gap:5px!important;padding:8px 4px!important;font-size:12.5px!important;border-radius:13px!important;box-shadow:0 3px 10px rgba(16,32,72,.1)!important}
+.ab3 i{font-size:16px!important}
+/* صور حرة على الصفحة */
+.flt{position:absolute;z-index:30;--k:1;overflow:hidden;touch-action:none;cursor:move}
+.flt>img.fi{position:absolute;max-width:none;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.flt .ftx{position:absolute;transform:translate(-50%,-50%);white-space:pre;font-weight:900;line-height:1.35;padding:2px 10px;border-radius:8px;touch-action:none;cursor:move;font-family:var(--hf,Cairo),Cairo,sans-serif}
+.flt.sel{overflow:visible;outline:calc(2.5px*var(--k)) solid #2563eb;outline-offset:2px}
+.flt.sel .fclip{position:absolute;inset:0;overflow:hidden}
+.flt .fh{display:none;position:absolute;width:calc(32px*var(--k));height:calc(32px*var(--k));border-radius:50%;background:#2563eb;border:calc(3px*var(--k)) solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);z-index:3;touch-action:none}
+.flt.sel .fh{display:block}
+.flt .fh.br{right:calc(-16px*var(--k));bottom:calc(-16px*var(--k));cursor:nwse-resize}.flt .fh.r{right:calc(-16px*var(--k));top:50%;margin-top:calc(-16px*var(--k));cursor:ew-resize;background:#0ea5e9}.flt .fh.b{bottom:calc(-16px*var(--k));left:50%;margin-left:calc(-16px*var(--k));cursor:ns-resize;background:#0ea5e9}
+.flt.pan{cursor:grab;outline-color:#f59e0b}
+body.exporting .flt{outline:0!important}body.exporting .flt .fh{display:none!important}
+.flt .ftx.tsel{outline:2px dashed #f59e0b}
+#flBar{position:fixed;left:6px;right:6px;top:calc(56px + env(safe-area-inset-top));z-index:45;background:#0b1f45;border-radius:16px;padding:6px;display:none;gap:4px;overflow-x:auto;box-shadow:0 10px 26px rgba(0,0,0,.35);scrollbar-width:none}
+#flBar::-webkit-scrollbar{display:none}
+#flBar.on{display:flex}
+#flBar button{flex:0 0 auto;border:0;background:rgba(255,255,255,.12);color:#fff;border-radius:11px;padding:7px 9px;font:800 12px Cairo,sans-serif;white-space:nowrap;cursor:pointer}
+#flBar button.on{background:#f59e0b;color:#111}#flBar .ok{background:#22c55e}#flBar .del{background:#e11d48}
+body:not(.fs) #flBar{top:8px}
 </style>
 </head>
 <body>
@@ -600,8 +626,9 @@ body.fs.editing #fsBar{display:none}
   <a class="wa-btn" id="waTop" target="_blank" title="تواصل عبر واتساب"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.3-.8-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8 0-1.4.7-2 1-2.3.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2Z"/></svg></a>
   <button class="sh-btn" onclick="shareApp()" title="مشاركة البرنامج"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
   <button class="chip" id="chip" onclick="openAcct()">👤 حسابي</button>
+  <button class="hb sq" onclick="shareApp()" title="مشاركة البرنامج"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
   <button class="hb" onclick="openMine()"><i>📁</i>ملازمي</button>
-  <button class="hb" onclick="showTab('vInfo')" title="إعدادات الملزمة"><i>⚙️</i>الإعدادات</button>
+  <button class="hb" onclick="showTab('vInfo')" title="معلومات الملزمة"><i>📋</i>المعلومات</button>
  </div>
  <div class="mybar"><button class="mb-new" onclick="mineNew()">➕ ملزمة جديدة</button><button class="mb-mine" onclick="openMine()">📁 ملازمي</button></div>
  <div class="tabs">
@@ -694,10 +721,10 @@ body.fs.editing #fsBar{display:none}
  </div>
  <div class="phint ui"><span>👆 اضغط على أي سطر بالورقة لتعديله</span><span><button class="btn sm" onclick="toggleZoom()" id="zBtn">🔍 تكبير</button> <button class="btn sm" onclick="toggleAll()" id="allBtn">📚 كل الصفحات</button></span></div>
  <div class="muted ui" id="pgInfo" style="text-align:center;margin-bottom:6px"></div>
- <div id="fsTop" class="ui"><button class="x" onclick="exitFS()">✕</button><button id="fsPrev" onclick="showPage(CURP-1)">›</button><div class="lb" id="fsLb"></div><button id="fsNext" onclick="showPage(CURP+1)">‹</button><button onclick="zoomBy(-.25)">−</button><button onclick="zoomBy(.25)">+</button></div>
+ <div id="fsTop" class="ui"><button class="x" onclick="exitFS()">✕</button><button id="fsPrev" onclick="showPage(CURP-1)">›</button><div class="lb" id="fsLb"></div><button id="fsNext" onclick="showPage(CURP+1)">‹</button><button onclick="toggleAll()" id="fsAll" style="font-size:12px">📚 كل الصفحات</button><button onclick="zoomBy(-.25)">−</button><button onclick="zoomBy(.25)">+</button></div>
  <div class="work">
   <div class="stage">
-   <div class="stb ui"><button onclick="undo()" id="uBtn" title="تراجع">↶</button><button onclick="redo()" id="rBtn" title="إعادة">↷</button><button onclick="zoomBy(-.25)">➖</button><span class="zp" id="zPct">100%</span><button onclick="zoomBy(.25)">➕</button><button onclick="enterFS()" title="ملء الشاشة" style="font-size:18px">⛶</button></div>
+   <div class="stb ui"><button onclick="undo()" id="uBtn" title="تراجع">↶</button><button onclick="redo()" id="rBtn" title="إعادة">↷</button><button onclick="zoomBy(-.25)">➖</button><span class="zp" id="zPct">100%</span><button onclick="zoomBy(.25)">➕</button><button onclick="toggleAll()" title="كل الصفحات" id="stAll">📚</button><button onclick="enterFS()" title="ملء الشاشة" style="font-size:18px">⛶</button></div>
    <div id="pages" class="single"></div>
   </div>
   <div class="tpanel ui">
@@ -711,10 +738,10 @@ body.fs.editing #fsBar{display:none}
    <button class="tmore" onclick="openAllTools()">المزيد من الأدوات ▾</button>
   </div>
  </div>
- <div class="abar ui"><button class="ab3 sv" onclick="manualSave()"><i>💾</i>حفظ</button><button class="ab3 pd" onclick="exportPDF()"><i>📕</i>تصدير PDF</button><button class="ab3 sh" onclick="shareApp()"><i>🔗</i>مشاركة</button><button class="ab3 pv" onclick="enterFS(true)"><i>👁️</i>معاينة</button></div>
  <div id="sbarSlot"></div>
+ <div class="abar ui"><button class="ab3 sv" onclick="manualSave()"><i>💾</i>حفظ</button><button class="ab3 pd" onclick="exportPDF()"><i>📕</i>تصدير PDF</button><button class="ab3 pv" onclick="enterFS(true)"><i>👁️</i>معاينة</button></div>
  <div id="fsBar" class="ui">
-  <button onclick="addHere()"><i>✍️</i>سطر</button><button onclick="openElements()"><i>🧩</i>عناصر</button><button onclick="addImageHere()"><i>🖼️</i>صورة</button><button onclick="newPageHere()"><i>📄</i>صفحة</button>
+  <button onclick="addHere()"><i>✍️</i>سطر</button><button onclick="openElements()"><i>🧩</i>عناصر</button><button onclick="toolImage()"><i>🖼️</i>صورة</button><button onclick="newPageHere()"><i>📄</i>صفحة</button>
   <button onclick="newTopicHere()"><i>📘</i>موضوع</button><button onclick="newChapterHere()"><i>📗</i>فصل</button><button onclick="openColors()"><i>🎨</i>ألوان</button><button onclick="openFrames()"><i>🔲</i>إطار</button>
   <button onclick="openCoverSheet('front')"><i>📕</i>الغلاف</button><button onclick="openFonts()"><i>🔤</i>الخطوط</button><button onclick="undo()"><i>↶</i>تراجع</button><button onclick="redo()"><i>↷</i>إعادة</button>
   <button onclick="openAllTools()"><i>🧰</i>الكل</button><button class="pdfb" onclick="exportPDF()"><i>📕</i>PDF</button>
@@ -783,6 +810,7 @@ body.fs.editing #fsBar{display:none}
 <!-- POPUP -->
 <div class="modal hidden ui" id="popM" style="align-items:center"><div class="sheet" style="border-radius:22px;max-width:380px;margin:16px" id="popBody"></div></div>
 <div class="sbar ui hidden" id="sbar"></div>
+<div id="flBar" class="ui"></div>
 <div class="bnav ui" id="bnav"><button data-n="help" onclick="openHelp()"><i>❓</i>مساعدة</button><button data-n="home" class="on" onclick="goHome()"><i>🏠</i>الرئيسية</button><button data-n="files" onclick="openMine()"><i>📁</i>ملفاتي</button><button data-n="tpl" onclick="openCoverSheet('front')"><i>👑</i>القوالب</button></div>
 
 <!-- IMAGE PICKER -->
@@ -1191,6 +1219,7 @@ async function confirmPick(){
 }
 function applyPick(img){
  const T=pTarget;closePicker();if(!T)return;
+ if(T.kind==='float'){addFloat(T.pi,img);return}
  if(T.kind==='coverBg'||T.kind==='backBg'){const B=T.kind==='backBg';if(B){S.back.bg=img;S.back.on=true;S.back.text=S.back.text!==false}else S.coverBg=img;save();bindInfo();cvGo(B?'back':'front').then(()=>openCoverSheet(B?'back':'front'));toast('🖼️ تمت إضافة صورة الغلاف — اختر تظهر الكتابة أو لا');return}
  if(T.kind==='cover'){S.coverImg=img;bindInfo();if(T.reopen){save();cvGo('front').then(()=>openCoverSheet('front'));return}}
  else{const t=findT(T.topicId);if(!t)return;
@@ -1782,12 +1811,13 @@ function showPage(i){const L=pagesList();if(!L.length)return;CURP=Math.max(0,Mat
  const pv=$('#pgPrev'),nx=$('#pgNext');if(pv)pv.disabled=CURP===0;if(nx)nx.disabled=CURP===L.length-1;
  const fl=$('#fsLb');if(fl)fl.textContent=pageLabel(L[CURP],CURP)+' — '+(CURP+1)+' من '+L.length;const fp=$('#fsPrev'),fn=$('#fsNext');if(fp)fp.disabled=CURP===0;if(fn)fn.disabled=CURP===L.length-1;
  if(SINGLE&&!$('#vPreview').classList.contains('off'))window.scrollTo({top:0,behavior:'smooth'})}
-function toggleAll(){SINGLE=!SINGLE;$('#pages').classList.toggle('single',SINGLE);$('#allBtn').textContent=SINGLE?'📚 كل الصفحات':'📄 صفحة واحدة';scalePages();showPage(CURP)}
+function toggleAll(){SINGLE=!SINGLE;$('#pages').classList.toggle('single',SINGLE);$('#allBtn').textContent=SINGLE?'📚 كل الصفحات':'📄 صفحة واحدة';const fa=$('#fsAll');if(fa)fa.textContent=SINGLE?'📚 كل الصفحات':'📄 صفحة واحدة';const sa=$('#stAll');if(sa)sa.textContent=SINGLE?'📚':'📄';scalePages();showPage(CURP);if(!SINGLE)toast('📚 كل الصفحات — انزل لتحت وعدّل بأي صفحة')}
 function toggleZoom(){ZOOM=ZOOM>1?1:1.7;$('#pages').classList.toggle('zoom',ZOOM>1);$('#zBtn').textContent=ZOOM>1?'🔎 ملء الشاشة':'🔍 تكبير';scalePages()}
 async function refreshPages(focus){await renderPages();if(focus){const el=document.querySelector(`#pages [data-t="${focus.t}"][data-b="${focus.b}"][data-ln="${focus.ln}"]`)||document.querySelector(`#pages [data-ed="th"][data-t="${focus.t}"]`);
   if(el){const pw=el.closest('.pw');const i=pagesList().indexOf(pw);if(i>=0)showPage(i);el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1700)}}}
 // tap to edit
 $('#pages').addEventListener('click',e=>{if(document.body.classList.contains('exporting'))return;
+ if(e.target.closest('.flt')||Date.now()-FL_T<350)return;if(FSEL){flDeselect();return}
  const page=e.target.closest('.page');if(!page)return;
  if(page.classList.contains('cover')){openCoverSheet(page.classList.contains('bcover')?'back':'front');return}
  if(!SINGLE){const i=pagesList().indexOf(page.parentNode);if(i>=0&&i!==CURP){CURP=i;}}
@@ -1798,7 +1828,7 @@ $('#pages').addEventListener('click',e=>{if(document.body.classList.contains('ex
  if(d.ed==='th'&&e.target.closest('.tt'))return;else if(d.ed==='th'||d.ed==='ch')openTopicSheet(ti);else if(d.ed==='img')openImgSheet(ti,+d.b)});
 // swipe between pages
 let sx=null,sy=null;
-$('#pages').addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+$('#pages').addEventListener('touchstart',e=>{if(e.target.closest('.flt')||e.touches.length>1){sx=null;return}sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
 $('#pages').addEventListener('touchend',e=>{if(sx==null||!SINGLE||ZOOM>1)return;const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;sx=null;
  if(Math.abs(dx)>70&&Math.abs(dy)<60){const next=isEN()?dx<0:dx>0;showPage(CURP+(next?1:-1))}},{passive:true});
 
@@ -2113,20 +2143,29 @@ function updSaved(){const e=document.getElementById('svAgo');if(!e)return;const 
 setInterval(updSaved,20000);
 function manualSave(){clearTimeout(saveT);saveNow();toast('💾 تم حفظ الملزمة')}
 function goHome(){$('#obM').classList.add('hidden');showTab('vPreview')}
-function uiAfterRender(){updSaved();tplThumbs()}
+function uiAfterRender(){updSaved();tplThumbs();renderFloats()}
 function tplThumbs(){const box=document.getElementById('tplThumbs');if(!box||typeof coverPage!=='function')return;
  box.innerHTML='';['wave','card','frame'].forEach(id=>{const d=document.createElement('div');d.className='tpt';const pg=coverPage('front',id,true);pg.dir=isEN()?'ltr':'rtl';pg.style.setProperty('--hf',fontCss(S.headFont));d.appendChild(pg);
   d.onclick=async()=>{S.coverTpl=id;S.coverBg=null;save();await cvGo('front');toast('🎨 تم تطبيق القالب على الغلاف')};box.appendChild(d)});
  requestAnimationFrame(()=>box.querySelectorAll('.tpt').forEach(t=>{t.firstChild.style.transform=`scale(${t.clientWidth/794})`}))}
 /* ملء الشاشة */
-function enterFS(pv){if(document.body.classList.contains('editing'))return;document.body.classList.add('fs');document.body.classList.toggle('pv',!!pv);if(!SINGLE)toggleAll();ZOOM=1;$('#pages').classList.remove('zoom');scalePages();showPage(CURP);window.scrollTo(0,0);if(pv)toast('👁️ معاينة — اسحب للتنقل بين الصفحات')}
-function exitFS(silent){document.body.classList.remove('fs','pv');ZOOM=1;$('#pages').classList.remove('zoom');scalePages();if(!silent)showPage(CURP);window.scrollTo(0,0)}
-function zoomBy(d){ZOOM=Math.max(.5,Math.min(2.5,Math.round((ZOOM+d)*100)/100));$('#pages').classList.toggle('zoom',ZOOM>1);scalePages()}
+function enterFS(pv){if(document.body.classList.contains('editing'))return;document.body.classList.add('fs');document.body.classList.toggle('pv',!!pv);if(pv&&!SINGLE)toggleAll();ZOOM=1;$('#pages').classList.remove('zoom');scalePages();flK();showPage(CURP);window.scrollTo(0,0);if(pv)toast('👁️ معاينة — اسحب للتنقل بين الصفحات')}
+function exitFS(silent){document.body.classList.remove('fs','pv');ZOOM=1;$('#pages').classList.remove('zoom');scalePages();flK();if(!silent)showPage(CURP);window.scrollTo(0,0)}
+function flK(){document.querySelectorAll('#pages .flt').forEach(e=>{const pw=e.closest('.pw');const k=PW/Math.max(1,pw.getBoundingClientRect().width||PW);e.style.setProperty('--k',Math.min(4,Math.max(1,k)).toFixed(2))})}
+function zoomBy(d){ZOOM=Math.max(.5,Math.min(2.5,Math.round((ZOOM+d)*100)/100));$('#pages').classList.toggle('zoom',ZOOM>1);scalePages();flK()}
 // الكتابة على الورقة الصغيرة تفتح ملء الشاشة تلقائياً
 document.getElementById('pages').addEventListener('focusin',e=>{if(!document.body.classList.contains('fs')&&e.target.closest('[contenteditable="true"]')){const el=e.target;document.body.classList.add('fs');document.body.classList.remove('pv');scalePages();setTimeout(()=>{try{el.scrollIntoView({block:'center'})}catch(_){}},60)}});
 /* أدوات */
 function toolText(){enterFS();setTimeout(addHere,80)}
-function toolImage(){addImageHere()}
+function toolImage(){const pi=CURP;
+ $('#obBody').innerHTML=`<div class="sheet-h"><b>🖼️ إضافة صورة</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
+ <div class="cvsec" style="margin-top:4px"><b>✋ صورة حرة على هذه الصفحة</b><div class="muted" style="margin-bottom:8px">تحرّكها بإصبعك، تكبّرها وتصغّرها، وتكتب كلمات فوقها</div>
+  <div class="seg"><button class="btn orange" id="fiDev">📷 من الجهاز</button><button class="btn primary" id="fiGen">✨ توليد بالوصف</button></div></div>
+ <div class="cvsec"><b>📄 صورة ضمن النص</b><div class="muted" style="margin-bottom:8px">تنضاف بين الأسطر وتمشي ويه الكتابة</div><button class="btn" style="width:100%" id="fiIn">📄 صورة ضمن النص</button></div>`;
+ $('#fiDev').onclick=()=>{$('#obM').classList.add('hidden');pickFile(img=>addFloat(pi,img))};
+ $('#fiGen').onclick=()=>{$('#obM').classList.add('hidden');openPicker({kind:'float',pi})};
+ $('#fiIn').onclick=()=>{$('#obM').classList.add('hidden');addImageHere()};
+ $('#obM').classList.remove('hidden')}
 function toolPage(){enterFS();setTimeout(newPageHere,80)}
 async function newChapterHere(){const name=await ask(isEN()?'New unit':'فصل جديد',{icon:'📗',msg:isEN()?'Unit name (optional)':'اسم الفصل (اختياري)',input:'',ph:isEN()?'Unit name':'اسم الفصل',yes:isEN()?'Next':'التالي',no:isEN()?'Cancel':'إلغاء'});if(name==null)return;
  const tn=await ask(isEN()?'First lesson':'أول موضوع بالفصل',{icon:'📘',input:'',ph:isEN()?'Lesson title':'اسم الموضوع',yes:isEN()?'Add':'إضافة',no:isEN()?'Cancel':'إلغاء'});if(tn==null)return;
@@ -2205,6 +2244,92 @@ async function applySnap(j){APPLYING=true;const keep={pid:S.pid,bid:S.bid,lock:S
 async function undo(){if(document.body.classList.contains('editing')&&typeof ACT!=='undefined'&&ACT){commitEl(ACT);ACT.blur();endEditing()}clearTimeout(undoT);snapNow();if(!UNDO.length){toast('ما كو شي للتراجع');return}REDO.push(LASTSNAP);await applySnap(UNDO.pop());toast('↶ تم التراجع')}
 async function redo(){clearTimeout(undoT);snapNow();if(!REDO.length){toast('ما كو شي للإعادة');return}UNDO.push(LASTSNAP);await applySnap(REDO.pop());toast('↷ تمت الإعادة')}
 (function(){document.body.classList.add('nui');const sb=document.getElementById('sbar'),sl=document.getElementById('sbarSlot');if(sb&&sl)sl.appendChild(sb);setTimeout(()=>{snapNow();updUndo();updSaved()},1500)})();
+/* ================= صور حرة على الصفحة ================= */
+let FSEL=null,FL_T=0,FPAN=false,FTX=null;
+const FLKEY=i=>'p'+(i+1);
+function flList(i){S.floats=S.floats||{};return S.floats[FLKEY(i)]||(S.floats[FLKEY(i)]=[])}
+function flFind(id){for(const k in (S.floats||{})){const L=S.floats[k];const j=L.findIndex(x=>x.id===id);if(j>=0)return{k,L,j,f:L[j]}}return null}
+function addFloat(pi,img){if(pi==null)pi=CURP;const L=flList(pi);let w=Math.min(520,img.w||520),h=w*(img.h||1)/(img.w||1);if(h>640){h=640;w=h*(img.w||1)/(img.h||1)}
+ const f={id:uid(),src:img.src,iw:img.w||w,ih:img.h||h,x:Math.round((794-w)/2),y:Math.round((1123-h)/2),w:Math.round(w),h:Math.round(h),z:1,ox:0,oy:0,r:14,tx:[]};
+ L.push(f);save();FSEL=f.id;renderFloats();showPage(pi);flBarShow();toast('✋ حرّك الصورة بإصبعك — والزاوية الزرقاء للتكبير والتصغير',4000)}
+function flGeo(f){const k=Math.max(f.w/f.iw,f.h/f.ih)*(f.z||1),W=f.iw*k,H=f.ih*k,mx=Math.max(0,(W-f.w)/2),my=Math.max(0,(H-f.h)/2);
+ f.ox=Math.max(-mx,Math.min(mx,f.ox||0));f.oy=Math.max(-my,Math.min(my,f.oy||0));return{W,H,L:(f.w-W)/2+f.ox,T:(f.h-H)/2+f.oy}}
+function flStyle(d,f){const g=flGeo(f);d.style.left=f.x+'px';d.style.top=f.y+'px';d.style.width=f.w+'px';d.style.height=f.h+'px';d.style.borderRadius=(f.r||0)+'px';
+ const im=d.querySelector('img.fi');if(im){im.style.width=g.W+'px';im.style.height=g.H+'px';im.style.left=g.L+'px';im.style.top=g.T+'px'}
+ const c=d.querySelector('.fclip');if(c)c.style.borderRadius=(f.r||0)+'px'}
+function txHTML(t){return `<div class="ftx${FTX===t.id?' tsel':''}" data-tid="${t.id}" style="left:${t.x}px;top:${t.y}px;font-size:${t.s}px;color:${t.c};${t.bg?'background:'+t.bg+';':''}${t.sh?'text-shadow:0 2px 6px rgba(0,0,0,.7),0 0 2px rgba(0,0,0,.9);':''}">${esc(t.t)}</div>`}
+function flEl(f){const d=document.createElement('div');d.className='flt'+(FSEL===f.id?' sel':'')+(FSEL===f.id&&FPAN?' pan':'');d.dataset.fid=f.id;
+ d.innerHTML=`<div class="fclip"><img class="fi" src="${f.src}" draggable="false">${(f.tx||[]).map(txHTML).join('')}</div><i class="fh br" data-h="br"></i><i class="fh r" data-h="r"></i><i class="fh b" data-h="b"></i>`;
+ flStyle(d,f);return d}
+function renderFloats(){const PL=pagesList();PL.forEach((pw,i)=>{const p=pw.firstChild;if(!p)return;p.querySelectorAll('.flt').forEach(x=>x.remove());
+  const L=(S.floats||{})[FLKEY(i)];if(L&&L.length){const k=PW/Math.max(1,pw.getBoundingClientRect().width||PW);L.forEach(f=>{const e=flEl(f);e.style.setProperty('--k',Math.min(4,Math.max(1,k)).toFixed(2));p.appendChild(e)})}});
+ if(FSEL&&!flFind(FSEL))flDeselect()}
+function flDeselect(){FSEL=null;FPAN=false;FTX=null;document.querySelectorAll('#pages .flt.sel').forEach(x=>{x.classList.remove('sel','pan')});$('#flBar').classList.remove('on')}
+function flBarShow(){const b=$('#flBar');const F=FSEL&&flFind(FSEL);if(!F){b.classList.remove('on');return}
+ b.innerHTML=`<button class="ok" data-a="ok">✓ تم</button><button data-a="tx">🔤 كلمات</button><button data-a="zi">🔍＋</button><button data-a="zo">🔍－</button><button data-a="pan" class="${FPAN?'on':''}">✋ تحريك داخل الصورة</button><button data-a="rd">⬜ الزوايا</button><button data-a="fit">↺ الأصل</button><button data-a="up">⬆ قدّام</button><button data-a="del" class="del">🗑 حذف</button>`;
+ b.querySelectorAll('[data-a]').forEach(x=>x.onclick=e=>{e.stopPropagation();flAct(x.dataset.a)});b.classList.add('on')}
+function flRefresh(){const F=FSEL&&flFind(FSEL);if(!F)return;const d=document.querySelector(`#pages .flt[data-fid="${FSEL}"]`);if(d){const n=flEl(F.f);n.style.setProperty('--k',d.style.getPropertyValue('--k')||1);d.replaceWith(n)}}
+async function flAct(a){const F=flFind(FSEL);if(!F)return;const f=F.f;
+ if(a==='ok'){save();flDeselect();toast('✅ تم');return}
+ if(a==='zi'){f.z=Math.min(4,(f.z||1)+.2)}else if(a==='zo'){f.z=Math.max(1,(f.z||1)-.2)}
+ else if(a==='pan'){FPAN=!FPAN;flBarShow();toast(FPAN?'✋ اسحب بإصبعك لتحريك الصورة داخل الإطار':'✋ رجع تحريك الإطار نفسه')}
+ else if(a==='rd'){const R=[0,14,40,9999];f.r=R[(R.indexOf(f.r||0)+1)%R.length]}
+ else if(a==='fit'){f.z=1;f.ox=0;f.oy=0;f.h=Math.round(f.w*f.ih/f.iw)}
+ else if(a==='up'){F.L.splice(F.j,1);F.L.push(f)}
+ else if(a==='del'){if(!await ask('هل تريد حذف الصورة؟',{danger:true}))return;F.L.splice(F.j,1);save();flDeselect();renderFloats();toast('🗑️ تم حذف الصورة');return}
+ else if(a==='tx'){const t=await ask('🔤 كلمات على الصورة',{icon:'✍️',input:'',ph:'اكتب الكلمات',yes:'إضافة',no:'إلغاء'});if(!t||!t.trim())return;
+  f.tx=f.tx||[];const tt={id:uid(),t:t.trim(),x:Math.round(f.w/2),y:Math.round(f.h/2),s:Math.max(22,Math.round(f.w/12)),c:'#ffffff',bg:'',sh:1};f.tx.push(tt);FTX=tt.id;save();
+  if(a==='up')renderFloats();flRefresh();toast('✋ حرّك الكلمات بإصبعك — واضغط عليها حتى تعدّلها');return}
+ save();if(a==='up')renderFloats();else flRefresh()}
+async function flTextEdit(f,t){
+ $('#obBody').innerHTML=`<div class="sheet-h"><b>🔤 تعديل الكلمات</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
+ <textarea class="in" id="ftT" rows="2">${esc(t.t)}</textarea>
+ <label class="f">الحجم: <b id="ftSn">${t.s}</b></label><input type="range" id="ftS" min="12" max="140" value="${t.s}" style="width:100%">
+ <label class="f">لون الكلمات</label><div class="seg" id="ftC">${['#ffffff','#111827','#ffd54f','#ef4444','#2563eb','#16a34a','#f97316','#a855f7'].map(c=>`<button class="btn sm" data-c="${c}" style="width:38px;height:38px;padding:0;background:${c};border:3px solid ${t.c===c?'#2563eb':'#e2e8f0'}"></button>`).join('')}</div>
+ <label class="f">الخلفية</label><div class="seg" id="ftB"><button class="btn sm" data-b="">بدون</button><button class="btn sm" data-b="rgba(255,255,255,.88)">⬜ بيضاء</button><button class="btn sm" data-b="rgba(0,0,0,.6)">⬛ سوداء</button><button class="btn sm" data-b="rgba(255,213,79,.92)">🟨 صفراء</button></div>
+ <label class="cvsw"><input type="checkbox" id="ftSh" ${t.sh?'checked':''}> ظل حول الكلمات (أوضح فوق الصور)</label>
+ <div class="row" style="margin-top:12px"><button class="btn red" id="ftDel">🗑 حذف الكلمات</button><button class="btn green" id="ftOk">✅ تم</button></div>`;
+ const upd=()=>{save();flRefresh()};
+ $('#ftT').oninput=e=>{t.t=e.target.value;upd()};
+ $('#ftS').oninput=e=>{t.s=+e.target.value;$('#ftSn').textContent=t.s;upd()};
+ $('#ftC').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{t.c=b.dataset.c;$('#ftC').querySelectorAll('[data-c]').forEach(x=>x.style.borderColor=x===b?'#2563eb':'#e2e8f0');upd()});
+ $('#ftB').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{t.bg=b.dataset.b;upd()});
+ $('#ftSh').onchange=e=>{t.sh=e.target.checked?1:0;upd()};
+ $('#ftDel').onclick=()=>{f.tx=f.tx.filter(x=>x!==t);FTX=null;upd();$('#obM').classList.add('hidden')};
+ $('#ftOk').onclick=()=>{if(!t.t.trim()){f.tx=f.tx.filter(x=>x!==t)}upd();$('#obM').classList.add('hidden')};
+ $('#obM').classList.remove('hidden')}
+/* السحب والتكبير بالإصبع */
+(function(){const P=new Map();let st=null;
+ const scaleOf=d=>{const pw=d.closest('.pw');return pw?pw.getBoundingClientRect().width/PW:1};
+ const pages=document.getElementById('pages');
+ pages.addEventListener('pointerdown',e=>{const d=e.target.closest('.flt');if(!d||document.body.classList.contains('exporting'))return;
+  e.preventDefault();e.stopPropagation();FL_T=Date.now();
+  const id=d.dataset.fid,F=flFind(id);if(!F)return;
+  if(FSEL!==id){FSEL=id;FPAN=false;FTX=null;document.querySelectorAll('#pages .flt.sel').forEach(x=>x.classList.remove('sel','pan'));d.classList.add('sel');flBarShow()}
+  P.set(e.pointerId,{x:e.clientX,y:e.clientY});try{d.setPointerCapture(e.pointerId)}catch(_){}
+  const f=F.f,sc=scaleOf(d),h=e.target.dataset.h,tx=e.target.closest('.ftx');
+  if(P.size===2){const a=[...P.values()];st={mode:'pinch',d,f,sc,dist:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),o:{w:f.w,h:f.h,x:f.x,y:f.y,z:f.z}};return}
+  if(tx){const t=(f.tx||[]).find(x=>x.id===tx.dataset.tid);FTX=t&&t.id;st={mode:'text',d,f,t,sc,sx:e.clientX,sy:e.clientY,o:{x:t.x,y:t.y},moved:false};return}
+  st={mode:h?('h-'+h):(FPAN?'pan':'move'),d,f,sc,sx:e.clientX,sy:e.clientY,o:{x:f.x,y:f.y,w:f.w,h:f.h,ox:f.ox||0,oy:f.oy||0},moved:false}},{passive:false});
+ pages.addEventListener('pointermove',e=>{if(!st||!P.has(e.pointerId))return;e.preventDefault();P.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  const {f,d,sc,o}=st;
+  if(st.mode==='pinch'){if(P.size<2)return;const a=[...P.values()];const k=Math.max(.2,Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)/st.dist);
+   if(FPAN){f.z=Math.max(1,Math.min(4,o.z*k))}else{f.w=Math.max(60,Math.min(1400,o.w*k));f.h=Math.max(60,Math.min(1800,o.h*k));f.x=o.x+(o.w-f.w)/2;f.y=o.y+(o.h-f.h)/2}flStyle(d,f);return}
+  const dx=(e.clientX-st.sx)/sc,dy=(e.clientY-st.sy)/sc;if(Math.abs(dx)+Math.abs(dy)>3)st.moved=true;
+  if(st.mode==='move'){f.x=Math.round(Math.max(-f.w+60,Math.min(794-60,o.x+dx)));f.y=Math.round(Math.max(-f.h+60,Math.min(1123-60,o.y+dy)))}
+  else if(st.mode==='pan'){f.ox=o.ox+dx;f.oy=o.oy+dy}
+  else if(st.mode==='h-br'){const k=Math.max(60/o.w,(o.w+dx)/o.w);f.w=Math.round(o.w*k);f.h=Math.round(o.h*k)}
+  else if(st.mode==='h-r'){f.w=Math.round(Math.max(60,o.w+dx))}
+  else if(st.mode==='h-b'){f.h=Math.round(Math.max(60,o.h+dy))}
+  else if(st.mode==='text'){const t=st.t;if(!t)return;t.x=Math.round(o.x+dx);t.y=Math.round(o.y+dy);const el=d.querySelector(`.ftx[data-tid="${t.id}"]`);if(el){el.style.left=t.x+'px';el.style.top=t.y+'px'}return}
+  flStyle(d,f)},{passive:false});
+ const up=e=>{if(!P.has(e.pointerId))return;P.delete(e.pointerId);FL_T=Date.now();if(!st)return;
+  if(st.mode==='pinch'){if(P.size===0){st=null;save()}return}
+  const s0=st;st=null;if(P.size)return;save();
+  if(s0.mode==='text'&&!s0.moved&&s0.t){flTextEdit(s0.f,s0.t);return}
+  if(s0.mode==='text')flRefresh()};
+ pages.addEventListener('pointerup',up);pages.addEventListener('pointercancel',up);
+})();
 /* ===== مشاركة البرنامج ===== */
 function shareApp(){
  const url=APP_URL,txt='✨ مصمم الكوثر — صمّم ملازمك باحترافية ويانه\n📕 أغلفة احترافية، +30 خط، إطارات، رسوم بالوصف، وحفظ PDF جاهز للطباعة\n🎁 أول 3 صفحات مجاناً\n📲 يشتغل على الأندرويد والآيفون واللابتوب:\n',full=txt+url;
