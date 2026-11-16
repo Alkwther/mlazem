@@ -2,6 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<script>/* إذا انفتح كملف (واتساب/تنزيلات) يتحول تلقائياً للرابط الصحيح */if(!/^https?:$/.test(location.protocol)){var inFrame=true;try{inFrame=window.top!==window.self}catch(e){}if(!inFrame)location.replace("https://alkwther.github.io/mlazem/mlazem-admin.html")}</script>
+
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>إدارة الكوثر</title>
 <link rel="manifest" href="manifest-admin.json">
@@ -504,6 +506,30 @@ async function savePrice(){const p=Math.round(+normD($('#price').value)),t=Math.
   if(old&&old!==base)setTimeout(()=>bar(true),1200);try{localStorage.setItem(KEY,base)}catch(e){}})();
  async function check(){if(!base)return;const n=await hash();if(n&&n!==base)bar(false)}
  setInterval(check,5*60*1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
+})();
+/* ===== تثبيت البرنامج كتطبيق (يفتح بشاشة كاملة بدون رابط) ===== */
+(function(){
+ const standalone=()=>window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+ if(standalone()||!/^https?:$/.test(location.protocol))return;
+ const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);let deferred=null;
+ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;show()});
+ window.addEventListener('appinstalled',()=>{const b=document.getElementById('instBar');if(b)b.remove();try{localStorage.setItem('mlz_inst','1')}catch(e){}});
+ function show(){if(document.getElementById('instBar'))return;let dis=0;try{dis=+localStorage.getItem('mlz_inst_x')||0}catch(e){}if(Date.now()-dis<3*864e5)return;
+  const d=document.createElement('div');d.id='instBar';
+  d.style.cssText='position:fixed;left:10px;right:10px;bottom:132px;z-index:9998;background:linear-gradient(135deg,#0b1f45,#2c55b3);color:#fff;border-radius:18px;padding:12px 14px;display:flex;gap:10px;align-items:center;box-shadow:0 12px 30px rgba(0,0,0,.35);font:700 14px Cairo,sans-serif;direction:rtl;max-width:520px;margin:0 auto';
+  d.innerHTML='<img src="'+(document.querySelector('link[rel=apple-touch-icon]')||{}).href+'" style="width:44px;height:44px;border-radius:12px"><div style="flex:1;line-height:1.5">📲 ثبّت البرنامج على جهازك<br><span style="font-weight:600;font-size:12px;color:#c3d1ef">يفتح بشاشة كاملة مثل التطبيقات — بدون رابط</span></div><button id="instGo" style="border:0;background:#ffd36b;color:#3a2600;font:900 14px Cairo,sans-serif;border-radius:12px;padding:10px 14px">تثبيت</button><button id="instX" style="border:0;background:none;color:#fff;font-size:20px">✕</button>';
+  document.body.appendChild(d);
+  document.getElementById('instX').onclick=()=>{d.remove();try{localStorage.setItem('mlz_inst_x',Date.now())}catch(e){}};
+  document.getElementById('instGo').onclick=async()=>{
+   if(deferred){deferred.prompt();const r=await deferred.userChoice;deferred=null;if(r.outcome==='accepted')d.remove();return}
+   const m=document.createElement('div');m.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(8,16,36,.7);display:flex;align-items:flex-end;justify-content:center;direction:rtl';
+   m.innerHTML='<div style="background:#fff;border-radius:22px 22px 0 0;padding:20px;max-width:520px;width:100%;font:700 15px Cairo,sans-serif;line-height:2;color:#141c2e">'+(ios?
+    '<b style="font-size:17px">📲 التثبيت على الآيفون</b><br>1️⃣ افتح البرنامج من متصفح <b>Safari</b><br>2️⃣ اضغط زر المشاركة <b>⬆️</b> أسفل الشاشة<br>3️⃣ اختر <b>إضافة إلى الشاشة الرئيسية</b><br>4️⃣ اضغط <b>إضافة</b>':
+    '<b style="font-size:17px">📲 التثبيت على الجهاز</b><br>1️⃣ اضغط <b>⋮</b> (القائمة) أعلى Chrome<br>2️⃣ اختر <b>تثبيت التطبيق</b> أو <b>إضافة إلى الشاشة الرئيسية</b><br>3️⃣ اضغط <b>تثبيت</b><br>بعدها افتح البرنامج من أيقونته الصفراء')+
+    '<button style="width:100%;margin-top:12px;border:0;background:#2563eb;color:#fff;font:800 15px Cairo,sans-serif;border-radius:12px;padding:12px">تمام</button></div>';
+   m.onclick=e=>{if(e.target===m||e.target.tagName==='BUTTON')m.remove()};document.body.appendChild(m)};
+ }
+ setTimeout(()=>{if(!deferred)show()},ios?2500:6000);
 })();
 </script>
 </body>

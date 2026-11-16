@@ -615,6 +615,10 @@ body.exporting .flt{outline:0!important}body.exporting .flt .fh{display:none!imp
 #flBar button{flex:0 0 auto;border:0;background:rgba(255,255,255,.12);color:#fff;border-radius:11px;padding:7px 9px;font:800 12px Cairo,sans-serif;white-space:nowrap;cursor:pointer}
 #flBar button.on{background:#f59e0b;color:#111}#flBar .ok{background:#22c55e}#flBar .del{background:#e11d48}
 body:not(.fs) #flBar{top:8px}
+
+.bwm{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.bwm span{font-weight:900;white-space:nowrap;font-family:var(--hf,Cairo),Cairo,sans-serif;line-height:1}
+.bwm.tile{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr);place-items:center}
 </style>
 </head>
 <body>
@@ -733,6 +737,7 @@ body:not(.fs) #flBar{top:8px}
      <button class="tg" onclick="toolText()"><i>✍️</i>نص</button><button class="tg" onclick="toolImage()"><i>🖼️</i>صورة</button>
      <button class="tg" onclick="openFrames()"><i>🔲</i>إطار</button><button class="tg" onclick="openColors()"><i>🎨</i>ألوان</button>
      <button class="tg" onclick="openElements()"><i>🧩</i>عناصر</button><button class="tg" onclick="toolPage()"><i>📄</i>صفحة</button>
+     <button class="tg" onclick="openWM()" style="grid-column:span 2;flex-direction:row;justify-content:center;gap:5px"><i style="font-size:17px">💧</i>علامة مائية</button>
     </div></div>
    <div class="tcard tpl"><div class="tph" onclick="openCoverSheet('front')"><span>⭐ قوالب جاهزة</span><span>‹</span></div><div class="tps" id="tplThumbs"></div></div>
    <button class="tmore" onclick="openAllTools()">المزيد من الأدوات ▾</button>
@@ -743,7 +748,7 @@ body:not(.fs) #flBar{top:8px}
  <div id="fsBar" class="ui">
   <button onclick="addHere()"><i>✍️</i>سطر</button><button onclick="openElements()"><i>🧩</i>عناصر</button><button onclick="toolImage()"><i>🖼️</i>صورة</button><button onclick="newPageHere()"><i>📄</i>صفحة</button>
   <button onclick="newTopicHere()"><i>📘</i>موضوع</button><button onclick="newChapterHere()"><i>📗</i>فصل</button><button onclick="openColors()"><i>🎨</i>ألوان</button><button onclick="openFrames()"><i>🔲</i>إطار</button>
-  <button onclick="openCoverSheet('front')"><i>📕</i>الغلاف</button><button onclick="openFonts()"><i>🔤</i>الخطوط</button><button onclick="undo()"><i>↶</i>تراجع</button><button onclick="redo()"><i>↷</i>إعادة</button>
+  <button onclick="openCoverSheet('front')"><i>📕</i>الغلاف</button><button onclick="openFonts()"><i>🔤</i>الخطوط</button><button onclick="openWM()"><i>💧</i>علامة مائية</button><button onclick="undo()"><i>↶</i>تراجع</button><button onclick="redo()"><i>↷</i>إعادة</button>
   <button onclick="openAllTools()"><i>🧰</i>الكل</button><button class="pdfb" onclick="exportPDF()"><i>📕</i>PDF</button>
  </div>
  <div class="ptools ui">
@@ -1343,13 +1348,13 @@ function makePage(n,color,headTitle){
  const p=document.createElement('div');p.className='page'+(S.frame&&S.frame!=='none'?' framed':'');setVars(p,color);p.dataset.n=n;
  const deco=S.style==='modern'?'<div class="side"></div><div class="crn"></div>':S.style==='classic'?'<div class="frame"></div><div class="frame2"></div>':'<div class="blob1"></div><div class="blob2"></div><div class="blob3"></div>';
  p.innerHTML=deco+`<div class="ph"><span class="a">${esc(S.title)}</span><span class="b">${esc(headTitle||S.subject)}</span></div>
-  <div class="pb"></div><div class="pf"><span>${esc(footTxt())}</span><span class="pn">${n}</span></div>`+(S.frame&&S.frame!=='none'?`<div class="frm">${frameHTML(S.frame,S.frameColor||color)}</div>`:'')+WM;
+  <div class="pb"></div><div class="pf"><span>${esc(footTxt())}</span><span class="pn">${n}</span></div>`+bwmHTML()+(S.frame&&S.frame!=='none'?`<div class="frm">${frameHTML(S.frame,S.frameColor||color)}</div>`:'')+WM;
  pw.appendChild(p);return{pw,page:p,body:p.querySelector('.pb')};
 }
 let EXPORT_ID=null;
 const tT=()=>S.lock?S.lock.teacher:S.teacher,tP=()=>S.lock?S.lock.phone:S.phone;
 const serialOf=id=>'B-'+String(id).slice(-6).toUpperCase();
-function footTxt(){const L=S.lock,t=L?L.teacher:S.teacher,p=L?L.phone:S.phone,id=EXPORT_ID||(L&&L.id);return [t,p].filter(Boolean).join(' — ')+(id?'   •   '+serialOf(id):'')}
+function footTxt(){const L=S.lock,t=L?L.teacher:S.teacher,p=L?L.phone:S.phone;return [t,p].filter(Boolean).join(' — ')}
 const WM='<div class="wm"><span>معاينة — مصمم الملازم</span></div>';
 function makeChapterPage(n,ci,t,list){
  const pw=document.createElement('div');pw.className='pw';
@@ -1357,7 +1362,7 @@ function makeChapterPage(n,ci,t,list){
  p.innerHTML=`<div class="ch-bg"></div><div class="cv-c" style="width:420px;height:420px;top:-150px;inset-inline-end:-150px"></div><div class="cv-c" style="width:260px;height:260px;bottom:-80px;inset-inline-start:-80px"></div>
   ${S.style==='classic'?'<div style="position:absolute;inset:22px;border:4px double var(--c)"></div>':''}
   <div class="ch-in"><div class="ch-num">${ci+1}</div><div class="ch-k">${esc(unitLabel(ci))}</div>${t.unit?`<div class="ch-t">${esc(t.unit)}</div>`:''}
-  <div class="ch-list"><div class="h">${LG().inUnit}</div>${list.map((x,i)=>`<div class="it">${i+1}. ${esc(x.title||'')}</div>`).join('')}</div></div>`+WM;
+  <div class="ch-list"><div class="h">${LG().inUnit}</div>${list.map((x,i)=>`<div class="it">${i+1}. ${esc(x.title||'')}</div>`).join('')}</div></div>`+bwmHTML()+WM;
  pw.appendChild(p);return pw;
 }
 const CTPL=[['bold','متدرّج'],['wave','موجة'],['card','بطاقة'],['frame','رسمي بإطار'],['diagonal','أشرطة مائلة'],['minimal','بسيط أنيق']];
@@ -1414,7 +1419,7 @@ function coverPage(kind,tplOver,thumb){
   const top=B?`${S.title?`<div class="cv-pill">${esc(S.title)}</div>`:''}<div class="cv-orn"></div>${cf.note?`<div class="cv-title cv-note">${esc(cf.note)}</div>`:''}`
    :`${S.grade?`<div class="cv-pill">${esc(S.grade)}</div>`:''}<div class="cv-title">${esc(S.title)}</div>${S.subject?`<div class="cv-sub">${esc(S.subject)}</div>`:''}<div class="cv-orn"></div>${img}`;
   inner=`<div class="cv-in">${top}<div class="cv-sp"></div>${T?`<div class="cv-t">${esc(T)}</div>`:''}${P?`<div class="cv-ph">${esc(P)}</div>`:''}${S.extra?`<div class="cv-ex">${esc(S.extra)}</div>`:''}</div>`}
- p.innerHTML=deco+inner+(thumb?'':`<div class="cv-hint">✏️ اضغط لتعديل ${B?'الغلاف الخلفي':'الغلاف'}</div>`+WM);
+ p.innerHTML=deco+inner+(!thumb&&S.wm&&S.wm.cover?bwmHTML():'')+(thumb?'':`<div class="cv-hint">✏️ اضغط لتعديل ${B?'الغلاف الخلفي':'الغلاف'}</div>`+WM);
  return p}
 function makeCover(kind,n){const pw=document.createElement('div');pw.className='pw';const p=coverPage(kind||'front');p.dataset.n=n||1;pw.appendChild(p);return pw}
 async function cvGo(kind){await renderPages();const L=pagesList();showPage(kind==='back'?L.length-1:0)}
@@ -1940,7 +1945,7 @@ function openImgSheet(ti,bi){const t=S.topics[ti],b=t.blocks[bi];
 /* ========== subscription: accounts & live per-page billing ========== */
 const WA_NUM='9647809677257';
 const GOVS=['بغداد','البصرة','نينوى','أربيل','النجف','كربلاء','بابل','ذي قار','ميسان','واسط','الديوانية','المثنى','الأنبار','ديالى','صلاح الدين','كركوك','دهوك','السليمانية','حلبجة'];
-let FB=null,ME=null,PRICE=150,TRIAL=3,IS_ADMIN=false,unsubMe=null,SELF_T=0,PREV_BAL=null;
+let WELCOME=0,FB=null,ME=null,PRICE=150,TRIAL=3,IS_ADMIN=false,unsubMe=null,SELF_T=0,PREV_BAL=null;
 const fbReady=()=>!!(FIREBASE_CONFIG.apiKey&&FIREBASE_CONFIG.projectId&&window.firebase);
 const fmt=n=>Math.round(n||0).toLocaleString('en');
 const normD=s=>String(s||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
@@ -2109,7 +2114,7 @@ function initAuth(){
      try{await ensureProfile(u,info);try{localStorage.removeItem('mlz_pending')}catch(e){}}catch(e){const a=$('#aErr');if(a)a.textContent='تعذّر إكمال الحساب: '+(e.code||e.message)}return}
     ME={id:u.uid,...s.data()};$('#auth').classList.add('hidden');
     if(PREV_BAL!=null&&ME.balance>PREV_BAL&&Date.now()-SELF_T>6000)popup('🎉','تم شحن رصيدك',`تمت إضافة <b>${fmt(ME.balance-PREV_BAL)}</b> دينار<br>رصيدك الآن: <b style="font-size:22px;color:#15803d">${fmt(ME.balance)}</b> دينار`);
-    const first=PREV_BAL==null;PREV_BAL=ME.balance;updChip();if(first){liveSoon(300);showTab('vPreview')}
+    const first=PREV_BAL==null;PREV_BAL=ME.balance;updChip();if(first){liveSoon(300);showTab('vPreview');if(window._welcome){popup('🎁','أهلاً بك في مصمم الكوثر',`هدية ترحيب: تمت إضافة <b>${fmt(window._welcome)}</b> دينار لرصيدك<br>+ ${TRIAL} صفحات مجانية`);window._welcome=0}}
     if(ME.active===false)popup('⛔','الحساب موقوف','تواصل مع الإدارة عبر واتساب');
    },e=>{const a=$('#aErr');if(a)a.textContent='تعذّر قراءة الحساب: '+(e.code||e.message);toast('تعذّر قراءة الحساب')});
  });
@@ -2210,7 +2215,7 @@ function openAllTools(){
  const T=[['✍️','سطر نص',"toolText()"],['🧩','عناصر',"openElements()"],['🖼️','صورة',"toolImage()"],['📄','صفحة جديدة',"toolPage()"],
   ['📘','موضوع جديد',"newTopicHere()"],['📗','فصل جديد',"newChapterHere()"],['🎨','الألوان',"openColors()"],['🔲','الإطار',"openFrames()"],
   ['📕','الغلاف',"openCoverSheet('front')"],['📗','الغلاف الخلفي',"openCoverSheet('back')"],['🔤','الخطوط',"openFonts()"],['🌐',isEN()?'عربي':'English',"toggleLang()"],
-  ['📑',S.showToc?'إخفاء الفهرس':'إظهار الفهرس',"toggleToc()"],['✨','نمط التصميم',"cycleStyle()"],['📝','المواضيع',"showTab('vTopics')"],['⚙️','معلومات الملزمة',"showTab('vInfo')"],
+  ['📑',S.showToc?'إخفاء الفهرس':'إظهار الفهرس',"toggleToc()"],['✨','نمط التصميم',"cycleStyle()"],['💧','علامة مائية',"openWM()"],['📝','المواضيع',"showTab('vTopics')"],['⚙️','معلومات الملزمة',"showTab('vInfo')"],
   ['↶','تراجع',"undo()"],['↷','إعادة',"redo()"],['⛶','ملء الشاشة',"enterFS()"],['👁️','معاينة',"enterFS(true)"],
   ['📁','ملازمي',"openMine()"],['💾','نسخة احتياطية',"exportProject()"],['📲','تنزيل البرنامج',"INST.open()"],['🔗','مشاركة البرنامج',"shareApp()"],['📕','تصدير PDF',"exportPDF()"],['❓','مساعدة',"openHelp()"]];
  $('#obBody').innerHTML=`<div class="sheet-h"><b>🧰 كل الأدوات</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
@@ -2244,6 +2249,32 @@ async function applySnap(j){APPLYING=true;const keep={pid:S.pid,bid:S.bid,lock:S
 async function undo(){if(document.body.classList.contains('editing')&&typeof ACT!=='undefined'&&ACT){commitEl(ACT);ACT.blur();endEditing()}clearTimeout(undoT);snapNow();if(!UNDO.length){toast('ما كو شي للتراجع');return}REDO.push(LASTSNAP);await applySnap(UNDO.pop());toast('↶ تم التراجع')}
 async function redo(){clearTimeout(undoT);snapNow();if(!REDO.length){toast('ما كو شي للإعادة');return}UNDO.push(LASTSNAP);await applySnap(REDO.pop());toast('↷ تمت الإعادة')}
 (function(){document.body.classList.add('nui');const sb=document.getElementById('sbar'),sl=document.getElementById('sbarSlot');if(sb&&sl)sl.appendChild(sb);setTimeout(()=>{snapNow();updUndo();updSaved()},1500)})();
+/* ================= العلامة المائية ================= */
+function bwmHTML(){const w=S.wm;if(!w||!(w.t||'').trim())return '';const st=`font-size:${w.s||90}px;color:${w.c||'#64748b'};opacity:${w.o!=null?w.o:.1};transform:rotate(${w.r!=null?w.r:-30}deg)`;
+ return w.tile?`<div class="bwm tile">${Array(8).fill(`<span style="${st};font-size:${Math.round((w.s||90)*.55)}px">${esc(w.t)}</span>`).join('')}</div>`:`<div class="bwm"><span style="${st}">${esc(w.t)}</span></div>`}
+function openWM(){S.wm=Object.assign({t:'',s:90,o:.1,c:'#64748b',r:-30,tile:0,cover:0},S.wm||{});const w=S.wm;
+ $('#obBody').innerHTML=`<div class="sheet-h"><b>💧 العلامة المائية</b><button class="btn sm" id="wmX">✅ تم</button></div>
+ <div class="muted">الكلمة تظهر على كل أوراق الملزمة وبالـ PDF</div>
+ <label class="f">الكلمة</label><input class="in" id="wmT" value="${esc(w.t)}" placeholder="مثلاً: مطبعة الكوثر / اسم الأستاذ">
+ <label class="f">حجم الكلمة: <b id="wmSn">${w.s}</b></label><input type="range" id="wmS" min="24" max="220" value="${w.s}" style="width:100%">
+ <label class="f">درجة الوضوح (التباين): <b id="wmOn">${Math.round(w.o*100)}%</b></label><input type="range" id="wmO" min="3" max="60" value="${Math.round(w.o*100)}" style="width:100%">
+ <label class="f">اللون</label><div class="seg" id="wmC">${['#64748b','#111827','#1e88e5','#e11d48','#16a34a','#f59e0b','#7c3aed'].map(c=>`<button class="btn sm" data-c="${c}" style="width:38px;height:38px;padding:0;background:${c};border:3px solid ${w.c===c?'#2563eb':'#e2e8f0'}"></button>`).join('')}</div>
+ <label class="f">الاتجاه</label><div class="seg" id="wmR"><button class="btn sm ${w.r==-30?'primary':''}" data-r="-30">↗ مائل</button><button class="btn sm ${w.r==0?'primary':''}" data-r="0">↔ أفقي</button><button class="btn sm ${w.r==30?'primary':''}" data-r="30">↘ مائل</button></div>
+ <label class="cvsw"><input type="checkbox" id="wmTile" ${w.tile?'checked':''}> تكرار الكلمة على كل الورقة</label>
+ <label class="cvsw"><input type="checkbox" id="wmCv" ${w.cover?'checked':''}> تظهر على الغلاف أيضاً</label>
+ <div class="muted" style="margin-top:10px;text-align:center">شكلها على الورقة:</div><div id="wmPrev" style="position:relative;width:170px;aspect-ratio:794/1123;margin:6px auto 0;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.1)"></div>
+ <button class="btn red" style="width:100%;margin-top:10px" id="wmDel">🗑 إزالة العلامة المائية</button>`;
+ const pv=()=>{const box=$('#wmPrev');box.innerHTML=`<div style="position:absolute;top:0;left:0;width:794px;height:1123px;transform-origin:top left;transform:scale(${box.clientWidth/794})">${(w.t||'').trim()?bwmHTML():'<div style="padding:200px 60px;font-size:40px;color:#94a3b8;text-align:center">اكتب الكلمة حتى تشوفها هنا</div>'}</div>`};
+ let rt;const upd=()=>{save();pv();clearTimeout(rt);rt=setTimeout(()=>renderPages(),500)};
+ $('#wmT').oninput=e=>{w.t=e.target.value;upd()};
+ $('#wmS').oninput=e=>{w.s=+e.target.value;$('#wmSn').textContent=w.s;upd()};
+ $('#wmO').oninput=e=>{w.o=+e.target.value/100;$('#wmOn').textContent=e.target.value+'%';upd()};
+ $('#wmC').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{w.c=b.dataset.c;$('#wmC').querySelectorAll('[data-c]').forEach(x=>x.style.borderColor=x===b?'#2563eb':'#e2e8f0');upd()});
+ $('#wmR').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{w.r=+b.dataset.r;$('#wmR').querySelectorAll('[data-r]').forEach(x=>x.classList.toggle('primary',x===b));upd()});
+ $('#wmTile').onchange=e=>{w.tile=e.target.checked?1:0;upd()};$('#wmCv').onchange=e=>{w.cover=e.target.checked?1:0;upd()};
+ $('#wmDel').onclick=()=>{w.t='';$('#wmT').value='';upd();toast('تمت إزالة العلامة المائية')};
+ $('#wmX').onclick=async()=>{$('#obM').classList.add('hidden');await renderPages();if((w.t||'').trim())toast('💧 العلامة المائية على كل الأوراق')};
+ $('#obM').classList.remove('hidden');requestAnimationFrame(pv)}
 /* ================= صور حرة على الصفحة ================= */
 let FSEL=null,FL_T=0,FPAN=false,FTX=null;
 const FLKEY=i=>'p'+(i+1);
