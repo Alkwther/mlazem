@@ -656,6 +656,45 @@ body.exporting .flt.ftxt{outline:0!important}
 .cl3 button.on{box-shadow:0 0 0 3px #2563eb}
 .npv{position:relative;margin:0 auto;width:min(300px,80vw);box-shadow:0 10px 30px rgba(0,0,0,.18);border-radius:4px;overflow:hidden;background:#fff}
 .npv canvas{display:block;width:100%}.npv .nm{position:absolute;display:flex;align-items:center;justify-content:center;font-weight:900;line-height:1;white-space:nowrap}
+
+/* جدول */
+.tsz{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;max-width:300px;margin:10px auto}
+.tsz i{aspect-ratio:1;border:2px solid #dbe3ef;border-radius:7px;background:#f8fafc;cursor:pointer}
+.tsz i.on{background:#2563eb;border-color:#2563eb}
+.tszl{text-align:center;font-size:22px;font-weight:900;color:#0b1f45;margin-top:4px}
+.ted{overflow:auto;padding:4px 2px 10px;-webkit-overflow-scrolling:touch}
+.ted table{border-collapse:separate;border-spacing:0;margin:0 auto}
+.ted td{padding:0;border:1.5px solid #cbd5e1;background:#fff}
+.ted td input{width:110px;border:0;padding:11px 8px;font:700 14px Cairo,sans-serif;text-align:center;background:transparent;outline:none}
+.ted tr.hd td{background:var(--tc,#1d4ed8)}.ted tr.hd td input{color:#fff;font-weight:900}.ted tr.hd td input::placeholder{color:#e0e7ff}
+.ted td input:focus{background:#fef9c3;color:#111}
+.ted .cx td,.ted td.rx{border:0;background:none;padding:3px;text-align:center}
+.ted .cx button,.ted td.rx button{border:0;background:#fee2e2;color:#be123c;border-radius:8px;width:28px;height:24px;font-size:12px;cursor:pointer}
+.tbar{display:flex;gap:8px;margin-top:10px}.tbar .btn{flex:1;padding:13px}
+/* رموز الرياضيات */
+#mathP{position:fixed;left:6px;right:6px;top:calc(54px + env(safe-area-inset-top));z-index:9990;background:#fff;border-radius:18px;box-shadow:0 14px 40px rgba(11,31,69,.35);display:none;flex-direction:column;max-height:44vh;overflow:hidden;direction:rtl;border:1.5px solid #dbe3ef}
+#mathP.on{display:flex}#mathP.bt{top:auto;bottom:calc(78px + env(safe-area-inset-bottom));max-height:40vh}
+#mathP .mh{display:flex;align-items:center;gap:6px;padding:6px 8px;background:#0b1f45;color:#fff}
+#mathP .mh b{flex:1;font-size:13.5px}
+#mathP .mh button{border:0;background:#22c55e;color:#fff;border-radius:10px;padding:6px 12px;font:900 13px Cairo,sans-serif;cursor:pointer}
+#mathP .mt{display:flex;gap:4px;overflow-x:auto;padding:6px;background:#f1f5f9;scrollbar-width:none;flex:0 0 auto}#mathP .mt::-webkit-scrollbar{display:none}
+#mathP .mt button{flex:0 0 auto;border:0;background:#fff;border-radius:10px;padding:6px 10px;font:800 12px Cairo,sans-serif;color:#0b1f45;cursor:pointer;white-space:nowrap}
+#mathP .mt button.on{background:#2563eb;color:#fff}
+#mathP .mg{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:5px;padding:7px}
+#mathP .mg button{border:1.5px solid #e2e8f0;background:#fff;border-radius:11px;height:44px;font:600 21px "Cambria Math","STIX Two Math","Times New Roman",serif;color:#0b1f45;cursor:pointer;padding:0 4px;white-space:nowrap}
+#mathP .mg button.w{font:800 14px Cairo,sans-serif}
+#mathP .mg button:active{background:#dbeafe}
+#mathP .tip{grid-column:1/-1;font:700 11.5px Cairo,sans-serif;color:#64748b;text-align:center}
+.shg2{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.shg2 button{border:1.5px solid #e2e8f0;background:#fff;border-radius:14px;padding:6px 4px;font:800 12px Cairo,sans-serif;color:#0b1f45;cursor:pointer}
+.shg2 img{width:100%;height:70px;object-fit:contain;display:block}
+
+.smg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.smc{background:#fff;border:1.5px solid #e1e7f2;border-radius:16px;padding:7px;box-shadow:0 4px 12px rgba(16,32,72,.07)}
+.smc .th4{position:relative;aspect-ratio:794/1123;overflow:hidden;border-radius:9px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.15)}
+.smc .th4>div{position:absolute;top:0;left:0;transform-origin:top left}
+.smc b{display:block;font-size:13.5px;color:#0b1f45;margin:6px 2px 2px;text-align:center}
+.smc .sa{display:flex;flex-direction:column;gap:4px;margin-top:4px}.smc .sa .btn{padding:7px 4px;font-size:12px}
 </style>
 </head>
 <body>
@@ -785,7 +824,7 @@ body.exporting .flt.ftxt{outline:0!important}
  <div id="fsBar" class="ui">
   <button onclick="addHere()"><i>✍️</i>سطر</button><button onclick="openElements()"><i>🧩</i>عناصر</button><button onclick="toolImage()"><i>🖼️</i>صورة</button><button onclick="newPageHere()"><i>📄</i>صفحة</button>
   <button onclick="newTopicHere()"><i>📘</i>موضوع</button><button onclick="newChapterHere()"><i>📗</i>فصل</button><button onclick="openColors()"><i>🎨</i>ألوان</button><button onclick="openFrames()"><i>🔲</i>إطار</button>
-  <button onclick="openCoverSheet('front')"><i>📕</i>الغلاف</button><button onclick="addTextFloat()"><i>🔤</i>كتابة حرة</button><button onclick="openFonts()"><i>🔠</i>الخطوط</button><button onclick="openWM()"><i>💧</i>علامة مائية</button><button onclick="undo()"><i>↶</i>تراجع</button><button onclick="redo()"><i>↷</i>إعادة</button>
+  <button onclick="openCoverSheet('front')"><i>📕</i>الغلاف</button><button onclick="addTextFloat()"><i>🔤</i>كتابة حرة</button><button onclick="openFonts()"><i>🔠</i>الخطوط</button><button onclick="openWM()"><i>💧</i>علامة مائية</button><button onclick="newTableSheet()"><i>▦</i>جدول</button><button onclick="openMath()"><i style="font-family:serif">∑</i>رموز</button><button onclick="openShapes()"><i>📐</i>أشكال</button><button onclick="undo()"><i>↶</i>تراجع</button><button onclick="redo()"><i>↷</i>إعادة</button>
   <button onclick="openAllTools()"><i>🧰</i>الكل</button><button class="pdfb" onclick="exportPDF()"><i>📕</i>PDF</button>
  </div>
  <div class="ptools ui">
@@ -799,7 +838,8 @@ body.exporting .flt.ftxt{outline:0!important}
  <div class="muted ui" id="expNote" style="text-align:center;margin-top:8px"></div>
 </div>
 <div id="fbar" class="fbar ui hidden"><div class="chipsx" id="fbTypes"></div>
- <div class="fbbtns"><button data-c="b">B</button><button data-c="m">تظليل</button><button data-c="u"><u>U</u></button><button data-c="ic">ملوّن</button><button data-c="up">⬆</button><button data-c="dn">⬇</button><button data-c="del" class="del">🗑</button><button data-c="ok" class="ok">✓ تم</button></div></div>
+ <div class="fbbtns"><button data-c="b">B</button><button data-c="m">تظليل</button><button data-c="u"><u>U</u></button><button data-c="ic">ملوّن</button><button data-c="up">⬆</button><button data-c="dn">⬇</button><button data-c="math" style="font-family:serif;font-weight:900">∑√</button><button data-c="del" class="del">🗑</button><button data-c="ok" class="ok">✓ تم</button></div></div>
+<div id="mathP" class="ui"></div>
 
 <!-- AUTH -->
 <div id="auth" class="ui">
@@ -853,7 +893,7 @@ body.exporting .flt.ftxt{outline:0!important}
 <div class="modal hidden ui" id="popM" style="align-items:center"><div class="sheet" style="border-radius:22px;max-width:380px;margin:16px" id="popBody"></div></div>
 <div class="sbar ui hidden" id="sbar"></div>
 <div id="flBar" class="ui"></div>
-<div class="bnav ui" id="bnav"><button data-n="help" onclick="openHelp()"><i>❓</i>مساعدة</button><button data-n="merge" onclick="openMerge()"><i>🗂️</i>دمج PDF</button><button data-n="num" onclick="openNumber()"><i>🔢</i>ترقيم PDF</button><button data-n="home" class="on" onclick="goHome()"><i>🏠</i>الرئيسية</button><button data-n="files" onclick="openMine()"><i>📁</i>ملفاتي</button><button data-n="tpl" onclick="openCoverSheet('front')"><i>👑</i>القوالب</button></div>
+<div class="bnav ui" id="bnav"><button data-n="help" onclick="openHelp()"><i>❓</i>مساعدة</button><button data-n="merge" onclick="openMerge()"><i>🗂️</i>دمج PDF</button><button data-n="num" onclick="openNumber()"><i>🔢</i>ترقيم PDF</button><button data-n="home" class="on" onclick="goHome()"><i>🏠</i>الرئيسية</button><button data-n="files" onclick="openMine()"><i>📁</i>ملفاتي</button><button data-n="tpl" onclick="openSamples()"><i>👑</i>القوالب</button></div>
 
 <!-- IMAGE PICKER -->
 <div class="modal hidden ui" id="picker">
@@ -981,7 +1021,8 @@ function sample(){return{
   {id:uid(),title:'التنفس الخلوي',color:'#43a047',blocks:[{id:uid(),type:'text',text:
 '# مراحل التنفس الخلوي\n1. التحلل السكري: يحدث في السايتوبلازم.\n2. دورة كربس: تحدث في المايتوكوندريا.\n3. سلسلة نقل الإلكترونات.\n[قانون] C6H12O6 + 6O2 ← 6CO2 + 6H2O + طاقة\n[مثال] عند الركض لمسافة طويلة تزداد سرعة التنفس لتوفير الطاقة.'}]}
  ]}}
-let S=sample();
+function demoSample(){return Object.assign(sample(),{demo:1,showToc:false,chapterPage:false,newPage:true})}
+let S=demoSample();
 const DB={db:null,
  open(){return new Promise(res=>{try{const r=indexedDB.open('mlazem-designer',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>{this.db=r.result;res()};r.onerror=()=>res()}catch(e){res()}})},
  get(k){return new Promise(res=>{try{const q=this.db.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>res(null)}catch(e){res(null)}})},
@@ -1004,7 +1045,7 @@ function renderProjects(){const L=$('#projList');if(!L)return;
   <button class="btn sm" onclick="dupProject('${p.id}')" title="نسخ لأستاذ جديد">نسخ لأستاذ جديد</button><button class="btn sm red" onclick="delProject('${p.id}')">✕</button></div>`).join('')}
 async function openProjectNoSave(id){const raw=await DB.get('p:'+id);if(!raw)return;S=Object.assign(sample(),JSON.parse(raw));S.pid=id;DB.set('lastPid',id);bindInfo();renderTopics();renderProjects();liveSoon(300)}
 async function openProject(id){clearTimeout(saveT);saveNow();const raw=await DB.get('p:'+id);if(!raw)return;S=Object.assign(sample(),JSON.parse(raw));S.pid=id;DB.set('lastPid',id);bindInfo();renderTopics();renderProjects();toast('تم فتح: '+S.title);liveSoon(300)}
-async function dupProject(id){clearTimeout(saveT);saveNow();const raw=await DB.get('p:'+id);if(!raw)return;const d=JSON.parse(raw);d.pid=uid();delete d.lock;delete d.bid;d.teacher='';d.phone='';d.title=(d.title||'')+' (نسخة)';S=Object.assign(sample(),d);saveNow();bindInfo();renderTopics();showTab('vInfo');toast('نسخة جديدة — اكتب اسم الأستاذ الجديد')}
+async function dupProject(id){clearTimeout(saveT);saveNow();const raw=await DB.get('p:'+id);if(!raw)return;const d=JSON.parse(raw);d.pid=uid();delete d.lock;delete d.bid;delete d.demo;d.teacher='';d.phone='';d.title=(d.title||'')+' (نسخة)';S=Object.assign(sample(),d);saveNow();bindInfo();renderTopics();showTab('vInfo');toast('نسخة جديدة — اكتب اسم الأستاذ الجديد')}
 /* ===== نافذة سؤال داخل البرنامج (بدل نوافذ المتصفح) ===== */
 function ask(title,o={}){return new Promise(res=>{const old=document.getElementById('askM');if(old)old.remove();
  const m=document.createElement('div');m.id='askM';
@@ -1602,6 +1643,7 @@ const pdfName=()=>{const t=((S.lock?S.lock.teacher:S.teacher)||'').trim(),sb=(S.
 function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
 async function capturePage(p,q){return html2canvas(p,{scale:q,useCORS:true,backgroundColor:'#ffffff',logging:false,windowWidth:1000,scrollX:0,scrollY:0})}
 async function exportPDF(){
+ if(S.demo){popup('📘','ملزمة نموذجية للتجربة','هاي الملزمة نموذج حتى تتعرف على البرنامج — 3 صفحات بس، وما تنحسب عليك، وما تنحفظ PDF.<br>صمّم ملزمتك من <b>➕ ملزمة جديدة</b>.<br><button class="btn primary" style="width:100%;margin-top:12px" onclick="$(\'#popM\').classList.add(\'hidden\');mineNew()">➕ ملزمة جديدة</button>');return}
  if(DEMO){popup('👁️','وضع المعاينة',`حفظ PDF يعمل فقط بعد تسجيل الدخول من البرنامج الرسمي.<br><a class="btn primary" style="width:100%;margin-top:12px" href="${APP_URL}" target="_top">🔗 فتح البرنامج الرسمي</a>`);return}
  if(!window.html2canvas||!window.jspdf){toast('مكتبات التصدير لم تُحمّل — تأكد من الإنترنت');return}
  const teacher=(S.lock?S.lock.teacher:S.teacher||'').trim();
@@ -1662,7 +1704,7 @@ async function changeTeacher(){
  const ph=await ask('رقم هاتف الأستاذ الجديد',{icon:'📞',msg:'اختياري — تگدر تتركه فارغ',input:'',ph:'07xxxxxxxxx',tel:1,yes:'التالي',no:'تخطي'});
  if(!await ask('تأكيد تغيير الأستاذ',{icon:'⚠️',msg:`ملزمة جديدة باسم: ${esc(name)}\nسيتم خصم ${fmt(cost)} دينار من رصيدك`,yes:'نعم، متابعة',no:'لا'}))return;
  clearTimeout(saveT);saveNow();
- const d=JSON.parse(JSON.stringify(S));delete d.lock;delete d.bid;d.pid=uid();d.teacher=name;d.phone=(ph||'').trim();
+ const d=JSON.parse(JSON.stringify(S));delete d.lock;delete d.bid;delete d.demo;d.pid=uid();d.teacher=name;d.phone=(ph||'').trim();
  S=Object.assign(sample(),d);saveNow();bindInfo();renderTopics();renderProjects();
  const o=overlay('جاري إنشاء الملزمة باسم الأستاذ الجديد...');
  try{await liveSyncNow()}finally{o.remove()}
@@ -1694,7 +1736,7 @@ async function openMine(){
  const items=[];for(const p of PJ){const raw=await DB.get('p:'+p.id);let d=null;try{d=raw&&JSON.parse(raw)}catch(e){}items.push({p,d,raw})}
  $('#obBody').innerHTML=`<div class="sheet-h"><b>📁 ملازمي (${items.length})</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
   <button class="btn primary mine-new" id="mnNew">➕ إنشاء ملزمة جديدة</button>
-  <button class="btn" style="width:100%;margin:-4px 0 12px;padding:12px" onclick="openPdfImport()">📥 رفع ملزمة PDF وتعديلها</button>
+  <div class="row" style="margin:-4px 0 12px;gap:8px"><button class="btn" style="padding:12px" onclick="openSamples()">📚 نماذج جاهزة</button><button class="btn" style="padding:12px" onclick="openPdfImport()">📥 رفع PDF</button></div>
   <div class="muted" style="margin-bottom:8px">اضغط "تعديل" لفتح أي ملزمة والتعديل عليها وحفظها PDF مرة أخرى. الملزمة المحفوظة PDF يبقى اسم الأستاذ ورقمه مقفلين عليها.</div>
   <div id="mnList"></div>
   <label class="btn" style="width:100%;margin-top:6px">📂 فتح نسخة احتياطية (ملف مشروع)<input type="file" accept=".json,application/json" hidden onchange="$('#obM').classList.add('hidden');importProject(this)"></label>`;
@@ -1774,7 +1816,7 @@ async function idleRender(){if(document.body.classList.contains('editing'))retur
 // events
 const PG=$('#pages');
 PG.addEventListener('focusin',e=>{const el=e.target;if(!isEd(el))return;if(ACT&&ACT!==el)commitEl(ACT);clearTimeout(idleT);fbarShow(el)});
-PG.addEventListener('focusout',e=>{const el=e.target;if(!isEd(el))return;setTimeout(()=>{const a=document.activeElement;if(isEd(a)||($('#fbar').contains(a)))return;commitEl(el);endEditing()},180)});
+PG.addEventListener('focusout',e=>{const el=e.target;if(!isEd(el))return;setTimeout(()=>{const a=document.activeElement;if(isEd(a)||($('#fbar').contains(a))||($('#mathP').contains(a)))return;commitEl(el);endEditing()},180)});
 PG.addEventListener('input',e=>{const el=e.target;if(!isEd(el))return;if(el.classList.contains('etx'))el.classList.toggle('emp',!el.textContent.replace(/​/g,'').trim());clearTimeout(inT);inT=setTimeout(()=>commitEl(el),500)});
 PG.addEventListener('beforeinput',e=>{const el=e.target;if(!isEd(el))return;
  if(e.inputType==='insertParagraph'||e.inputType==='insertLineBreak'){e.preventDefault();if(el.classList.contains('etx'))enterNew(el);else el.blur();return}
@@ -1782,7 +1824,8 @@ PG.addEventListener('beforeinput',e=>{const el=e.target;if(!isEd(el))return;
 PG.addEventListener('keydown',e=>{const el=e.target;if(!isEd(el))return;if(e.key==='Enter'&&!('onbeforeinput' in el)){e.preventDefault();if(el.classList.contains('etx'))enterNew(el);else el.blur()}});
 PG.addEventListener('paste',e=>{const el=e.target;if(!isEd(el))return;e.preventDefault();const t=(e.clipboardData||window.clipboardData).getData('text');document.execCommand('insertText',false,t.replace(/\s*\n\s*/g,' '))});
 $('#fbar').querySelectorAll('.fbbtns button').forEach(b=>{b.onpointerdown=e=>e.preventDefault();b.onclick=async()=>{const c=b.dataset.c;if(!ACT)return;
- if(c==='ok'){commitEl(ACT);ACT.blur();endEditing();return}
+ if(c==='math'){openMath();return}
+ if(c==='ok'){closeMath();commitEl(ACT);ACT.blur();endEditing();return}
  if(c==='b'){document.execCommand('bold');commitEl(ACT);return}if(c==='u'){document.execCommand('underline');commitEl(ACT);return}
  if(c==='m'){wrapTag('mark');return}if(c==='ic'){wrapTag('span','ic');return}
  const host=hostOf(ACT);if(c==='del'){ask('هل تريد حذف هذا السطر؟',{danger:true}).then(y=>{if(y)deleteLine(host,false)});return}
@@ -1892,7 +1935,7 @@ function buildLine(type,txt,n){
  if(type==='nl'){n=(n||'').trim()||nextN('');return n+(/^[0-9٠-٩]+$/.test(n)?'. ':') ')+one}
  return '['+LG().boxes[KIDX[type]]+'] '+one}
 function openLine(ti,bi,ln){const t=S.topics[ti],b=t&&t.blocks[bi];if(!b)return;const it=parseItemsLn(b.text).find(x=>x.ln===ln);if(!it)return;
- if(it.k==='tbl'){ED={ti,bi,ln:it.ln,ln2:it.ln2,type:'tbl',isNew:false};showEd(b.text.split('\n').slice(it.ln,it.ln2+1).join('\n'),'✏️ تعديل الجدول');return}
+ if(it.k==='tbl'){openTable(ti,bi,it.ln,it.ln2);return;ED={ti,bi,ln:it.ln,ln2:it.ln2,type:'tbl',isNew:false};showEd(b.text.split('\n').slice(it.ln,it.ln2+1).join('\n'),'✏️ تعديل الجدول');return}
  ED={ti,bi,ln:it.ln,ln2:it.ln2,type:itemType(it),n:it.n||'',isNew:false};showEd(it.t||'','✏️ تعديل السطر')}
 function newLine(ti,bi,after,type,n){ED={ti,bi,ln:after,ln2:after,type:type||'p',n:n||'',isNew:true};showEd('','➕ سطر جديد')}
 function showEd(text,title){const t=S.topics[ED.ti];$('#edTitle').textContent=title;$('#edM').style.setProperty('--c',t.color);
@@ -2092,6 +2135,7 @@ async function liveSync(){
  LIVE.busy=true;LIVE.err=false;
  try{
   const n=await renderPages();LIVE.n=n;
+  if(S.demo){LIVE.n=Math.min(n,3);LIVE.charged=0;LIVE.unpaid=0;LIVE.exported=0;return}
   if(!FB||!ME||IS_ADMIN){LIVE.charged=n;LIVE.unpaid=0;return}
   if(ME.active===false){LIVE.unpaid=n;return}
   if(S.bid&&!S.bid.startsWith(ME.id+'_')){delete S.bid;delete S.lock;saveNow();bindInfo()}
@@ -2123,7 +2167,7 @@ async function setPages(bid,n){
  });
  SELF_T=Date.now();return out;
 }
-function statusBar(){
+function statusBar(){setTimeout(()=>{if(typeof demoNote==='function')demoNote()},0);
  const b=$('#sbar');if(!b)return;
  if(!ME){b.classList.add('hidden');return}b.classList.remove('hidden');
  const note=$('#expNote');
@@ -2196,7 +2240,10 @@ function updSaved(){const e=document.getElementById('svAgo');if(!e)return;const 
 setInterval(updSaved,20000);
 function manualSave(){clearTimeout(saveT);saveNow();toast('💾 تم حفظ الملزمة')}
 function goHome(){$('#obM').classList.add('hidden');showTab('vPreview')}
-function uiAfterRender(){updSaved();tplThumbs();renderFloats()}
+function uiAfterRender(){
+ if(S.demo){const L=pagesList();if(L.length>3){L.slice(3).forEach(x=>x.remove());const sel=$('#pgSel');if(sel)while(sel.options.length>3)sel.remove(3);if(CURP>2)showPage(2);if(!uiAfterRender._t||Date.now()-uiAfterRender._t>15000){uiAfterRender._t=Date.now();toast('📘 الملزمة النموذجية 3 صفحات بس — للزيادة اضغط ➕ ملزمة جديدة',4000)}}}
+ updSaved();tplThumbs();renderFloats();demoNote()}
+function demoNote(){const n=$('#expNote');if(n&&S.demo)n.innerHTML='📘 <b>ملزمة نموذجية للتجربة</b> — 3 صفحات، ما تنحسب عليك وما تنحفظ PDF. لتصميم ملزمتك اضغط <b>➕ ملزمة جديدة</b> من 📁 ملازمي'}
 function tplThumbs(){const box=document.getElementById('tplThumbs');if(!box||typeof coverPage!=='function')return;
  box.innerHTML='';['wave','card','frame'].forEach(id=>{const d=document.createElement('div');d.className='tpt';const pg=coverPage('front',id,true);pg.dir=isEN()?'ltr':'rtl';pg.style.setProperty('--hf',fontCss(S.headFont));d.appendChild(pg);
   d.onclick=async()=>{S.coverTpl=id;S.coverBg=null;save();await cvGo('front');toast('🎨 تم تطبيق القالب على الغلاف')};box.appendChild(d)});
@@ -2236,8 +2283,8 @@ function openElements(){
  const ic={h1:'🔠',h2:'🔡',li:'•',nl:'١',def:'📗',law:'⚖️',note:'📝',ex:'💡',imp:'⚠️',rem:'🧠',q:'❓',a:'✅',p:'¶'};
  $('#obBody').innerHTML=`<div class="sheet-h"><b>🧩 العناصر</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
  <div class="muted">اختار العنصر وراح ينضاف على الورقة واكتب بيه مباشرة</div>
- <div class="agrid">${LTYPES.map(([k,n])=>`<button data-k="${k}"><i>${ic[k]||'▫️'}</i>${n.replace(/^[•١] /,'')}</button>`).join('')}<button data-k="ftx"><i>🔤</i>كتابة حرة</button><button data-k="tbl"><i>▦</i>جدول</button><button data-k="pg"><i>📄</i>صفحة جديدة</button><button data-k="img"><i>🖼️</i>صورة</button></div>`;
- $('#obBody').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const k=b.dataset.k;$('#obM').classList.add('hidden');if(k==='pg')toolPage();else if(k==='ftx')addTextFloat();else if(k==='img')toolImage();else insertTyped(k)});
+ <div class="agrid">${LTYPES.map(([k,n])=>`<button data-k="${k}"><i>${ic[k]||'▫️'}</i>${n.replace(/^[•١] /,'')}</button>`).join('')}<button data-k="ftx"><i>🔤</i>كتابة حرة</button><button data-k="tbl"><i>▦</i>جدول</button><button data-k="math"><i style="font-family:serif">∑√</i>رموز رياضيات</button><button data-k="shp"><i>📐</i>أشكال هندسية</button><button data-k="pg"><i>📄</i>صفحة جديدة</button><button data-k="img"><i>🖼️</i>صورة</button></div>`;
+ $('#obBody').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const k=b.dataset.k;$('#obM').classList.add('hidden');if(k==='pg')toolPage();else if(k==='tbl')newTableSheet();else if(k==='math')openMath();else if(k==='shp')openShapes();else if(k==='ftx')addTextFloat();else if(k==='img')toolImage();else insertTyped(k)});
  $('#obM').classList.remove('hidden')}
 function curTopicIdx(){const pg=pagesList()[CURP];const el=pg&&pg.querySelector('[data-t]');return el?+el.dataset.t:(S.topics.length?0:-1)}
 function openColors(){const ti=curTopicIdx(),t=S.topics[ti];
@@ -2263,9 +2310,9 @@ function openAllTools(){
  const T=[['✍️','سطر نص',"toolText()"],['🧩','عناصر',"openElements()"],['🖼️','صورة',"toolImage()"],['📄','صفحة جديدة',"toolPage()"],
   ['📘','موضوع جديد',"newTopicHere()"],['📗','فصل جديد',"newChapterHere()"],['🎨','الألوان',"openColors()"],['🔲','الإطار',"openFrames()"],
   ['📕','الغلاف',"openCoverSheet('front')"],['📗','الغلاف الخلفي',"openCoverSheet('back')"],['🔤','الخطوط',"openFonts()"],['🌐',isEN()?'عربي':'English',"toggleLang()"],
-  ['📑',S.showToc?'إخفاء الفهرس':'إظهار الفهرس',"toggleToc()"],['✨','نمط التصميم',"cycleStyle()"],['💧','علامة مائية',"openWM()"],['📝','المواضيع',"showTab('vTopics')"],['⚙️','معلومات الملزمة',"showTab('vInfo')"],
+  ['📑',S.showToc?'إخفاء الفهرس':'إظهار الفهرس',"toggleToc()"],['✨','نمط التصميم',"cycleStyle()"],['💧','علامة مائية',"openWM()"],['▦','جدول',"newTableSheet()"],['∑','رموز رياضيات',"openMath()"],['📐','أشكال هندسية',"openShapes()"],['📝','المواضيع',"showTab('vTopics')"],['⚙️','معلومات الملزمة',"showTab('vInfo')"],
   ['↶','تراجع',"undo()"],['↷','إعادة',"redo()"],['⛶','ملء الشاشة',"enterFS()"],['👁️','معاينة',"enterFS(true)"],
-  ['📁','ملازمي',"openMine()"],['📥','رفع ملزمة PDF',"openPdfImport()"],['🔤','كتابة حرة',"addTextFloat()"],['💾','نسخة احتياطية',"exportProject()"],['📲','تنزيل البرنامج',"INST.open()"],['🔗','مشاركة البرنامج',"shareApp()"],['📕','تصدير PDF',"exportPDF()"],['🗂️','دمج ملفات PDF',"openMerge()"],['🔢','ترقيم PDF',"openNumber()"],['❓','مساعدة',"openHelp()"]];
+  ['📁','ملازمي',"openMine()"],['📚','نماذج جاهزة',"openSamples()"],['📥','رفع ملزمة PDF',"openPdfImport()"],['🔤','كتابة حرة',"addTextFloat()"],['💾','نسخة احتياطية',"exportProject()"],['📲','تنزيل البرنامج',"INST.open()"],['🔗','مشاركة البرنامج',"shareApp()"],['📕','تصدير PDF',"exportPDF()"],['🗂️','دمج ملفات PDF',"openMerge()"],['🔢','ترقيم PDF',"openNumber()"],['❓','مساعدة',"openHelp()"]];
  $('#obBody').innerHTML=`<div class="sheet-h"><b>🧰 كل الأدوات</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
  <div class="agrid">${T.map(([i,n,f])=>`<button data-f="${f.replace(/"/g,'&quot;')}"><i>${i}</i>${n}</button>`).join('')}</div>`;
  $('#obBody').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{$('#obM').classList.add('hidden');try{(new Function(b.dataset.f))()}catch(e){console.warn(e)}});
@@ -2297,6 +2344,145 @@ async function applySnap(j){APPLYING=true;const keep={pid:S.pid,bid:S.bid,lock:S
 async function undo(){if(document.body.classList.contains('editing')&&typeof ACT!=='undefined'&&ACT){commitEl(ACT);ACT.blur();endEditing()}clearTimeout(undoT);snapNow();if(!UNDO.length){toast('ما كو شي للتراجع');return}REDO.push(LASTSNAP);await applySnap(UNDO.pop());toast('↶ تم التراجع')}
 async function redo(){clearTimeout(undoT);snapNow();if(!REDO.length){toast('ما كو شي للإعادة');return}UNDO.push(LASTSNAP);await applySnap(REDO.pop());toast('↷ تمت الإعادة')}
 (function(){document.body.classList.add('nui');const sb=document.getElementById('sbar'),sl=document.getElementById('sbarSlot');if(sb&&sl)sl.appendChild(sb);setTimeout(()=>{snapNow();updUndo();updSaved()},1500)})();
+/* ================= نماذج جاهزة لكل المواد ================= */
+const SMT=(title,color,text,unit)=>({id:uid(),unit:unit||'',title,color,blocks:[{id:uid(),type:'text',text}]});
+const SAMPLES=[
+ ['🔢','الرياضيات',()=>({title:'ملزمة الرياضيات',subject:'الرياضيات',grade:'الثالث المتوسط',coverColor:'#1d4ed8',coverTpl:'diagonal',frame:'corners',style:'modern',headFont:'Changa',bodyFont:'Cairo',
+  topics:[SMT('المعادلة التربيعية','#1d4ed8','# الصيغة العامة\n[تعريف] المعادلة التربيعية: كل معادلة بالصيغة **أس² + ب س + جـ = ٠** حيث أ ≠ ٠\n[قانون] القانون العام: س = ( −ب ± √(ب² − ٤ أ جـ) ) ÷ ٢أ\n## مثال محلول\n[مثال] حل المعادلة: س² − ٥س + ٦ = ٠\n[الحل] (س − ٢)(س − ٣) = ٠ ⇒ س = ٢ أو س = ٣\n[تذكر] المميز Δ = ب² − ٤ أ جـ\n- إذا Δ > ٠ ⇐ يوجد جذران حقيقيان مختلفان\n- إذا Δ = ٠ ⇐ يوجد جذر حقيقي واحد مكرر\n- إذا Δ < ٠ ⇐ لا توجد جذور حقيقية','المعادلات'),
+   SMT('مبرهنة فيثاغورس','#0891b2','# المثلث القائم الزاوية\n[قانون] (الوتر)² = (الضلع الأول)² + (الضلع الثاني)²\n## أمثلة على أطوال أضلاع مثلث قائم\n| الضلع الأول | الضلع الثاني | الوتر |\n| 3 | 4 | 5 |\n| 6 | 8 | 10 |\n| 5 | 12 | 13 |\n[سؤال] مثلث قائم طولا ضلعيه ٩ سم و ١٢ سم، جد طول الوتر.\n[جواب] الوتر = √(٨١ + ١٤٤) = √٢٢٥ = **١٥ سم**\n[ملاحظة] الوتر هو أطول أضلاع المثلث القائم ويقابل الزاوية القائمة ∟')]})],
+ ['🔤','الإنكليزي',()=>({lang:'en',title:'English Booklet',subject:'English Language',grade:'Grade 6 Preparatory',teacher:'Mr. ...',coverColor:'#e11d48',coverTpl:'card',frame:'thin',style:'modern',headFont:'Montserrat',bodyFont:'Poppins',extra:'First Edition 2026 — Al-Kawthar Press',
+  back:{on:false,tpl:'card',bg:null,text:true,color:'',note:'Best wishes for success'},
+  topics:[SMT('Present Perfect Tense','#e11d48','# Form\n[Rule] Subject + **have / has** + past participle (V3)\n- I **have finished** my homework.\n- She **has visited** Baghdad twice.\n[Note] We use **has** with he, she and it.\n## Time Expressions\n1. already\n2. yet\n3. just\n4. since\n5. for\n[Example] They have lived here **since** 2015.','Unit One'),
+   SMT('Vocabulary: The Environment','#16a34a','# Key Words\n| Word | Meaning | Example |\n| pollution | تلوث | Air pollution is dangerous. |\n| recycle | يعيد التدوير | We recycle paper. |\n| protect | يحمي | We must protect the trees. |\n| waste | نفايات | Do not throw waste in rivers. |\n[Question] Complete: We must ______ our planet. (protect)\n[Answer] We must **protect** our planet.\n[Remember] Reduce • Reuse • Recycle')]})],
+ ['🕌','التربية الإسلامية',()=>({title:'ملزمة التربية الإسلامية',subject:'التربية الإسلامية',grade:'الأول المتوسط',coverColor:'#0f766e',coverTpl:'frame',frame:'ornament',style:'classic',headFont:'Amiri',bodyFont:'Noto Naskh Arabic',
+  topics:[SMT('أركان الإسلام','#0f766e','# أركان الإسلام خمسة\n[تعريف] الإسلام: الاستسلام لله تعالى بالتوحيد، والانقياد له بالطاعة.\n1. شهادة أن لا إله إلا الله وأن محمداً رسول الله\n2. إقامة الصلاة\n3. إيتاء الزكاة\n4. صوم رمضان\n5. حج البيت لمن استطاع إليه سبيلاً\n[تذكر] الصلوات المفروضة خمس في اليوم والليلة: الفجر، الظهر، العصر، المغرب، العشاء.\n[سؤال] عدّد أركان الإسلام.','العقيدة والعبادات'),
+   SMT('أركان الإيمان','#b45309','# أركان الإيمان ستة\n1. الإيمان بالله\n2. الإيمان بالملائكة\n3. الإيمان بالكتب السماوية\n4. الإيمان بالرسل\n5. الإيمان باليوم الآخر\n6. الإيمان بالقدر خيره وشره\n## الكتب السماوية\n| الكتاب | النبي الذي أُنزل عليه |\n| التوراة | موسى عليه السلام |\n| الزبور | داود عليه السلام |\n| الإنجيل | عيسى عليه السلام |\n| القرآن الكريم | محمد ﷺ |\n[مهم] القرآن الكريم آخر الكتب السماوية')]})],
+ ['✍️','القواعد',()=>({title:'ملزمة القواعد',subject:'اللغة العربية — القواعد',grade:'الخامس الإعدادي',coverColor:'#7c3aed',coverTpl:'minimal',frame:'double',style:'modern',headFont:'El Messiri',bodyFont:'Tajawal',
+  topics:[SMT('المبتدأ والخبر','#7c3aed','# الجملة الاسمية\n[تعريف] المبتدأ: اسم مرفوع يقع في أول الجملة الاسمية غالباً.\n[تعريف] الخبر: ما يُتمّ معنى المبتدأ، ويكون مرفوعاً.\n[مثال] العلمُ نورٌ\n- العلمُ: مبتدأ مرفوع وعلامة رفعه الضمة الظاهرة.\n- نورٌ: خبر مرفوع وعلامة رفعه تنوين الضم.\n## أنواع الخبر\n1. مفرد: الجوُّ ==جميلٌ==\n2. جملة: الطالبُ ==يدرسُ==\n3. شبه جملة: الكتابُ ==على المنضدة==','النحو'),
+   SMT('كان وأخواتها','#db2777','# عملها\n[ملاحظة] تدخل على الجملة الاسمية فترفع المبتدأ ويسمى **اسمها**، وتنصب الخبر ويسمى **خبرها**.\n[تذكر] أخواتها: أصبح، أضحى، أمسى، ظلّ، بات، صار، ليس، ما زال، ما برح، ما فتئ، ما انفكّ، ما دام.\n[مثال] كان الجوُّ جميلاً.\n[سؤال] أعرب: أصبحَ الطالبُ مجتهداً.\n[جواب] أصبحَ: فعل ماضٍ ناقص مبني على الفتح. الطالبُ: اسم أصبح مرفوع وعلامة رفعه الضمة. مجتهداً: خبر أصبح منصوب وعلامة نصبه تنوين الفتح.')]})],
+ ['⚡','الفيزياء',()=>({title:'ملزمة الفيزياء',subject:'الفيزياء',grade:'الرابع الإعدادي',coverColor:'#ea580c',coverTpl:'wave',frame:'gradient',style:'modern',headFont:'Kufam',bodyFont:'IBM Plex Sans Arabic',
+  topics:[SMT('قانون نيوتن الثاني','#ea580c','# القوة والتعجيل\n[قانون] F = m × a\n[تعريف] القوة: مؤثر يغيّر أو يحاول أن يغيّر الحالة الحركية للجسم.\n| الكمية | الرمز | الوحدة |\n| القوة | F | نيوتن N |\n| الكتلة | m | كيلوغرام kg |\n| التعجيل | a | m/s² |\n[مثال] جسم كتلته 4 kg يتحرك بتعجيل 3 m/s²، احسب القوة المؤثرة فيه.\n[الحل] F = m × a = 4 × 3 = **12 N**','الحركة'),
+   SMT('الطاقة الميكانيكية','#2563eb','# أنواع الطاقة\n[قانون] الطاقة الحركية: KE = ½ m v²\n[قانون] الطاقة الكامنة: PE = m g h\n[تذكر] التعجيل الأرضي g ≈ 9.8 m/s²\n[مثال] كرة كتلتها 2 kg وسرعتها 5 m/s، احسب طاقتها الحركية.\n[الحل] KE = ½ × 2 × 5² = **25 J**\n[مهم] وحدة قياس الطاقة هي الجول J\n[سؤال] ماذا يحدث للطاقة الحركية إذا تضاعفت السرعة؟\n[جواب] تصبح أربعة أضعاف لأن KE ∝ v²')]})],
+ ['🧪','الكيمياء',()=>({title:'ملزمة الكيمياء',subject:'الكيمياء',grade:'الثاني المتوسط',coverColor:'#0891b2',coverTpl:'bold',frame:'bubbles',style:'fun',headFont:'Baloo Bhaijaan 2',bodyFont:'Almarai',
+  topics:[SMT('الجدول الدوري','#0891b2','# العدد الذري\n[تعريف] العدد الذري: عدد البروتونات الموجودة في نواة الذرة.\n| العنصر | الرمز | العدد الذري |\n| الهيدروجين | H | 1 |\n| الكاربون | C | 6 |\n| الأوكسجين | O | 8 |\n| الصوديوم | Na | 11 |\n| الكلور | Cl | 17 |\n[ملاحظة] تُرتّب العناصر في الجدول الدوري حسب تزايد أعدادها الذرية.','المادة وتركيبها'),
+   SMT('المعادلات الكيميائية','#16a34a','# موازنة المعادلات\n[قانون] 2H₂ + O₂ → 2H₂O\n[ملاحظة] المعادلة الموزونة: عدد ذرات كل عنصر متساوٍ في طرفي المعادلة.\n[مثال] NaOH + HCl → NaCl + H₂O\n- المتفاعلات: هيدروكسيد الصوديوم وحامض الهيدروكلوريك\n- النواتج: كلوريد الصوديوم (ملح الطعام) والماء\n[سؤال] وازن المعادلة: N₂ + H₂ → NH₃\n[جواب] N₂ + 3H₂ → **2NH₃**')]})],
+ ['🧬','الأحياء',()=>({})]];
+function sampleData(i){const d=Object.assign(sample(),SAMPLES[i][2]());d.demo=1;d.showToc=false;d.chapterPage=false;d.newPage=true;return d}
+function openSamples(){$('#obM').classList.add('hidden');
+ $('#obBody').innerHTML=`<div class="sheet-h"><b>📚 نماذج جاهزة</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
+ <div class="muted">ملازم مصممة لكل مادة — 3 صفحات للتجربة، ما تنحسب عليك. أو اختار <b>صمّم على شكلها</b> وتطلعلك ملزمة جديدة بنفس التصميم</div>
+ <div class="smg" id="smG"></div>
+ <button class="btn" style="width:100%;margin-top:12px" onclick="$('#obM').classList.add('hidden');openCoverSheet('front')">🎨 تصاميم الغلاف</button>`;
+ const G=$('#smG'),keep=S;
+ SAMPLES.forEach((x,i)=>{const c=document.createElement('div');c.className='smc';c.innerHTML=`<div class="th4"></div><b>${x[0]} ${x[1]}</b><div class="sa"><button class="btn sm primary" data-a="o">👁️ افتح النموذج</button><button class="btn sm" data-a="u">🎨 صمّم على شكلها</button></div>`;
+  try{S=sampleData(i);const pg=coverPage('front',null,true);pg.dir=S.lang==='en'?'ltr':'rtl';pg.style.setProperty('--hf',fontCss(S.headFont));c.firstChild.appendChild(pg)}catch(e){console.warn(e)}finally{S=keep}
+  c.querySelector('.th4').onclick=()=>smOpen(i);c.querySelector('[data-a=o]').onclick=()=>smOpen(i);c.querySelector('[data-a=u]').onclick=()=>smUse(i);G.appendChild(c)});
+ requestAnimationFrame(()=>G.querySelectorAll('.th4').forEach(t=>{if(t.firstChild)t.firstChild.style.transform=`scale(${t.clientWidth/794})`}));
+ $('#obM').classList.remove('hidden')}
+async function smOpen(i){$('#obM').classList.add('hidden');clearTimeout(saveT);saveNow();S=sampleData(i);S.pid=uid();saveNow();bindInfo();renderTopics();renderProjects();showTab('vPreview');await renderPages();showPage(0);liveSoon(300);toast('📘 نموذج '+SAMPLES[i][1]+' — 3 صفحات للتجربة',3500)}
+async function smUse(i){$('#obM').classList.add('hidden');clearTimeout(saveT);saveNow();const d=sampleData(i),b=blankProject();
+ ['lang','coverColor','coverTpl','frame','frameColor','style','headFont','bodyFont','fontSize','subject','grade'].forEach(k=>{if(d[k]!=null)b[k]=d[k]});
+ b.title='ملزمة '+(SAMPLES[i][1]==='الإنكليزي'?'English':SAMPLES[i][1]);if(d.lang==='en'){b.title='English Booklet'}b.topics[0].color=d.topics[0].color;
+ S=b;saveNow();bindInfo();renderTopics();renderProjects();showTab('vPreview');await cvGo('front');openCoverSheet('front');toast('🎨 ملزمة جديدة بتصميم '+SAMPLES[i][1]+' — اكتب معلومات الغلاف',3500)}
+/* ================= الجدول السهل ================= */
+let TBE=null;
+function newTableSheet(){if(typeof closeMath==='function')closeMath();let R=3,C=3;
+ $('#obBody').innerHTML=`<div class="sheet-h"><b>▦ جدول جديد</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
+ <div class="muted" style="text-align:center">اضغط على المربعات واختار عدد الصفوف والأعمدة</div>
+ <div class="tszl" id="tszL">3 صفوف × 3 أعمدة</div><div class="tsz" id="tszG">${Array.from({length:48},(_,k)=>`<i data-r="${Math.floor(k/6)+1}" data-c="${k%6+1}"></i>`).join('')}</div>
+ <div class="muted" style="text-align:center">💡 تگدر تضيف صفوف وأعمدة بعدين بسهولة</div>
+ <button class="btn primary" style="width:100%;margin-top:10px;padding:14px" id="tszGo">▦ إنشاء الجدول</button>`;
+ const paint=()=>{$('#tszG').querySelectorAll('i').forEach(x=>x.classList.toggle('on',+x.dataset.r<=R&&+x.dataset.c<=C));$('#tszL').textContent=`${R} صفوف × ${C} أعمدة`};
+ $('#tszG').querySelectorAll('i').forEach(x=>x.onclick=()=>{R=+x.dataset.r;C=+x.dataset.c;paint()});paint();
+ $('#tszGo').onclick=async()=>{$('#obM').classList.add('hidden');if(!document.body.classList.contains('fs'))enterFS();
+  const a=pageAnchor();const b=S.topics[a.ti].blocks[a.bi];const L=b.text===''?[]:b.text.split('\n');const at=a.ln<0?0:a.ln+1;
+  const rows=Array.from({length:R},(_,r)=>Array.from({length:C},(_,c)=>r===0?(isEN()?'Title '+(c+1):'عنوان '+(c+1)):''));
+  L.splice(at,0,...rows.map(tbLine));b.text=L.join('\n');save();await renderPages();openTable(a.ti,a.bi,at,at+R-1,true)};
+ $('#obM').classList.remove('hidden')}
+const tbLine=r=>'| '+r.map(c=>(c||' ').replace(/\|/g,'／').replace(/\n/g,' ')).join(' | ')+' |';
+function openTable(ti,bi,ln,ln2,isNew){const b=S.topics[ti].blocks[bi];const L=b.text.split('\n').slice(ln,ln2+1);
+ const rows=L.map(l=>l.trim().replace(/^\||\|$/g,'').split('|').map(c=>c.trim())).filter(r=>!r.every(c=>/^:?-{2,}:?$/.test(c)));
+ const C=Math.max(...rows.map(r=>r.length));rows.forEach(r=>{while(r.length<C)r.push('')});
+ TBE={ti,bi,ln,ln2,rows,color:S.topics[ti].color};ptOpen('▦',isNew?'جدول جديد':'تعديل الجدول','اضغط على أي خانة واكتب • أول صف هو العنوان');tbRender(isNew)}
+function tbRender(focusFirst){const R=TBE.rows,C=R[0].length;
+ $('#ptB').innerHTML=`<div class="ted" style="--tc:${TBE.color}"><table><tr class="cx"><td></td>${R[0].map((_,c)=>`<td>${C>1?`<button data-dc="${c}" title="حذف العمود">✕</button>`:''}</td>`).join('')}</tr>
+  ${R.map((r,ri)=>`<tr class="${ri===0?'hd':''}"><td class="rx">${R.length>1?`<button data-dr="${ri}" title="حذف الصف">✕</button>`:''}</td>${r.map((c,ci)=>`<td><input data-r="${ri}" data-c="${ci}" value="${esc(c)}" placeholder="${ri===0?'عنوان':'…'}"></td>`).join('')}</tr>`).join('')}</table></div>
+  <div class="tbar"><button class="btn primary" id="tbAR">➕ صف</button><button class="btn primary" id="tbAC">➕ عمود</button></div>
+  <div class="tbar"><button class="btn" id="tbM">∑√ رموز رياضيات</button></div>
+  <div class="muted" style="text-align:center;margin-top:8px">${R.length} صف × ${C} عمود • ✕ فوق العمود أو جنب الصف للحذف</div>`;
+ $('#ptB').querySelectorAll('input').forEach(x=>{x.oninput=()=>{TBE.rows[+x.dataset.r][+x.dataset.c]=x.value};x.onfocus=()=>{TBE.last=x}});
+ $('#ptB').querySelectorAll('[data-dc]').forEach(x=>x.onclick=()=>{const c=+x.dataset.dc;TBE.rows.forEach(r=>r.splice(c,1));tbRender()});
+ $('#ptB').querySelectorAll('[data-dr]').forEach(x=>x.onclick=()=>{TBE.rows.splice(+x.dataset.dr,1);tbRender()});
+ $('#tbAR').onclick=()=>{TBE.rows.push(Array(TBE.rows[0].length).fill(''));tbRender();const ins=$('#ptB').querySelectorAll(`input[data-r="${TBE.rows.length-1}"]`);if(ins[0])ins[0].focus()};
+ $('#tbAC').onclick=()=>{TBE.rows.forEach((r,i)=>r.push(i===0?(isEN()?'Title':'عنوان'):''));tbRender();const t=$('#ptB').querySelector('.ted');if(t)t.scrollLeft=-99999};
+ $('#tbM').onclick=()=>{const x=TBE.last||$('#ptB').querySelector('input[data-r="1"]')||$('#ptB').querySelector('input');if(x)x.focus();openMath(x)};
+ $('#ptF').innerHTML=`<button class="btn red" id="tbDel" style="flex:0 0 auto;padding:14px 16px">🗑</button><button class="btn green" id="tbOk">✅ حفظ الجدول</button>`;
+ $('#tbOk').onclick=async()=>{closeMath();const b=S.topics[TBE.ti].blocks[TBE.bi];const L=b.text.split('\n');L.splice(TBE.ln,TBE.ln2-TBE.ln+1,...TBE.rows.map(tbLine));b.text=L.join('\n');save();$('#ptool').remove();await renderPages();toast('✅ تم حفظ الجدول')};
+ $('#tbDel').onclick=async()=>{if(!await ask('هل تريد حذف الجدول؟',{danger:true}))return;closeMath();const b=S.topics[TBE.ti].blocks[TBE.bi];const L=b.text.split('\n');L.splice(TBE.ln,TBE.ln2-TBE.ln+1);b.text=L.join('\n');save();$('#ptool').remove();await renderPages();toast('🗑️ تم حذف الجدول')};
+ if(focusFirst){const x=$('#ptB').querySelector('input');if(x){x.focus();x.select()}}}
+/* ================= رموز الرياضيات ================= */
+const MATHS=[
+ ['عمليات','+ − × ÷ ± ∓ = ≠ ≈ ≡ ≅ ∝ · ∗ % ‰ ( ) [ ] { } | ‖ / ⁄'],
+ ['مقارنة','< > ≤ ≥ ≪ ≫ ≮ ≯ ≰ ≱ ≃ ∼'],
+ ['أسس وجذور','√ ∛ ∜ ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁺ ⁻ ⁼ ⁽ ⁾ ⁿ ˣ ʸ ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ₊ ₋ ₌ ₍ ₎ ₓ','💡 للكسر: رقم صغير فوق + ⁄ + رقم صغير تحت، مثل ³⁄₄'],
+ ['كسور','½ ⅓ ⅔ ¼ ¾ ⅕ ⅖ ⅗ ⅘ ⅙ ⅚ ⅐ ⅛ ⅜ ⅝ ⅞ ⅑ ⅒ ⁄'],
+ ['هندسة','△ ▲ ◁ ▷ ○ ● ◯ □ ■ ▭ ▯ ▱ ◇ ◆ ⬠ ⬡ ∠ ∡ ∢ ∟ ⊥ ∥ ∦ ≅ ∼ ° ′ ″ ⌒ ⊙ π ⟂'],
+ ['مجموعات','∈ ∉ ∋ ⊂ ⊃ ⊆ ⊇ ⊄ ⊊ ∪ ∩ ∅ ∖ ℕ ℤ ℚ ℝ ℂ ∀ ∃ ∄ { } |'],
+ ['أسهم ومنطق','∴ ∵ ⇒ ⇐ ⇔ → ← ↔ ↑ ↓ ↗ ↘ ¬ ∧ ∨ ⊕ ⊗ ⊢'],
+ ['تفاضل وتكامل','∑ ∏ ∫ ∬ ∭ ∮ ∂ ∇ Δ ∆ ∞ ′ ″ lim dx dy f(x) f′(x) log ln e sin cos tan sec csc cot'],
+ ['يونانية','α β γ δ ε ζ η θ ι κ λ μ ν ξ π ρ σ τ υ φ χ ψ ω Γ Δ Θ Λ Ξ Π Σ Φ Ψ Ω'],
+ ['عربي','س ص ع ل م ن ك هـ جا جتا ظا ظتا قا قتا لو لط نها مجـ ∑ س² ص² ⁻¹ π ط','💡 رموز المناهج العراقية: جا=sin، جتا=cos، ظا=tan']];
+let MTAB=0,MTGT=null;
+function openMath(target){MTGT=target||null;
+ if(!MTGT&&!(typeof ACT!=='undefined'&&ACT)){if(!document.body.classList.contains('fs'))enterFS();insertTyped('p');setTimeout(()=>openMath(),450);return}
+ const P=$('#mathP');P.innerHTML=`<div class="mh"><b>∑√ رموز رياضيات — اضغط الرمز ويندرج بمكان الكتابة</b><button id="mpX">✓ تم</button></div><div class="mt">${MATHS.map((m,i)=>`<button data-t="${i}" class="${i===MTAB?'on':''}">${m[0]}</button>`).join('')}</div><div class="mg" id="mpG"></div>`;
+ P.classList.add('on');P.classList.toggle('bt',!!(MTGT&&MTGT.closest&&MTGT.closest('#ptool')));
+ const fill=()=>{const m=MATHS[MTAB];$('#mpG').innerHTML=m[1].split(' ').filter(Boolean).map(x=>`<button class="${x.length>2||/[ء-ي]/.test(x)?'w':''}" data-s="${esc(x)}">${esc(x)}</button>`).join('')+(m[2]?`<div class="tip">${m[2]}</div>`:'');
+  $('#mpG').querySelectorAll('[data-s]').forEach(b=>{b.onpointerdown=e=>e.preventDefault();b.onmousedown=e=>e.preventDefault();b.onclick=()=>mathIns(b.dataset.s)})};
+ P.querySelectorAll('[data-t]').forEach(b=>{b.onpointerdown=e=>e.preventDefault();b.onmousedown=e=>e.preventDefault();b.onclick=()=>{MTAB=+b.dataset.t;P.querySelectorAll('[data-t]').forEach(x=>x.classList.toggle('on',x===b));fill()}});
+ $('#mpX').onpointerdown=e=>e.preventDefault();$('#mpX').onclick=()=>{closeMath();if(MTGT)MTGT.blur()};fill()}
+function closeMath(){const P=$('#mathP');if(P)P.classList.remove('on');MTGT=null}
+function mathIns(sym){const t=MTGT||(typeof ACT!=='undefined'&&ACT);if(!t){toast('اضغط على السطر أولاً');return}
+ if(t.tagName==='INPUT'||t.tagName==='TEXTAREA'){const a=t.selectionStart??t.value.length,z=t.selectionEnd??a;t.value=t.value.slice(0,a)+sym+t.value.slice(z);t.selectionStart=t.selectionEnd=a+sym.length;t.dispatchEvent(new Event('input',{bubbles:true}));t.focus();return}
+ if(document.activeElement!==t){t.focus()}document.execCommand('insertText',false,sym)}
+/* ================= الأشكال الهندسية ================= */
+const SHP=(()=>{const st='stroke="#1f2937" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"',fl='fill="rgba(37,99,235,.10)"',ds='stroke-dasharray="8 7"';
+ const poly=(n,r,cx,cy,rot)=>Array.from({length:n},(_,i)=>{const a=rot+i*2*Math.PI/n;return(cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1)}).join(' ');
+ return[
+ ['مثلث',200,190,`<polygon points="100,18 186,172 14,172" ${st} ${fl}/>`],
+ ['مثلث قائم',200,190,`<polygon points="30,18 30,172 186,172" ${st} ${fl}/><polyline points="30,150 52,150 52,172" fill="none" ${st}/>`],
+ ['مثلث متساوي الساقين',200,190,`<polygon points="100,14 166,174 34,174" ${st} ${fl}/><path d="M60 94 l14 -6 M140 94 l-14 -6" ${st}/>`],
+ ['دائرة',200,200,`<circle cx="100" cy="100" r="84" ${st} ${fl}/><circle cx="100" cy="100" r="4" fill="#1f2937"/><line x1="100" y1="100" x2="184" y2="100" ${st} ${ds}/>`],
+ ['مربع',200,200,`<rect x="22" y="22" width="156" height="156" ${st} ${fl}/><path d="M22 44h22v-22M156 22v22h22" fill="none" ${st}/>`],
+ ['مستطيل',260,170,`<rect x="16" y="20" width="228" height="130" ${st} ${fl}/>`],
+ ['متوازي أضلاع',260,170,`<polygon points="70,22 244,22 190,148 16,148" ${st} ${fl}/>`],
+ ['شبه منحرف',260,170,`<polygon points="70,24 190,24 244,148 16,148" ${st} ${fl}/>`],
+ ['معين',200,200,`<polygon points="100,12 188,100 100,188 12,100" ${st} ${fl}/><line x1="100" y1="12" x2="100" y2="188" ${st} ${ds}/><line x1="12" y1="100" x2="188" y2="100" ${st} ${ds}/>`],
+ ['خماسي',200,200,`<polygon points="${poly(5,88,100,106,-Math.PI/2)}" ${st} ${fl}/>`],
+ ['سداسي',200,200,`<polygon points="${poly(6,88,100,100,0)}" ${st} ${fl}/>`],
+ ['زاوية',220,170,`<line x1="20" y1="150" x2="206" y2="150" ${st}/><line x1="20" y1="150" x2="170" y2="24" ${st}/><path d="M80 150 A60 60 0 0 0 66 111" fill="none" ${st}/>`],
+ ['مكعب',220,220,`<rect x="20" y="70" width="130" height="130" ${st} ${fl}/><polygon points="20,70 70,20 200,20 150,70" ${st} fill="rgba(37,99,235,.18)"/><polygon points="150,70 200,20 200,150 150,200" ${st} fill="rgba(37,99,235,.06)"/><path d="M70 20 V150 H200 M70 150 L20 200" fill="none" ${st} ${ds}/>`],
+ ['متوازي مستطيلات',260,200,`<rect x="16" y="66" width="180" height="120" ${st} ${fl}/><polygon points="16,66 64,20 244,20 196,66" ${st} fill="rgba(37,99,235,.18)"/><polygon points="196,66 244,20 244,140 196,186" ${st} fill="rgba(37,99,235,.06)"/>`],
+ ['أسطوانة',200,230,`<path d="M24 40 V190 A76 24 0 0 0 176 190 V40" ${st} ${fl}/><ellipse cx="100" cy="40" rx="76" ry="24" ${st} fill="rgba(37,99,235,.2)"/><path d="M24 190 A76 24 0 0 1 176 190" fill="none" ${st} ${ds}/>`],
+ ['مخروط',200,230,`<path d="M100 14 L176 196 A76 22 0 0 1 24 196 Z" ${st} ${fl}/><path d="M24 196 A76 22 0 0 1 176 196" fill="none" ${st} ${ds}/><line x1="100" y1="14" x2="100" y2="196" ${st} ${ds}/>`],
+ ['كرة',200,200,`<circle cx="100" cy="100" r="86" ${st} ${fl}/><path d="M14 100 A86 26 0 0 0 186 100" fill="none" ${st}/><path d="M14 100 A86 26 0 0 1 186 100" fill="none" ${st} ${ds}/>`],
+ ['هرم',220,220,`<polygon points="110,14 30,170 150,200" ${st} fill="rgba(37,99,235,.14)"/><polygon points="110,14 150,200 200,160" ${st} fill="rgba(37,99,235,.06)"/><path d="M30 170 L80 140 L200 160 M80 140 L110 14" fill="none" ${st} ${ds}/>`],
+ ['محاور إحداثيات',240,240,`<path d="M20 120 H222 M120 220 V18" ${st}/><path d="M222 120 l-12 -7 v14z M120 18 l-7 12 h14z" fill="#1f2937"/>${[-4,-3,-2,-1,1,2,3,4].map(k=>`<line x1="${120+k*24}" y1="114" x2="${120+k*24}" y2="126" ${st}/><line x1="114" y1="${120-k*24}" x2="126" y2="${120-k*24}" ${st}/>`).join('')}<text x="226" y="140" font-size="18" font-family="serif" font-style="italic">x</text><text x="128" y="24" font-size="18" font-family="serif" font-style="italic">y</text>`],
+ ['خط الأعداد',320,90,`<path d="M10 40 H310" ${st}/><path d="M310 40 l-12 -7 v14z M10 40 l12 -7 v14z" fill="#1f2937"/>${[-5,-4,-3,-2,-1,0,1,2,3,4,5].map(k=>`<line x1="${160+k*27}" y1="32" x2="${160+k*27}" y2="48" ${st}/><text x="${160+k*27}" y="74" font-size="16" text-anchor="middle" font-family="Arial">${k}</text>`).join('')}`],
+ ['قطعة مستقيمة',260,60,`<line x1="20" y1="30" x2="240" y2="30" ${st}/><circle cx="20" cy="30" r="6" fill="#1f2937"/><circle cx="240" cy="30" r="6" fill="#1f2937"/>`],
+ ['مستقيمان متوازيان',260,120,`<line x1="10" y1="34" x2="250" y2="34" ${st}/><line x1="10" y1="90" x2="250" y2="90" ${st}/><path d="M120 28 l8 6 -8 6 M120 84 l8 6 -8 6" fill="none" ${st}/>`],
+ ['مستقيمان متعامدان',200,200,`<line x1="100" y1="10" x2="100" y2="190" ${st}/><line x1="10" y1="100" x2="190" y2="100" ${st}/><polyline points="100,80 120,80 120,100" fill="none" ${st}/>`],
+ ['قوس ودائرة مركزية',200,200,`<circle cx="100" cy="100" r="84" fill="none" ${st}/><line x1="100" y1="100" x2="184" y2="100" ${st}/><line x1="100" y1="100" x2="142" y2="27" ${st}/><path d="M184 100 A84 84 0 0 0 142 27" fill="none" stroke="#e11d48" stroke-width="7"/><circle cx="100" cy="100" r="4" fill="#1f2937"/>`]]})();
+const shpSVG=(w,h,body)=>`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${body}</svg>`;
+function openShapes(){if(typeof closeMath==='function')closeMath();if(typeof ACT!=='undefined'&&ACT){commitEl(ACT);ACT.blur();endEditing()}const pi=CURP;
+ $('#obBody').innerHTML=`<div class="sheet-h"><b>📐 أشكال هندسية</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
+ <div class="muted">ينضاف الشكل على الورقة — تحرّكه وتكبّره بإصبعك، وتكتب عليه أسماء الرؤوس والأطوال من 🔤 كلمات</div>
+ <div class="shg2">${SHP.map((x,i)=>`<button data-i="${i}"><img src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(shpSVG(x[1],x[2],x[3]))}">${x[0]}</button>`).join('')}</div>`;
+ $('#obBody').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{const x=SHP[+b.dataset.i];$('#obM').classList.add('hidden');
+  const im=new Image();im.onload=()=>{const K=4,c=document.createElement('canvas');c.width=x[1]*K;c.height=x[2]*K;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+   const w=Math.min(300,x[1]*1.4);addFloat(pi,{src:c.toDataURL('image/png'),w,h:w*x[2]/x[1]},{r:0});toast('📐 تمت إضافة '+x[0]+' — اضغط 🔤 كلمات لكتابة الرموز عليه',4000)};
+  im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(shpSVG(x[1],x[2],x[3]))});
+ $('#obM').classList.remove('hidden')}
 /* ================= أدوات PDF: دمج + ترقيم ================= */
 async function pdfLibW(){if(window.PDFLib)return window.PDFLib;const U=['https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js','https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js'];
  for(const u of U){try{await new Promise((ok,no)=>{const sc=document.createElement('script');sc.src=u;sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)});if(window.PDFLib)return window.PDFLib}catch(e){}}throw new Error('تعذّر تحميل أداة PDF — تأكد من الإنترنت')}
@@ -2479,8 +2665,8 @@ function flFind(id){for(const k in (S.floats||{})){const L=S.floats[k];const j=L
 function addTextFloat(pi){if(pi==null)pi=CURP;ask('🔤 كتابة حرة على الورقة',{icon:'✍️',msg:'تحرّكها بإصبعك لأي مكان',input:'',ph:'اكتب الكلمات',yes:'إضافة',no:'إلغاء'}).then(t=>{if(!t||!t.trim())return;
  const f={id:uid(),src:'',iw:500,ih:140,x:147,y:480,w:500,h:140,z:1,ox:0,oy:0,r:0,tx:[]};f.tx.push({id:uid(),t:t.trim(),x:250,y:70,s:38,c:'#111827',bg:'',sh:0});
  flList(pi).push(f);save();FSEL=f.id;FTX=f.tx[0].id;renderFloats();showPage(pi);flBarShow();toast('✋ حرّك الكتابة بإصبعك — اضغط عليها حتى تغيّر الحجم واللون',4000)})}
-function addFloat(pi,img){if(pi==null)pi=CURP;const L=flList(pi);let w=Math.min(520,img.w||520),h=w*(img.h||1)/(img.w||1);if(h>640){h=640;w=h*(img.w||1)/(img.h||1)}
- const f={id:uid(),src:img.src,iw:img.w||w,ih:img.h||h,x:Math.round((794-w)/2),y:Math.round((1123-h)/2),w:Math.round(w),h:Math.round(h),z:1,ox:0,oy:0,r:14,tx:[]};
+function addFloat(pi,img,opt){if(pi==null)pi=CURP;const L=flList(pi);let w=Math.min(520,img.w||520),h=w*(img.h||1)/(img.w||1);if(h>640){h=640;w=h*(img.w||1)/(img.h||1)}
+ const f=Object.assign({id:uid(),src:img.src,iw:img.w||w,ih:img.h||h,x:Math.round((794-w)/2),y:Math.round((1123-h)/2),w:Math.round(w),h:Math.round(h),z:1,ox:0,oy:0,r:14,tx:[]},opt||{});
  L.push(f);save();FSEL=f.id;renderFloats();showPage(pi);flBarShow();toast('✋ حرّك الصورة بإصبعك — والزاوية الزرقاء للتكبير والتصغير',4000)}
 function flGeo(f){if(!f.src)return{W:f.w,H:f.h,L:0,T:0};const k=Math.max(f.w/f.iw,f.h/f.ih)*(f.z||1),W=f.iw*k,H=f.ih*k,mx=Math.max(0,(W-f.w)/2),my=Math.max(0,(H-f.h)/2);
  f.ox=Math.max(-mx,Math.min(mx,f.ox||0));f.oy=Math.max(-my,Math.min(my,f.oy||0));return{W,H,L:(f.w-W)/2+f.ox,T:(f.h-H)/2+f.oy}}
