@@ -619,6 +619,43 @@ body:not(.fs) #flBar{top:8px}
 .bwm{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .bwm span{font-weight:900;white-space:nowrap;font-family:var(--hf,Cairo),Cairo,sans-serif;line-height:1}
 .bwm.tile{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr);place-items:center}
+
+.page.bgpg{background-size:100% 100%!important;background-repeat:no-repeat!important;background-position:center!important}
+.page.bgpg>*:not(.pb):not(.flt):not(.bwm):not(.wm){visibility:hidden!important}
+.page.bgpg [data-ed="th"],.page.bgpg [data-ed="ch"],.page.bgpg .chb,.page.bgpg .pbreak{visibility:hidden}
+.flt.ftxt{background:transparent}
+.flt.ftxt:not(.sel){outline:1px dashed rgba(37,99,235,.35)}
+body.exporting .flt.ftxt{outline:0!important}
+.pimp{border:2px solid #e2e8f0;border-radius:16px;padding:14px;margin-top:10px;cursor:pointer;display:block;background:#f8fafc}
+.pimp b{display:block;font-size:15.5px;color:#0b1f45}.pimp span{display:block;font-size:12.5px;color:#64748b;font-weight:700;margin-top:4px;line-height:1.7}
+
+.bnav button{font-size:10.5px!important}.bnav button i{font-size:19px!important}
+#ptool{position:fixed;inset:0;z-index:96;background:#eef2f9;display:flex;flex-direction:column;direction:rtl}
+#ptool .pth{background:linear-gradient(120deg,#071634,#0b1f45 55%,#1d4ed8);color:#fff;padding:12px 12px 14px;display:flex;align-items:center;gap:10px}
+#ptool .pth b{flex:1;font-size:17px}#ptool .pth small{display:block;font-size:11.5px;color:#c8d6f5;font-weight:700}
+#ptool .pth button{border:0;background:rgba(255,255,255,.15);color:#fff;border-radius:12px;width:38px;height:38px;font-size:18px;cursor:pointer}
+#ptool .ptb{flex:1;overflow:auto;padding:12px 12px 110px}
+#ptool .ptf{position:fixed;left:0;right:0;bottom:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#fff;box-shadow:0 -6px 20px rgba(16,32,72,.12);display:flex;gap:8px}
+#ptool .ptf .btn{flex:1;padding:14px;font-size:15.5px}
+.pdrop{display:block;border:2.5px dashed #93c5fd;background:#eff6ff;border-radius:20px;padding:22px 12px;text-align:center;cursor:pointer;color:#1e3a8a;font-weight:900}
+.pdrop i{display:block;font-style:normal;font-size:40px;margin-bottom:6px}.pdrop span{display:block;font-size:12.5px;color:#64748b;margin-top:4px;font-weight:700}
+.pfi{display:flex;gap:10px;align-items:center;background:#fff;border:1.5px solid #e1e7f2;border-radius:16px;padding:8px;margin-top:8px;box-shadow:0 3px 10px rgba(16,32,72,.05)}
+.pfi .pn2{flex:0 0 28px;height:28px;border-radius:50%;background:#1d4ed8;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:13px}
+.pfi canvas,.pfi .ph2{flex:0 0 46px;width:46px;height:64px;border-radius:6px;border:1px solid #e2e8f0;background:#f8fafc;object-fit:cover}
+.pfi .inf2{flex:1;min-width:0}.pfi .inf2 b{display:block;font-size:13.5px;color:#0b1f45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pfi .inf2 small{color:#64748b;font-weight:700;font-size:11.5px}
+.pfi .mv{display:flex;flex-direction:column;gap:3px}.pfi .mv button{border:0;background:#eef2f7;border-radius:8px;width:30px;height:24px;font-size:12px;cursor:pointer}
+.pfi .rm{border:0;background:#fee2e2;color:#be123c;border-radius:10px;width:32px;height:32px;cursor:pointer}
+.optg{background:#fff;border:1.5px solid #e1e7f2;border-radius:18px;padding:12px;margin-top:10px}
+.optg>b{display:block;color:#0b1f45;margin-bottom:8px;font-size:14px}
+.ch3{display:flex;flex-wrap:wrap;gap:6px}.ch3 button{border:1.5px solid #e2e8f0;background:#f8fafc;border-radius:12px;padding:8px 11px;font:800 13px Cairo,sans-serif;color:#0b1f45;cursor:pointer}
+.ch3 button.on{border-color:#2563eb;background:#2563eb;color:#fff}
+.posg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:210px;margin:0 auto;aspect-ratio:3/4;padding:8px;border:2px solid #cbd5e1;border-radius:10px;background:#fff}
+.posg button{border:1.5px dashed #cbd5e1;background:#f8fafc;border-radius:8px;cursor:pointer;font-size:16px}
+.posg button.on{background:#2563eb;border:0;color:#fff}.posg button.mid{visibility:hidden}
+.cl3{display:flex;flex-wrap:wrap;gap:7px}.cl3 button{width:34px;height:34px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1.5px #cbd5e1;cursor:pointer}
+.cl3 button.on{box-shadow:0 0 0 3px #2563eb}
+.npv{position:relative;margin:0 auto;width:min(300px,80vw);box-shadow:0 10px 30px rgba(0,0,0,.18);border-radius:4px;overflow:hidden;background:#fff}
+.npv canvas{display:block;width:100%}.npv .nm{position:absolute;display:flex;align-items:center;justify-content:center;font-weight:900;line-height:1;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -748,7 +785,7 @@ body:not(.fs) #flBar{top:8px}
  <div id="fsBar" class="ui">
   <button onclick="addHere()"><i>✍️</i>سطر</button><button onclick="openElements()"><i>🧩</i>عناصر</button><button onclick="toolImage()"><i>🖼️</i>صورة</button><button onclick="newPageHere()"><i>📄</i>صفحة</button>
   <button onclick="newTopicHere()"><i>📘</i>موضوع</button><button onclick="newChapterHere()"><i>📗</i>فصل</button><button onclick="openColors()"><i>🎨</i>ألوان</button><button onclick="openFrames()"><i>🔲</i>إطار</button>
-  <button onclick="openCoverSheet('front')"><i>📕</i>الغلاف</button><button onclick="openFonts()"><i>🔤</i>الخطوط</button><button onclick="openWM()"><i>💧</i>علامة مائية</button><button onclick="undo()"><i>↶</i>تراجع</button><button onclick="redo()"><i>↷</i>إعادة</button>
+  <button onclick="openCoverSheet('front')"><i>📕</i>الغلاف</button><button onclick="addTextFloat()"><i>🔤</i>كتابة حرة</button><button onclick="openFonts()"><i>🔠</i>الخطوط</button><button onclick="openWM()"><i>💧</i>علامة مائية</button><button onclick="undo()"><i>↶</i>تراجع</button><button onclick="redo()"><i>↷</i>إعادة</button>
   <button onclick="openAllTools()"><i>🧰</i>الكل</button><button class="pdfb" onclick="exportPDF()"><i>📕</i>PDF</button>
  </div>
  <div class="ptools ui">
@@ -816,7 +853,7 @@ body:not(.fs) #flBar{top:8px}
 <div class="modal hidden ui" id="popM" style="align-items:center"><div class="sheet" style="border-radius:22px;max-width:380px;margin:16px" id="popBody"></div></div>
 <div class="sbar ui hidden" id="sbar"></div>
 <div id="flBar" class="ui"></div>
-<div class="bnav ui" id="bnav"><button data-n="help" onclick="openHelp()"><i>❓</i>مساعدة</button><button data-n="home" class="on" onclick="goHome()"><i>🏠</i>الرئيسية</button><button data-n="files" onclick="openMine()"><i>📁</i>ملفاتي</button><button data-n="tpl" onclick="openCoverSheet('front')"><i>👑</i>القوالب</button></div>
+<div class="bnav ui" id="bnav"><button data-n="help" onclick="openHelp()"><i>❓</i>مساعدة</button><button data-n="merge" onclick="openMerge()"><i>🗂️</i>دمج PDF</button><button data-n="num" onclick="openNumber()"><i>🔢</i>ترقيم PDF</button><button data-n="home" class="on" onclick="goHome()"><i>🏠</i>الرئيسية</button><button data-n="files" onclick="openMine()"><i>📁</i>ملفاتي</button><button data-n="tpl" onclick="openCoverSheet('front')"><i>👑</i>القوالب</button></div>
 
 <!-- IMAGE PICKER -->
 <div class="modal hidden ui" id="picker">
@@ -1657,6 +1694,7 @@ async function openMine(){
  const items=[];for(const p of PJ){const raw=await DB.get('p:'+p.id);let d=null;try{d=raw&&JSON.parse(raw)}catch(e){}items.push({p,d,raw})}
  $('#obBody').innerHTML=`<div class="sheet-h"><b>📁 ملازمي (${items.length})</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
   <button class="btn primary mine-new" id="mnNew">➕ إنشاء ملزمة جديدة</button>
+  <button class="btn" style="width:100%;margin:-4px 0 12px;padding:12px" onclick="openPdfImport()">📥 رفع ملزمة PDF وتعديلها</button>
   <div class="muted" style="margin-bottom:8px">اضغط "تعديل" لفتح أي ملزمة والتعديل عليها وحفظها PDF مرة أخرى. الملزمة المحفوظة PDF يبقى اسم الأستاذ ورقمه مقفلين عليها.</div>
   <div id="mnList"></div>
   <label class="btn" style="width:100%;margin-top:6px">📂 فتح نسخة احتياطية (ملف مشروع)<input type="file" accept=".json,application/json" hidden onchange="$('#obM').classList.add('hidden');importProject(this)"></label>`;
@@ -1814,6 +1852,7 @@ function showPage(i){const L=pagesList();if(!L.length)return;CURP=Math.max(0,Mat
  L.forEach((p,j)=>p.classList.toggle('cur',j===CURP));
  const sel=$('#pgSel');if(sel){sel.innerHTML=L.map((p,j)=>`<option value="${j}" ${j===CURP?'selected':''}>${esc(pageLabel(p,j))} — من ${L.length}</option>`).join('')}
  const pv=$('#pgPrev'),nx=$('#pgNext');if(pv)pv.disabled=CURP===0;if(nx)nx.disabled=CURP===L.length-1;
+ if(typeof FSEL!=='undefined'&&FSEL){const d=document.querySelector(`#pages .flt[data-fid="${FSEL}"]`);if(!d||d.closest('.pw')!==L[CURP])flDeselect()}
  const fl=$('#fsLb');if(fl)fl.textContent=pageLabel(L[CURP],CURP)+' — '+(CURP+1)+' من '+L.length;const fp=$('#fsPrev'),fn=$('#fsNext');if(fp)fp.disabled=CURP===0;if(fn)fn.disabled=CURP===L.length-1;
  if(SINGLE&&!$('#vPreview').classList.contains('off'))window.scrollTo({top:0,behavior:'smooth'})}
 function toggleAll(){SINGLE=!SINGLE;$('#pages').classList.toggle('single',SINGLE);$('#allBtn').textContent=SINGLE?'📚 كل الصفحات':'📄 صفحة واحدة';const fa=$('#fsAll');if(fa)fa.textContent=SINGLE?'📚 كل الصفحات':'📄 صفحة واحدة';const sa=$('#stAll');if(sa)sa.textContent=SINGLE?'📚':'📄';scalePages();showPage(CURP);if(!SINGLE)toast('📚 كل الصفحات — انزل لتحت وعدّل بأي صفحة')}
@@ -1944,6 +1983,15 @@ function openImgSheet(ti,bi){const t=S.topics[ti],b=t.blocks[bi];
 
 /* ========== subscription: accounts & live per-page billing ========== */
 const WA_NUM='9647809677257';
+const WA_PW='9647809677257',WA_PW_SHOW='07809677257';
+function forgotPw(){const ph=normD(($('#aPhone')||{}).value||'').replace(/\D/g,'');
+ const txt=`لقد نسيت الرقم السري\nرقم هاتفي: ${ph||'—'}`;
+ $('#obBody').innerHTML=`<div class="sheet-h"><b>🔑 نسيت الرقم السري؟</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
+ <div style="text-align:center;line-height:2;font-weight:700">راسلنا على الواتساب ونرجّعلك الرقم السري<br>
+ <div style="font-size:24px;font-weight:900;color:#0b1f45;direction:ltr;margin:6px 0">📞 ${WA_PW_SHOW}</div></div>
+ ${ph?'':'<div class="warn" style="margin-top:6px">✍️ اكتب رقم هاتفك بخانة رقم الهاتف أولاً حتى يوصلنا بالرسالة</div>'}
+ <a class="btn wa" id="fpGo" style="width:100%;margin-top:12px;padding:14px;font-size:17px" target="_blank" rel="noopener" href="https://wa.me/${WA_PW}?text=${encodeURIComponent(txt)}">💬 مراسلة واتساب</a>`;
+ $('#obM').classList.remove('hidden')}
 const GOVS=['بغداد','البصرة','نينوى','أربيل','النجف','كربلاء','بابل','ذي قار','ميسان','واسط','الديوانية','المثنى','الأنبار','ديالى','صلاح الدين','كركوك','دهوك','السليمانية','حلبجة'];
 let WELCOME=0,FB=null,ME=null,PRICE=150,TRIAL=3,IS_ADMIN=false,unsubMe=null,SELF_T=0,PREV_BAL=null;
 const fbReady=()=>!!(FIREBASE_CONFIG.apiKey&&FIREBASE_CONFIG.projectId&&window.firebase);
@@ -1971,7 +2019,7 @@ function authView(mode){
   <label class="f">الرقم السري</label><div class="pw-wrap"><input class="in" id="aPass" type="password" dir="ltr" placeholder="6 أحرف أو أرقام على الأقل"><button type="button" title="إظهار الرقم السري" onclick="const i=$('#aPass');const show=i.type==='password';i.type=show?'text':'password';this.textContent=show?'🙈':'👁'">👁</button></div>
   <button class="btn primary" style="width:100%;margin-top:16px;padding:14px;font-size:16px" id="aGo">${reg?'إنشاء الحساب 🚀':'دخول'}</button>
   <div class="muted" id="aErr" style="color:#c0182f;text-align:center;margin-top:8px;font-weight:700">${offline?'⚠️ تعذّر الاتصال بالخادم — افتح البرنامج من رابطه في المتصفح (Chrome) وتأكد من الإنترنت':''}</div>
-  ${reg?'':'<div class="muted" style="text-align:center;margin-top:8px">تسجّل مرة وحدة — ويبقى الدخول محفوظ على جهازك</div>'}`;
+  ${reg?'':'<button type="button" class="btn" style="width:100%;margin-top:10px;background:none;border:0;color:#2563eb;font-weight:900;text-decoration:underline" onclick="forgotPw()">🔑 هل نسيت الرقم السري؟</button><div class="muted" style="text-align:center;margin-top:4px">تسجّل مرة وحدة — ويبقى الدخول محفوظ على جهازك</div>'}`;
  b.querySelectorAll('.rolepick label').forEach(l=>l.onclick=()=>{b.querySelectorAll('.rolepick label').forEach(x=>x.classList.toggle('on',x===l));l.querySelector('input').checked=true});
  $('#aGo').onclick=()=>{if(!fbReady()||!FB){$('#aErr').textContent='⚠️ لا يوجد اتصال بالخادم — افتح البرنامج من رابطه في المتصفح وتأكد من الإنترنت';return}reg?doRegister():doLogin()};
 }
@@ -2188,8 +2236,8 @@ function openElements(){
  const ic={h1:'🔠',h2:'🔡',li:'•',nl:'١',def:'📗',law:'⚖️',note:'📝',ex:'💡',imp:'⚠️',rem:'🧠',q:'❓',a:'✅',p:'¶'};
  $('#obBody').innerHTML=`<div class="sheet-h"><b>🧩 العناصر</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
  <div class="muted">اختار العنصر وراح ينضاف على الورقة واكتب بيه مباشرة</div>
- <div class="agrid">${LTYPES.map(([k,n])=>`<button data-k="${k}"><i>${ic[k]||'▫️'}</i>${n.replace(/^[•١] /,'')}</button>`).join('')}<button data-k="tbl"><i>▦</i>جدول</button><button data-k="pg"><i>📄</i>صفحة جديدة</button><button data-k="img"><i>🖼️</i>صورة</button></div>`;
- $('#obBody').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const k=b.dataset.k;$('#obM').classList.add('hidden');if(k==='pg')toolPage();else if(k==='img')addImageHere();else insertTyped(k)});
+ <div class="agrid">${LTYPES.map(([k,n])=>`<button data-k="${k}"><i>${ic[k]||'▫️'}</i>${n.replace(/^[•١] /,'')}</button>`).join('')}<button data-k="ftx"><i>🔤</i>كتابة حرة</button><button data-k="tbl"><i>▦</i>جدول</button><button data-k="pg"><i>📄</i>صفحة جديدة</button><button data-k="img"><i>🖼️</i>صورة</button></div>`;
+ $('#obBody').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const k=b.dataset.k;$('#obM').classList.add('hidden');if(k==='pg')toolPage();else if(k==='ftx')addTextFloat();else if(k==='img')toolImage();else insertTyped(k)});
  $('#obM').classList.remove('hidden')}
 function curTopicIdx(){const pg=pagesList()[CURP];const el=pg&&pg.querySelector('[data-t]');return el?+el.dataset.t:(S.topics.length?0:-1)}
 function openColors(){const ti=curTopicIdx(),t=S.topics[ti];
@@ -2217,7 +2265,7 @@ function openAllTools(){
   ['📕','الغلاف',"openCoverSheet('front')"],['📗','الغلاف الخلفي',"openCoverSheet('back')"],['🔤','الخطوط',"openFonts()"],['🌐',isEN()?'عربي':'English',"toggleLang()"],
   ['📑',S.showToc?'إخفاء الفهرس':'إظهار الفهرس',"toggleToc()"],['✨','نمط التصميم',"cycleStyle()"],['💧','علامة مائية',"openWM()"],['📝','المواضيع',"showTab('vTopics')"],['⚙️','معلومات الملزمة',"showTab('vInfo')"],
   ['↶','تراجع',"undo()"],['↷','إعادة',"redo()"],['⛶','ملء الشاشة',"enterFS()"],['👁️','معاينة',"enterFS(true)"],
-  ['📁','ملازمي',"openMine()"],['💾','نسخة احتياطية',"exportProject()"],['📲','تنزيل البرنامج',"INST.open()"],['🔗','مشاركة البرنامج',"shareApp()"],['📕','تصدير PDF',"exportPDF()"],['❓','مساعدة',"openHelp()"]];
+  ['📁','ملازمي',"openMine()"],['📥','رفع ملزمة PDF',"openPdfImport()"],['🔤','كتابة حرة',"addTextFloat()"],['💾','نسخة احتياطية',"exportProject()"],['📲','تنزيل البرنامج',"INST.open()"],['🔗','مشاركة البرنامج',"shareApp()"],['📕','تصدير PDF',"exportPDF()"],['🗂️','دمج ملفات PDF',"openMerge()"],['🔢','ترقيم PDF',"openNumber()"],['❓','مساعدة',"openHelp()"]];
  $('#obBody').innerHTML=`<div class="sheet-h"><b>🧰 كل الأدوات</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
  <div class="agrid">${T.map(([i,n,f])=>`<button data-f="${f.replace(/"/g,'&quot;')}"><i>${i}</i>${n}</button>`).join('')}</div>`;
  $('#obBody').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{$('#obM').classList.add('hidden');try{(new Function(b.dataset.f))()}catch(e){console.warn(e)}});
@@ -2249,6 +2297,154 @@ async function applySnap(j){APPLYING=true;const keep={pid:S.pid,bid:S.bid,lock:S
 async function undo(){if(document.body.classList.contains('editing')&&typeof ACT!=='undefined'&&ACT){commitEl(ACT);ACT.blur();endEditing()}clearTimeout(undoT);snapNow();if(!UNDO.length){toast('ما كو شي للتراجع');return}REDO.push(LASTSNAP);await applySnap(UNDO.pop());toast('↶ تم التراجع')}
 async function redo(){clearTimeout(undoT);snapNow();if(!REDO.length){toast('ما كو شي للإعادة');return}UNDO.push(LASTSNAP);await applySnap(REDO.pop());toast('↷ تمت الإعادة')}
 (function(){document.body.classList.add('nui');const sb=document.getElementById('sbar'),sl=document.getElementById('sbarSlot');if(sb&&sl)sl.appendChild(sb);setTimeout(()=>{snapNow();updUndo();updSaved()},1500)})();
+/* ================= أدوات PDF: دمج + ترقيم ================= */
+async function pdfLibW(){if(window.PDFLib)return window.PDFLib;const U=['https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js','https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js'];
+ for(const u of U){try{await new Promise((ok,no)=>{const sc=document.createElement('script');sc.src=u;sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)});if(window.PDFLib)return window.PDFLib}catch(e){}}throw new Error('تعذّر تحميل أداة PDF — تأكد من الإنترنت')}
+function ptOpen(icon,title,sub){let p=document.getElementById('ptool');if(p)p.remove();p=document.createElement('div');p.id='ptool';
+ p.innerHTML=`<div class="pth"><span style="font-size:28px">${icon}</span><b>${title}<small>${sub}</small></b><button onclick="document.getElementById('ptool').remove()">✕</button></div><div class="ptb" id="ptB"></div><div class="ptf" id="ptF"></div>`;document.body.appendChild(p);return p}
+const pdfBaseName=n=>(n||'ملف').replace(/\.pdf$/i,'').replace(/[\\/:*?"<>|]/g,'').trim()||'ملف';
+async function pdfThumb(bytes,cv,w){try{const lib=await pdfLib();const d=await lib.getDocument({data:bytes.slice(0)}).promise;const pg=await d.getPage(1);const v1=pg.getViewport({scale:1});const vp=pg.getViewport({scale:w/v1.width});
+ cv.width=Math.round(vp.width);cv.height=Math.round(vp.height);await pg.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;return{d,pg,v1}}catch(e){return null}}
+function pdfResult(bytes,name,info,extra){const blob=new Blob([bytes],{type:'application/pdf'}),url=URL.createObjectURL(blob),file=new File([blob],name,{type:'application/pdf'});
+ $('#ptB').innerHTML=`<div style="text-align:center;padding:26px 8px"><div style="width:96px;height:96px;margin:0 auto;border-radius:50%;background:#22c55e;color:#fff;font-size:54px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 14px rgba(34,197,94,.18)">✓</div>
+  <h2 style="margin-top:26px;color:#0b1f45">${info}</h2><div style="margin-top:10px;font-weight:800;color:#475569;direction:rtl"><bdi>📕 ${esc(name)}</bdi></div><div class="muted">${(bytes.length/1048576).toFixed(1)} ميگابايت</div></div>
+  <div class="row" style="gap:8px;margin-top:6px"><a class="btn" href="${url}" target="_blank" rel="noopener" style="padding:14px">📂 فتح الملف</a><button class="btn" id="prDl" style="padding:14px">⬇️ تحميل</button></div>${extra||''}`;
+ $('#ptF').innerHTML=`<button class="btn green" id="prSh">📤 إرسال بالواتساب أو غيره</button>`;
+ download(blob,name);
+ $('#prDl').onclick=()=>download(blob,name);
+ $('#prSh').onclick=async()=>{try{if(navigator.canShare&&navigator.canShare({files:[file]}))await navigator.share({files:[file],title:name});else{download(blob,name);toast('تم التحميل — أرسله من التنزيلات')}}catch(e){}};
+ return{blob,file}}
+/* ---------- دمج ---------- */
+let MG=[];
+function openMerge(){MG=[];ptOpen('🗂️','دمج ملفات PDF','اجمع أي عدد من الملفات بملف واحد وبالترتيب اللي تريده');mgRender()}
+function mgRender(){const B=$('#ptB');const tot=MG.reduce((a,x)=>a+(x.pages||0),0);
+ B.innerHTML=`<label class="pdrop"><i>📥</i>اضغط واختار ملفات PDF<span>تگدر تختار أكثر من ملف مرة وحدة، وتضيف بعدين ملفات ثانية</span><input type="file" accept="application/pdf,.pdf" multiple hidden id="mgIn"></label>
+ ${MG.length?`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-weight:900;color:#0b1f45"><span>📚 ${MG.length} ملف — ${tot} صفحة</span><button class="btn sm" id="mgSort">🔤 ترتيب بالاسم</button></div><div id="mgL"></div>
+ <label class="f" style="margin-top:12px">اسم الملف الجديد</label><input class="in" id="mgName" value="${esc(MG.nm||('ملف مدمج - '+MG.length+' ملفات'))}">`:'<div class="muted" style="text-align:center;margin-top:20px;line-height:2">ما كو ملفات بعد<br>💡 رتّب الملفات بالأسهم ⬆⬇ قبل الدمج</div>'}`;
+ $('#mgIn').onchange=async e=>{const fs=[...e.target.files];e.target.value='';for(const fl of fs){const bytes=new Uint8Array(await fl.arrayBuffer());MG.push({id:uid(),name:fl.name,bytes,pages:0,size:fl.size})}mgRender();
+  for(const x of MG.filter(x=>!x.pages)){try{const L=await pdfLibW();const d=await L.PDFDocument.load(x.bytes,{ignoreEncryption:true});x.pages=d.getPageCount()}catch(er){x.err=1}}mgRender()};
+ if(MG.length){$('#mgName').oninput=e=>{MG.nm=e.target.value};$('#mgSort').onclick=()=>{MG.sort((a,b)=>a.name.localeCompare(b.name,'ar',{numeric:true}));mgRender()};
+  const L=$('#mgL');MG.forEach((x,i)=>{const el=document.createElement('div');el.className='pfi';
+   el.innerHTML=`<div class="pn2">${i+1}</div><canvas></canvas><div class="inf2"><b>${esc(x.name)}</b><small>${x.err?'<span style="color:#be123c">⚠️ ملف تالف أو محمي</span>':(x.pages?x.pages+' صفحة':'⏳')} • ${(x.size/1048576).toFixed(1)} MB</small></div>
+    <div class="mv"><button data-m="-1" ${i?'':'disabled'}>⬆</button><button data-m="1" ${i<MG.length-1?'':'disabled'}>⬇</button></div><button class="rm">✕</button>`;
+   el.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const j=i+(+b.dataset.m);[MG[i],MG[j]]=[MG[j],MG[i]];mgRender()});
+   el.querySelector('.rm').onclick=()=>{MG.splice(i,1);mgRender()};L.appendChild(el);
+   if(x.th){const c=el.querySelector('canvas');c.width=x.th.width;c.height=x.th.height;c.getContext('2d').drawImage(x.th,0,0)}else{const c=el.querySelector('canvas');pdfThumb(x.bytes,c,92).then(r=>{if(r){x.th=document.createElement('canvas');x.th.width=c.width;x.th.height=c.height;x.th.getContext('2d').drawImage(c,0,0);try{r.d.destroy&&r.d.destroy()}catch(_){}}})}})}
+ $('#ptF').innerHTML=`<button class="btn primary" id="mgGo" ${MG.filter(x=>!x.err).length<2?'disabled':''}>🗂️ دمج ${MG.filter(x=>!x.err).length||''} ملفات</button>`;
+ $('#mgGo').onclick=mgDo}
+async function mgDo(){const ok=MG.filter(x=>!x.err);if(ok.length<2){toast('اختار ملفين أو أكثر');return}
+ let o=overlay('⏳ جاري الدمج...');try{const L=await pdfLibW();const out=await L.PDFDocument.create();
+  for(let i=0;i<ok.length;i++){o=overlay(`🗂️ جاري دمج الملف ${i+1} من ${ok.length}...`);const src=await L.PDFDocument.load(ok[i].bytes,{ignoreEncryption:true});const pages=await out.copyPages(src,src.getPageIndices());pages.forEach(p=>out.addPage(p))}
+  out.setTitle(pdfBaseName($('#mgName')?$('#mgName').value:'ملف مدمج'));out.setCreator('مصمم الكوثر');out.setProducer('مصمم الكوثر — مطبعة الكوثر');
+  o=overlay('💾 جاري الحفظ...');const bytes=await out.save();o.remove();
+  const name=pdfBaseName(MG.nm||($('#mgName')&&$('#mgName').value)||'ملف مدمج')+'.pdf';
+  pdfResult(bytes,name,`تم دمج ${ok.length} ملفات — ${out.getPageCount()} صفحة`,`<button class="btn primary" style="width:100%;margin-top:10px;padding:14px" id="mgNum">🔢 ترقيم هذا الملف</button>`);
+  $('#mgNum').onclick=()=>openNumber({bytes,name})
+ }catch(e){o.remove();popup('⚠️','تعذّر الدمج',esc(e.message||String(e)))}}
+/* ---------- ترقيم ---------- */
+let NB={};
+function openNumber(pre){NB=Object.assign({digits:'en',pos:'bc',shape:'circle',fmt:'n',num:'#ffffff',bg:'#1d4ed8',size:26,start:1,skip:0,margin:22},JSON.parse((()=>{try{return localStorage.getItem('mlz_nb')||'{}'}catch(e){return '{}'}})()));NB.file=null;
+ ptOpen('🔢','ترقيم ملف PDF','رقم عربي أو إنكليزي، بالمكان والشكل واللون اللي تريده');
+ if(pre&&pre.bytes){NB.file={name:pre.name,bytes:pre.bytes}}nbRender()}
+const toAr=s=>String(s).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+function nbText(i,N){const n=NB.digits==='ar'?toAr(i):String(i),T=NB.digits==='ar'?toAr(N):String(N);return NB.fmt==='page'?(NB.digits==='ar'?'صفحة '+n:'Page '+n):NB.fmt==='of'?(NB.digits==='ar'?n+' من '+T:n+' / '+T):NB.fmt==='dash'?'— '+n+' —':n}
+function nbRender(){const B=$('#ptB');const sel=(k,v)=>NB[k]===v?'on':'';
+ const COL=['#ffffff','#111827','#1d4ed8','#e11d48','#16a34a','#f59e0b','#7c3aed','#0891b2','#be185d','#64748b'];
+ const P=[['tr','↗'],['tc','⬆'],['tl','↖'],['','',1],['','',1],['','',1],['br','↘'],['bc','⬇'],['bl','↙']];
+ B.innerHTML=`${NB.file?`<div class="pfi"><canvas id="nbTh"></canvas><div class="inf2"><b>${esc(NB.file.name)}</b><small id="nbPg">⏳</small></div><label class="btn sm">تغيير<input type="file" accept="application/pdf,.pdf" hidden id="nbIn"></label></div>`
+  :`<label class="pdrop"><i>📄</i>اضغط واختار ملف PDF<span>بعدها تختار شكل الترقيم وتشوفه قبل الحفظ</span><input type="file" accept="application/pdf,.pdf" hidden id="nbIn"></label>`}
+ ${NB.file?`<div class="optg"><b>👁️ شكلها على الورقة</b><div class="npv" id="nbPv"><canvas id="nbCv"></canvas><div class="nm" id="nbNm"></div></div></div>`:''}
+ <div class="optg"><b>🔤 نوع الأرقام</b><div class="ch3"><button data-k="digits" data-v="en" class="${sel('digits','en')}">1 2 3 إنكليزي</button><button data-k="digits" data-v="ar" class="${sel('digits','ar')}">١ ٢ ٣ عربي</button></div>
+  <b style="margin-top:12px">📝 الصيغة</b><div class="ch3"><button data-k="fmt" data-v="n" class="${sel('fmt','n')}">5</button><button data-k="fmt" data-v="dash" class="${sel('fmt','dash')}">— 5 —</button><button data-k="fmt" data-v="page" class="${sel('fmt','page')}">صفحة 5</button><button data-k="fmt" data-v="of" class="${sel('fmt','of')}">5 من 20</button></div></div>
+ <div class="optg"><b>📍 مكان الرقم بالصفحة</b><div class="posg">${P.map(([k,ic,m])=>`<button class="${m?'mid':sel('pos',k)}" ${m?'':`data-k="pos" data-v="${k}"`}>${ic}</button>`).join('')}</div></div>
+ <div class="optg"><b>⭕ الشكل</b><div class="ch3"><button data-k="shape" data-v="none" class="${sel('shape','none')}">بدون</button><button data-k="shape" data-v="circle" class="${sel('shape','circle')}">● دائرة ملوّنة</button><button data-k="shape" data-v="ring" class="${sel('shape','ring')}">◯ إطار دائري</button><button data-k="shape" data-v="pill" class="${sel('shape','pill')}">▬ مستطيل دائري</button></div>
+  <b style="margin-top:12px">🎨 لون الرقم</b><div class="cl3">${COL.map(c=>`<button data-k="num" data-v="${c}" class="${sel('num',c)}" style="background:${c}"></button>`).join('')}</div>
+  ${NB.shape!=='none'?`<b style="margin-top:12px">🎨 لون ${NB.shape==='ring'?'الإطار':'الدائرة'}</b><div class="cl3">${COL.map(c=>`<button data-k="bg" data-v="${c}" class="${sel('bg',c)}" style="background:${c}"></button>`).join('')}</div>`:''}
+  <label class="f" style="margin-top:12px">الحجم: <b id="nbSz">${NB.size}</b></label><input type="range" min="14" max="60" value="${NB.size}" id="nbS" style="width:100%">
+  <label class="f">البُعد عن حافة الورقة: <b id="nbMg">${NB.margin}</b></label><input type="range" min="6" max="80" value="${NB.margin}" id="nbM" style="width:100%"></div>
+ <div class="optg"><b>⚙️ خيارات</b><div class="row"><div><label class="f">يبدأ الترقيم من</label><input class="in" id="nbSt" inputmode="numeric" value="${NB.start}"></div><div><label class="f">بدون رقم لأول</label><select class="in" id="nbSk">${[0,1,2,3,4,5].map(k=>`<option value="${k}" ${NB.skip==k?'selected':''}>${k?k+' صفحة (الغلاف)':'ولا صفحة'}</option>`).join('')}</select></div></div></div>`;
+ $('#nbIn').onchange=async e=>{const fl=e.target.files[0];if(!fl)return;NB.file={name:fl.name,bytes:new Uint8Array(await fl.arrayBuffer())};NB.v=null;nbRender()};
+ B.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{NB[b.dataset.k]=b.dataset.v;if(b.dataset.k==='shape'&&b.dataset.v==='ring'&&NB.num==='#ffffff')NB.num=NB.bg;if(b.dataset.k==='shape'&&b.dataset.v==='circle'&&NB.num===NB.bg)NB.num='#ffffff';nbRender()});
+ $('#nbS').oninput=e=>{NB.size=+e.target.value;$('#nbSz').textContent=NB.size;nbPrev()};$('#nbM').oninput=e=>{NB.margin=+e.target.value;$('#nbMg').textContent=NB.margin;nbPrev()};
+ $('#nbSt').oninput=e=>{NB.start=Math.max(0,parseInt(normD(e.target.value))||0);nbPrev()};$('#nbSk').onchange=e=>{NB.skip=+e.target.value;nbPrev()};
+ $('#ptF').innerHTML=`<button class="btn primary" id="nbGo" ${NB.file?'':'disabled'}>🔢 ترقيم وحفظ الملف</button>`;$('#nbGo').onclick=nbDo;
+ if(NB.file){if(NB.v){nbDraw()}else{const c=document.createElement('canvas');pdfThumb(NB.file.bytes,c,600).then(r=>{if(!r){$('#nbPg').textContent='⚠️ ما گدرت أعرض الملف';return}NB.v={cv:c,w:r.v1.width,h:r.v1.height,N:r.d.numPages};try{r.d.destroy&&r.d.destroy()}catch(_){};nbDraw()})}}}
+function nbDraw(){const c=$('#nbCv');if(!c||!NB.v)return;c.width=NB.v.cv.width;c.height=NB.v.cv.height;c.getContext('2d').drawImage(NB.v.cv,0,0);const t=$('#nbTh');if(t){t.width=46;t.height=Math.round(46*NB.v.h/NB.v.w);t.getContext('2d').drawImage(NB.v.cv,0,0,t.width,t.height)}
+ $('#nbPg').textContent=NB.v.N+' صفحة';nbPrev()}
+function nbBox(text,W,H){// بالنقاط (pt)
+ const s=NB.size,fs=s*(NB.shape==='none'?.8:.55);const ctx=document.createElement('canvas').getContext('2d');ctx.font=`900 ${fs}px Cairo, Arial, sans-serif`;const tw=ctx.measureText(text).width;
+ let w=NB.shape==='none'?tw+4:Math.max(s,tw+s*.7),h=NB.shape==='none'?fs*1.35:s;if((NB.shape==='circle'||NB.shape==='ring')&&tw>s*.72){w=tw+s*.8}
+ const m=NB.margin,v=NB.pos[0],hz=NB.pos[1];const x=hz==='l'?m:hz==='r'?W-m-w:(W-w)/2,y=v==='t'?m:H-m-h;return{x,y,w,h,fs}}
+function nbPrev(){try{localStorage.setItem('mlz_nb',JSON.stringify(Object.assign({},NB,{file:null,v:null})))}catch(e){}
+ const el=$('#nbNm'),pv=$('#nbPv');if(!el||!NB.v)return;const k=pv.clientWidth/NB.v.w;const i=NB.skip>=1?NB.start:NB.start;const txt=nbText(NB.skip>=1?'—':NB.start,NB.v.N-NB.skip+NB.start-1);
+ const show=NB.skip<1;const t2=show?txt:nbText(NB.start,NB.v.N-NB.skip+NB.start-1);const b=nbBox(t2,NB.v.w,NB.v.h);
+ Object.assign(el.style,{left:b.x*k+'px',top:b.y*k+'px',width:b.w*k+'px',height:b.h*k+'px',fontSize:b.fs*k+'px',color:NB.num,fontFamily:'Cairo,Arial,sans-serif',
+  background:NB.shape==='circle'||NB.shape==='pill'?NB.bg:'transparent',border:NB.shape==='ring'?(Math.max(1,NB.size*.07*k))+'px solid '+NB.bg:'0',borderRadius:NB.shape==='pill'?(b.h*k/2.2)+'px':NB.shape==='none'?'0':'999px',opacity:show?1:.35});
+ el.textContent=t2;el.title=show?'':'هاي الصفحة بدون رقم'}
+function nbImage(text,b){const K=6,cv=document.createElement('canvas');cv.width=Math.ceil(b.w*K);cv.height=Math.ceil(b.h*K);const g=cv.getContext('2d');g.scale(K,K);
+ if(NB.shape!=='none'){const r=NB.shape==='pill'?b.h/2.2:Math.min(b.w,b.h)/2;g.beginPath();g.roundRect?g.roundRect(0,0,b.w,b.h,r):g.rect(0,0,b.w,b.h);
+  if(NB.shape==='ring'){const lw=Math.max(1,NB.size*.07);g.beginPath();g.roundRect?g.roundRect(lw/2,lw/2,b.w-lw,b.h-lw,Math.max(0,r-lw/2)):g.rect(lw/2,lw/2,b.w-lw,b.h-lw);g.lineWidth=lw;g.strokeStyle=NB.bg;g.stroke()}else{g.fillStyle=NB.bg;g.fill()}}
+ g.fillStyle=NB.num;g.font=`900 ${b.fs}px Cairo, Arial, sans-serif`;g.textAlign='center';g.textBaseline='middle';g.direction='rtl';g.fillText(text,b.w/2,b.h/2+b.fs*.06);return cv.toDataURL('image/png')}
+async function nbDo(){if(!NB.file)return;let o=overlay('⏳ جاري الترقيم...');
+ try{try{await document.fonts.load('900 20px Cairo')}catch(e){}const L=await pdfLibW();const doc=await L.PDFDocument.load(NB.file.bytes,{ignoreEncryption:true});const pages=doc.getPages(),N=pages.length,total=N-NB.skip+NB.start-1;
+  for(let i=0;i<N;i++){if(i<NB.skip)continue;if(i%10===0)o=overlay(`🔢 جاري ترقيم الصفحة ${i+1} من ${N}...`);const pg=pages[i];const {width:W,height:H}=pg.getSize();
+   const txt=nbText(i-NB.skip+NB.start,total);const b=nbBox(txt,W,H);const png=await doc.embedPng(nbImage(txt,b));pg.drawImage(png,{x:b.x,y:H-b.y-b.h,width:b.w,height:b.h})}
+  o=overlay('💾 جاري الحفظ...');const bytes=await doc.save();o.remove();
+  pdfResult(bytes,pdfBaseName(NB.file.name)+' - مرقّم.pdf',`تم ترقيم ${N-NB.skip} صفحة`)
+ }catch(e){o.remove();popup('⚠️','تعذّر الترقيم',esc(e.message||String(e)))}}
+/* ================= رفع ملزمة PDF ================= */
+async function pdfLib(){if(window.pdfjsLib)return window.pdfjsLib;const V='4.10.38',U=[`https://cdn.jsdelivr.net/npm/pdfjs-dist@${V}/build/`,`https://unpkg.com/pdfjs-dist@${V}/build/`];let er;
+ for(const u of U){try{const m=await import(u+'pdf.min.mjs');m.GlobalWorkerOptions.workerSrc=u+'pdf.worker.min.mjs';window.pdfjsLib=m;return m}catch(e){er=e}}throw er}
+function openPdfImport(){
+ $('#obBody').innerHTML=`<div class="sheet-h"><b>📥 رفع ملزمة PDF</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
+ <div class="muted">تنفتح كملزمة جديدة بـ «ملازمي» — والملزمة الحالية تبقى مثل ما هي</div>
+ <label class="pimp"><b>✍️ تحويل لكتابة قابلة للتعديل</b><span>للـ PDF المسوّى من Word أو من برنامج تصميم. الكتابة تصير أسطر تعدّلها وتغيّر خطها وتصميمها.</span><input type="file" accept="application/pdf,.pdf" hidden id="piTxt"></label>
+ <label class="pimp"><b>🖼️ صفحات كصور + الكتابة فوقها</b><span>للـ PDF المصوّر (سكانر أو موبايل). كل صفحة تبقى بنفس شكلها بالضبط، وتگدر تضيف كتابة حرة وصور وعلامة مائية فوقها.</span><input type="file" accept="application/pdf,.pdf" hidden id="piImg"></label>
+ <div class="warn" style="margin-top:12px">💡 كل صفحة بالملزمة الجديدة تنحسب بسعر الصفحة (${PRICE} دينار) مثل أي ملزمة.</div>`;
+ $('#piTxt').onchange=e=>{const fl=e.target.files[0];$('#obM').classList.add('hidden');if(fl)importPdf(fl,'txt')};
+ $('#piImg').onchange=e=>{const fl=e.target.files[0];$('#obM').classList.add('hidden');if(fl)importPdf(fl,'img')};
+ $('#obM').classList.remove('hidden')}
+function pdfLines(tc){
+ const its=tc.items.filter(i=>i.str&&i.str.trim()).map(i=>({s:i.str,x:i.transform[4],y:i.transform[5],h:Math.abs(i.transform[3])||i.height||10,w:i.width||0,d:i.dir}));
+ its.sort((a,b)=>b.y-a.y);const L=[];
+ for(const it of its){const ln=L.find(l=>Math.abs(l.y-it.y)<Math.max(l.h,it.h)*.5);if(ln){ln.items.push(it);ln.h=Math.max(ln.h,it.h)}else L.push({y:it.y,h:it.h,items:[it]})}
+ L.sort((a,b)=>b.y-a.y);
+ return L.map(l=>{const ar=/[؀-ۿ]/;const rtl=l.items.filter(i=>i.d==='rtl'||ar.test(i.s)).length>=l.items.length/2;
+  const a=[...l.items].sort((p,q)=>p.x-q.x);if(rtl)a.reverse();let out='';
+  a.forEach((it,k)=>{if(k){const pv=a[k-1];const gap=rtl?pv.x-(it.x+it.w):it.x-(pv.x+pv.w);if(gap>it.h*.18&&!out.endsWith(' ')&&!it.s.startsWith(' '))out+=' '}out+=it.s});
+  let t=out;try{t=t.normalize('NFKC')}catch(_){}t=t.replace(/\s+([\u064B-\u0652])/g,'$1').replace(/\s+/g,' ').trim();
+  return{t,h:l.h,y:l.y,rtl}}).filter(l=>l.t)}
+function pdfToMarkup(pages){
+ const all=pages.flat();if(!all.length)return '';const hs=all.map(l=>l.h).sort((a,b)=>a-b),med=hs[Math.floor(hs.length/2)]||10;
+ const out=[];let prev=null;
+ const kind=l=>{if(l.h>=med*1.45)return'h1';if(l.h>=med*1.18&&l.t.length<80)return'h2';if(/^[•▪●◦■◆►✓\-–]\s*/.test(l.t))return'li';if(/^([0-9٠-٩]+|[أ-ي]|[a-z])\s*[.)\-]\s*/.test(l.t))return'nl';return'p'};
+ pages.forEach((pg,pi)=>{pg.forEach(l=>{const k=kind(l);let t=l.t;
+  if(k==='li')t='- '+t.replace(/^[•▪●◦■◆►✓\-–]\s*/,'');else if(k==='h1')t='# '+t;else if(k==='h2')t='## '+t;
+  const canMerge=prev&&prev.k==='p'&&k==='p'&&prev.pi===pi&&Math.abs(prev.h-l.h)<1&&(prev.y-l.y)<l.h*1.9&&!/[.:؟?!؛]$/.test(prev.t);
+  if(canMerge){out[out.length-1]+=' '+t;prev.t=t;prev.y=l.y}else{out.push(t);prev={k,t,h:l.h,y:l.y,pi}}})});
+ return out.join('\n')}
+async function importPdf(file,mode){
+ let o=overlay('⏳ جاري تحميل قارئ PDF...');
+ try{const lib=await pdfLib();o=overlay('📖 جاري فتح الملف...');
+  const pdf=await lib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;const N=pdf.numPages;
+  if(mode==='img'&&N>80){o.remove();popup('⚠️','الملف كبير',`الملف بيه ${N} صفحة — الحد 80 صفحة. قسّمه لملفين.`);return}
+  const name=file.name.replace(/\.pdf$/i,'').trim()||'ملزمة مستوردة';
+  clearTimeout(saveT);saveNow();const NS=blankProject();NS.title=name;NS.showToc=false;NS.chapterPage=false;
+  if(mode==='txt'){const pages=[];let found=0;
+   for(let i=1;i<=N;i++){o=overlay(`✍️ جاري قراءة الصفحة ${i} من ${N}...`);const pg=await pdf.getPage(i);const L=pdfLines(await pg.getTextContent());found+=L.length;pages.push(L);pg.cleanup()}
+   if(!found){o.remove();popup('📷','الملف مصوّر','ما بيه كتابة حقيقية — يبين مسوّى سكانر أو صور.<br>استخدم خيار <b>«صفحات كصور + الكتابة فوقها»</b>.<br><button class="btn primary" style="width:100%;margin-top:12px" onclick="$(\'#popM\').classList.add(\'hidden\');openPdfImport()">📥 رجوع</button>');return}
+   NS.topics=[{id:uid(),unit:'',title:name,color:NS.topics[0].color,blocks:[{id:uid(),type:'text',text:pdfToMarkup(pages)}]}];
+  }else{NS.pageBg={};const segs=[];
+   for(let i=1;i<=N;i++){o=overlay(`🖼️ جاري تجهيز الصفحة ${i} من ${N}...`);const pg=await pdf.getPage(i);const v1=pg.getViewport({scale:1});const sc=1240/v1.width;const vp=pg.getViewport({scale:sc});
+    const cv=document.createElement('canvas');cv.width=Math.round(vp.width);cv.height=Math.round(vp.height);const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);
+    await pg.render({canvasContext:g,viewport:vp}).promise;const src=cv.toDataURL('image/jpeg',.8);cv.width=cv.height=0;pg.cleanup();
+    if(i===1){NS.coverBg={src,w:Math.round(vp.width),h:Math.round(vp.height)};NS.coverText=false}else{NS.pageBg['p'+i]=src;segs.push(' ')}}
+   NS.topics=[{id:uid(),unit:'',title:'',color:NS.topics[0].color,blocks:[{id:uid(),type:'text',text:segs.join('\n---\n')}]}];
+  }
+  S=NS;saveNow();bindInfo();renderTopics();renderProjects();o.remove();
+  showTab('vPreview');await renderPages();showPage(mode==='img'?0:1);liveSoon(300);
+  popup('✅','تم رفع الملزمة',mode==='txt'?`صارت ملزمة جديدة باسم <b>${esc(name)}</b> (${N} صفحة PDF).<br>اضغط على أي سطر وعدّله، وغيّر الخط والإطار مثل ما تريد.<br><span style="color:#64748b;font-size:13px">راجع الكتابة — بعض ملفات PDF العربية تحتاج تصحيح بسيط.</span>`:`صارت ملزمة جديدة باسم <b>${esc(name)}</b> — ${N} صفحة بنفس شكلها.<br>أضف <b>🔤 كتابة حرة</b> أو صور أو علامة مائية فوق أي صفحة.`)
+ }catch(e){console.warn(e);try{o.remove()}catch(_){}popup('⚠️','تعذّر فتح الملف','تأكد من الإنترنت (أول مرة يحتاج يحمّل قارئ PDF) وإن الملف PDF سليم.<br><small style="color:#94a3b8">'+esc(String(e&&e.message||e).slice(0,120))+'</small>')}}
 /* ================= العلامة المائية ================= */
 function bwmHTML(){const w=S.wm;if(!w||!(w.t||'').trim())return '';const st=`font-size:${w.s||90}px;color:${w.c||'#64748b'};opacity:${w.o!=null?w.o:.1};transform:rotate(${w.r!=null?w.r:-30}deg)`;
  return w.tile?`<div class="bwm tile">${Array(8).fill(`<span style="${st};font-size:${Math.round((w.s||90)*.55)}px">${esc(w.t)}</span>`).join('')}</div>`:`<div class="bwm"><span style="${st}">${esc(w.t)}</span></div>`}
@@ -2280,19 +2476,23 @@ let FSEL=null,FL_T=0,FPAN=false,FTX=null;
 const FLKEY=i=>'p'+(i+1);
 function flList(i){S.floats=S.floats||{};return S.floats[FLKEY(i)]||(S.floats[FLKEY(i)]=[])}
 function flFind(id){for(const k in (S.floats||{})){const L=S.floats[k];const j=L.findIndex(x=>x.id===id);if(j>=0)return{k,L,j,f:L[j]}}return null}
+function addTextFloat(pi){if(pi==null)pi=CURP;ask('🔤 كتابة حرة على الورقة',{icon:'✍️',msg:'تحرّكها بإصبعك لأي مكان',input:'',ph:'اكتب الكلمات',yes:'إضافة',no:'إلغاء'}).then(t=>{if(!t||!t.trim())return;
+ const f={id:uid(),src:'',iw:500,ih:140,x:147,y:480,w:500,h:140,z:1,ox:0,oy:0,r:0,tx:[]};f.tx.push({id:uid(),t:t.trim(),x:250,y:70,s:38,c:'#111827',bg:'',sh:0});
+ flList(pi).push(f);save();FSEL=f.id;FTX=f.tx[0].id;renderFloats();showPage(pi);flBarShow();toast('✋ حرّك الكتابة بإصبعك — اضغط عليها حتى تغيّر الحجم واللون',4000)})}
 function addFloat(pi,img){if(pi==null)pi=CURP;const L=flList(pi);let w=Math.min(520,img.w||520),h=w*(img.h||1)/(img.w||1);if(h>640){h=640;w=h*(img.w||1)/(img.h||1)}
  const f={id:uid(),src:img.src,iw:img.w||w,ih:img.h||h,x:Math.round((794-w)/2),y:Math.round((1123-h)/2),w:Math.round(w),h:Math.round(h),z:1,ox:0,oy:0,r:14,tx:[]};
  L.push(f);save();FSEL=f.id;renderFloats();showPage(pi);flBarShow();toast('✋ حرّك الصورة بإصبعك — والزاوية الزرقاء للتكبير والتصغير',4000)}
-function flGeo(f){const k=Math.max(f.w/f.iw,f.h/f.ih)*(f.z||1),W=f.iw*k,H=f.ih*k,mx=Math.max(0,(W-f.w)/2),my=Math.max(0,(H-f.h)/2);
+function flGeo(f){if(!f.src)return{W:f.w,H:f.h,L:0,T:0};const k=Math.max(f.w/f.iw,f.h/f.ih)*(f.z||1),W=f.iw*k,H=f.ih*k,mx=Math.max(0,(W-f.w)/2),my=Math.max(0,(H-f.h)/2);
  f.ox=Math.max(-mx,Math.min(mx,f.ox||0));f.oy=Math.max(-my,Math.min(my,f.oy||0));return{W,H,L:(f.w-W)/2+f.ox,T:(f.h-H)/2+f.oy}}
 function flStyle(d,f){const g=flGeo(f);d.style.left=f.x+'px';d.style.top=f.y+'px';d.style.width=f.w+'px';d.style.height=f.h+'px';d.style.borderRadius=(f.r||0)+'px';
  const im=d.querySelector('img.fi');if(im){im.style.width=g.W+'px';im.style.height=g.H+'px';im.style.left=g.L+'px';im.style.top=g.T+'px'}
  const c=d.querySelector('.fclip');if(c)c.style.borderRadius=(f.r||0)+'px'}
 function txHTML(t){return `<div class="ftx${FTX===t.id?' tsel':''}" data-tid="${t.id}" style="left:${t.x}px;top:${t.y}px;font-size:${t.s}px;color:${t.c};${t.bg?'background:'+t.bg+';':''}${t.sh?'text-shadow:0 2px 6px rgba(0,0,0,.7),0 0 2px rgba(0,0,0,.9);':''}">${esc(t.t)}</div>`}
-function flEl(f){const d=document.createElement('div');d.className='flt'+(FSEL===f.id?' sel':'')+(FSEL===f.id&&FPAN?' pan':'');d.dataset.fid=f.id;
- d.innerHTML=`<div class="fclip"><img class="fi" src="${f.src}" draggable="false">${(f.tx||[]).map(txHTML).join('')}</div><i class="fh br" data-h="br"></i><i class="fh r" data-h="r"></i><i class="fh b" data-h="b"></i>`;
+function flEl(f){const d=document.createElement('div');d.className='flt'+(f.src?'':' ftxt')+(FSEL===f.id?' sel':'')+(FSEL===f.id&&FPAN?' pan':'');d.dataset.fid=f.id;
+ d.innerHTML=`<div class="fclip">${f.src?`<img class="fi" src="${f.src}" draggable="false">`:''}${(f.tx||[]).map(txHTML).join('')}</div><i class="fh br" data-h="br"></i><i class="fh r" data-h="r"></i><i class="fh b" data-h="b"></i>`;
  flStyle(d,f);return d}
 function renderFloats(){const PL=pagesList();PL.forEach((pw,i)=>{const p=pw.firstChild;if(!p)return;p.querySelectorAll('.flt').forEach(x=>x.remove());
+  const bg=i>0&&S.pageBg&&S.pageBg[FLKEY(i)];p.classList.toggle('bgpg',!!bg);if(bg)p.style.backgroundImage=`url(${bg})`;else if(p.classList.contains('page')&&!p.classList.contains('cover'))p.style.backgroundImage='';
   const L=(S.floats||{})[FLKEY(i)];if(L&&L.length){const k=PW/Math.max(1,pw.getBoundingClientRect().width||PW);L.forEach(f=>{const e=flEl(f);e.style.setProperty('--k',Math.min(4,Math.max(1,k)).toFixed(2));p.appendChild(e)})}});
  if(FSEL&&!flFind(FSEL))flDeselect()}
 function flDeselect(){FSEL=null;FPAN=false;FTX=null;document.querySelectorAll('#pages .flt.sel').forEach(x=>{x.classList.remove('sel','pan')});$('#flBar').classList.remove('on')}
