@@ -79,6 +79,13 @@ label.f{display:block;font-size:13px;color:#5b6575;margin:8px 0 3px;font-weight:
 .pw{font-family:monospace;direction:ltr;display:inline-block;background:#fff8e1;border:1px solid #ffe08a;border-radius:8px;padding:1px 8px;font-weight:800;color:#7a5200}
 .bar{height:8px;border-radius:5px;background:#3949ab;margin-top:4px}
 pre{background:#1d2430;color:#d6e2ff;border-radius:10px;padding:10px;font-size:11.5px;overflow:auto;direction:ltr;text-align:left;max-height:260px}
+
+.rdi{display:flex;gap:10px;padding:10px;border-bottom:1px solid #eef1f6}
+.rdi .th{flex:0 0 64px;height:90px;border-radius:7px;background:#eef1f6;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:26px}
+.rdi .th img{width:100%;height:100%;object-fit:cover}
+.rdi .bd{flex:1;min-width:0}.rdi b{font-size:14.5px}
+.rdi .pm{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.rdi .pm select,.rdi .pm input{border:1.5px solid #dde3ec;border-radius:9px;padding:6px 8px;font:inherit;font-size:13px}
+.rdi .pm input{width:100px}
 </style>
 </head>
 <body>
@@ -149,8 +156,30 @@ pre{background:#1d2430;color:#d6e2ff;border-radius:10px;padding:10px;font-size:1
  <div class="card" style="padding:0" id="txList"></div>
 </div>
 
+<!-- READY -->
+<div class="view hidden" id="vReady">
+ <div class="card">
+  <h2>💰 السعر العام لصفحة الملزمة الجاهزة</h2>
+  <div class="row"><input class="in" id="rpp" inputmode="numeric" placeholder="مثلاً 250"><button class="btn green sm" style="padding:11px 16px" onclick="saveRpp()">💾 حفظ</button></div>
+  <div class="muted" style="margin-top:6px;line-height:1.8">• يطبق على الملازم اللي سعرها «السعر العام» — سعرها = عدد الصفحات × هذا السعر.<br>• منفصل عن سعر صفحة التصميم العادي.</div>
+ </div>
+ <div class="card" style="line-height:1.9;background:#eef4ff">
+  <h2>📤 شلون أضيف ملزمة جاهزة؟</h2>
+  1️⃣ افتح <b>برنامج المصمم</b> وادخل بحساب المدير.<br>2️⃣ <b>📁 ملازمي ← 📥 رفع PDF</b> واختار الملف.<br>3️⃣ راجع الصفحات وصلّح أي غلط، وتأكد ما بيها اسم الأستاذ القديم.<br>4️⃣ <b>📁 ملازمي ← 📤 نشر كملزمة جاهزة</b> — اكتب الاسم والصف والمادة والسعر.<br><br><b>🎨 غلاف جاهز:</b> برنامج المصمم ← 📁 ملازمي ← 🎨 أغلفة جاهزة ← ➕ إنشاء غلاف جاهز ← ارفع التصميم ورتّب الكتابة ← 📤 نشر.
+ </div>
+ <div class="row" style="margin-bottom:8px"><input class="in" id="rQ" placeholder="🔍 بحث" oninput="renderReady()"></div>
+ <div class="card" style="padding:0" id="rdList"><div class="muted" style="padding:20px;text-align:center">⏳</div></div>
+</div>
+
 <!-- SETTINGS -->
 <div class="view hidden" id="vSet">
+ <div class="card">
+  <h2>☁️ تخزين الملفات الكبيرة (Cloudflare R2)</h2>
+  <div class="muted" style="line-height:1.8;margin-bottom:6px">الصق رابط الـ Worker — الملازم والأغلفة الجاهزة الجديدة تنرفع عليه (10 GB مجاناً). إذا فارغ، تنحفظ بـ Firebase.</div>
+  <input class="in" id="r2u" dir="ltr" placeholder="https://mlazem-files.xxxx.workers.dev">
+  <div class="row" style="margin-top:8px"><button class="btn primary" onclick="r2Test()">🔍 فحص الاتصال</button><button class="btn green" onclick="r2Save()">💾 حفظ</button></div>
+  <div id="r2s" class="muted" style="margin-top:6px"></div>
+ </div>
  <div class="card">
   <h2>💵 سعر الصفحة</h2>
   <input class="in" id="price" inputmode="numeric">
@@ -173,6 +202,7 @@ pre{background:#1d2430;color:#d6e2ff;border-radius:10px;padding:10px;font-size:1
  <button data-v="vBk"><i>📚</i>الملازم</button>
  <button data-v="vCodes"><i>🎟️</i>الأكواد</button>
  <button data-v="vTx"><i>🧾</i>الحركات</button>
+ <button data-v="vReady"><i>📦</i>الجاهزة</button>
  <button data-v="vSet"><i>⚙️</i>الإعدادات</button>
 </div>
 
@@ -211,6 +241,7 @@ service cloud.firestore {
     function cd(id) { return /databases/$(db)/documents/codes/$(id); }
     function me() { return /databases/$(db)/documents/designers/$(request.auth.uid); }
     function uf(d) { return d.get('usedFree', 0); }
+    function rd(id) { return /databases/$(db)/documents/ready/$(id); }
 
     match /settings/{id} {
       allow read: if signed();
@@ -274,7 +305,18 @@ service cloud.firestore {
         && request.resource.data.exported <= request.resource.data.charged
         && request.resource.data.amountPaid >= 0
         && request.resource.data.freePages >= resource.data.freePages
-        && request.resource.data.amountPaid >= (request.resource.data.charged - request.resource.data.freePages) * request.resource.data.price
+        && ((!('ready' in request.resource.data) && !('ready' in resource.data)
+              && request.resource.data.amountPaid >= (request.resource.data.charged - request.resource.data.freePages) * request.resource.data.price)
+          || ('ready' in request.resource.data
+              && (('ready' in resource.data && request.resource.data.ready == resource.data.ready
+                    && request.resource.data.readyPaid == resource.data.readyPaid && request.resource.data.readyPages == resource.data.readyPages)
+                || (!('ready' in resource.data) && resource.data.exported == 0
+                    && get(rd(request.resource.data.ready)).data.published == true
+                    && request.resource.data.readyPaid == get(rd(request.resource.data.ready)).data.total
+                    && request.resource.data.readyPages == get(rd(request.resource.data.ready)).data.pages))
+              && request.resource.data.exported >= request.resource.data.readyPages
+              && request.resource.data.amountPaid >= request.resource.data.readyPaid
+              && request.resource.data.amountPaid >= request.resource.data.readyPaid + (request.resource.data.charged - request.resource.data.readyPages - request.resource.data.freePages) * request.resource.data.price))
         && request.resource.data.amountPaid - resource.data.amountPaid == get(me()).data.balance - getAfter(me()).data.balance
         && request.resource.data.freePages - resource.data.freePages == uf(getAfter(me()).data) - uf(get(me()).data));
     }
@@ -289,6 +331,16 @@ service cloud.firestore {
         && getAfter(me()).data.lastCode == code);
     }
 
+    // ready-made booklets (published by the admin from the designer app)
+    match /ready/{rid} {
+      allow read: if signed();
+      allow write: if isAdmin();
+      match /parts/{p} {
+        allow read: if signed();
+        allow write: if isAdmin();
+      }
+    }
+
     match /transactions/{id} {
       allow read: if isAdmin() || (signed() && resource.data.uid == request.auth.uid);
       allow create: if isAdmin() || (signed() && request.resource.data.uid == request.auth.uid);
@@ -297,7 +349,7 @@ service cloud.firestore {
   }
 }`;
 
-let BK=[],FB,DES=[],CODES=[],TX=[],PER='month',TXTYPE='all',CF='new',PRICE=150,unsubs=[];
+let R2U='',RD=[],RPP=0,BK=[],FB,DES=[],CODES=[],TX=[],PER='month',TXTYPE='all',CF='new',PRICE=150,unsubs=[];
 const PERS=[['day','اليوم'],['week','الأسبوع'],['month','الشهر'],['year','السنة'],['all','الكل']];
 const TIERS=[5000,10000,25000,50000,100000];
 const TOPUP=[5000,10000,15000,20000,25000,30000,40000,50000];
@@ -306,13 +358,45 @@ let SECRETS={};
 const waTo=(ph,msg)=>`https://wa.me/964${normD(ph).replace(/\D/g,'').replace(/^0/,'')}?text=${encodeURIComponent(msg)}`;
 function perStart(p){const d=new Date();d.setHours(0,0,0,0);if(p==='week')d.setDate(d.getDate()-6);else if(p==='month')d.setDate(1);else if(p==='year'){d.setMonth(0,1)}else if(p==='all')return new Date(2020,0,1);return d}
 
+/* ---- ready booklets ---- */
+const rdTot=r=>r.pm==='fixed'?Math.round(+r.fp||0):Math.round((r.pm==='page'?(+r.pp||0):(RPP||PRICE))*(r.pages||0));
+function renderReady(){const L=$('#rdList');if(!L)return;const q=normD(($('#rQ')||{}).value||'').trim();
+ const R=RD.filter(r=>!q||[r.title,r.subject,r.grade].join(' ').includes(q));
+ if(!R.length){L.innerHTML='<div class="muted" style="padding:20px;text-align:center">ما كو ملازم جاهزة بعد — انشرها من برنامج المصمم</div>';return}
+ L.innerHTML=R.map(r=>{const sold=BK.filter(b=>b.ready===r.id),inc=sold.reduce((a,b)=>a+(b.readyPaid||0),0);
+  return `<div class="rdi"><div class="th">${r.thumb?`<img src="${r.thumb}">`:'📘'}</div><div class="bd">
+   <b>${r.type==='cover'?'🎨 ':''}${esc(r.title)}</b> ${r.type==='cover'?'<span class="tag" style="background:#ede9fe;color:#5b21b6">غلاف '+({a3l:'A3 أفقي',a3p:'A3 عمودي',a4l:'A4 أفقي',a4p:'A4 عمودي'}[r.size]||'')+'</span> ':''}${r.published?'<span class="tag" style="background:#dcfce7;color:#166534">ظاهرة</span>':'<span class="tag" style="background:#fee2e2;color:#991b1b">مخفية</span>'}
+   <div class="muted">${esc(r.subject||'')}${r.grade?' • '+esc(r.grade):''} • ${r.pages} صفحة • ${r.store==='r2'?'☁️ Cloudflare':'🔥 Firebase'}${r.size_kb?' • '+(r.size_kb>1024?(r.size_kb/1024).toFixed(1)+' MB':r.size_kb+' KB'):''}</div>
+   <div style="margin-top:4px;font-weight:800">💰 ${r.total?fmt(r.total)+' دينار':'مجاني'} <span class="muted">• 🛒 بيعت ${sold.length} مرة • ${fmt(inc)} دينار</span></div>
+   <div class="pm"><select id="pm_${r.id}"><option value="global" ${r.pm==='global'?'selected':''}>السعر العام للصفحة</option><option value="page" ${r.pm==='page'?'selected':''}>سعر صفحة خاص</option><option value="fixed" ${r.pm==='fixed'?'selected':''}>سعر ثابت للملزمة</option></select>
+    <input id="pv_${r.id}" inputmode="numeric" placeholder="المبلغ" value="${r.pm==='page'?r.pp:r.pm==='fixed'?r.fp:''}"><button class="btn primary sm" onclick="rdSave('${r.id}')">💾 حفظ السعر</button></div>
+   <div class="pm"><button class="btn sm" onclick="rdPub('${r.id}',${!r.published})">${r.published?'🙈 إخفاء':'👁️ إظهار'}</button><button class="btn sm" id="rdx_${r.id}" style="background:#fee2e2;color:#991b1b" onclick="rdDel('${r.id}')">🗑 حذف</button></div>
+  </div></div>`}).join('')}
+async function rdSave(id){const r=RD.find(x=>x.id===id);if(!r)return;const pm=$('#pm_'+id).value,v=Math.round(+normD($('#pv_'+id).value)||0);
+ if(pm!=='global'&&!v&&!(r.type==='cover'&&pm==='fixed')){toast('اكتب المبلغ');return}const up={pm,pp:pm==='page'?v:0,fp:pm==='fixed'?v:0};up.total=rdTot(Object.assign({},r,up));
+ await FB.db.doc('ready/'+id).update(up);toast('تم حفظ السعر ✓ — '+fmt(up.total)+' دينار')}
+async function rdPub(id,on){await FB.db.doc('ready/'+id).update({published:on});toast(on?'صارت تظهر للمصممين':'تم الإخفاء')}
+async function r2Req(m,key){const t=await FB.auth.currentUser.getIdToken();const r=await fetch(R2U.replace(/\/+$/,'')+'/obj/'+key,{method:m,headers:{Authorization:'Bearer '+t}});if(!r.ok){let e='';try{e=(await r.json()).error}catch(_){}throw new Error(e||('R2 '+r.status))}return r}
+async function r2Test(){const u=$('#r2u').value.trim().replace(/\/+$/,'');const st=$('#r2s');if(!/^https:\/\//.test(u)){st.textContent='⚠️ الصق رابط يبدأ بـ https://';return}st.textContent='⏳ جاري الفحص...';
+ try{const r=await fetch(u+'/health');const j=await r.json();if(!j.ok)throw new Error('');if(!j.bucket){st.innerHTML='⚠️ الـ Worker شغّال بس <b>الـ bucket مو مربوط</b> — أضف Binding باسم BUCKET';return}
+  const old=R2U;R2U=u;try{await r2Req('PUT','test/ping.json');await r2Req('GET','test/ping.json');await r2Req('DELETE','test/ping.json');st.innerHTML='✅ كلشي يشتغل — الرفع والتحميل والحذف. اضغط حفظ'}catch(e){st.innerHTML='⚠️ الاتصال شغّال بس الصلاحيات فيها مشكلة: '+esc(e.message)}finally{R2U=old}}
+ catch(e){st.textContent='❌ ما گدرت أتصل — تأكد من الرابط وإنك ضغطت Deploy'}}
+async function r2Save(){const u=$('#r2u').value.trim().replace(/\/+$/,'');if(u&&!/^https:\/\//.test(u)){toast('الرابط لازم يبدأ بـ https://');return}
+ await FB.db.doc('settings/main').set({r2Url:u},{merge:true});R2U=u;toast(u?'✅ تم — الملفات الجديدة تنرفع على Cloudflare':'تم — الملفات تنحفظ بـ Firebase')}
+async function rdDel(id){const b=$('#rdx_'+id);if(!b.dataset.c){b.dataset.c=1;b.textContent='⚠️ اضغط مرة ثانية للتأكيد';setTimeout(()=>{if(b){b.dataset.c='';b.textContent='🗑 حذف'}},4000);return}
+ const r=RD.find(x=>x.id===id);if(r&&r.store==='r2'&&R2U){try{await r2Req('DELETE','ready/'+id+'.json')}catch(e){}}
+ try{const q=await FB.db.collection('ready/'+id+'/parts').get();for(const d of q.docs)await d.ref.delete();await FB.db.doc('ready/'+id).delete();toast('تم الحذف — اللي اشتروها تبقى عندهم')}catch(e){toast('تعذّر الحذف')}}
+async function saveRpp(){const v=Math.round(+normD($('#rpp').value)||0);if(!v){toast('اكتب السعر');return}
+ await FB.db.doc('settings/main').set({readyPagePrice:v},{merge:true});RPP=v;
+ const G=RD.filter(r=>r.pm==='global');for(const r of G){await FB.db.doc('ready/'+r.id).update({total:rdTot(r)})}
+ toast('تم الحفظ ✓'+(G.length?' — تحدّث سعر '+G.length+' ملزمة':''))}
 /* ---- navigation ---- */
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('on',x===b));
- ['vHome','vDes','vBk','vCodes','vTx','vSet'].forEach(v=>$('#'+v).classList.toggle('hidden',v!==b.dataset.v));window.scrollTo(0,0)});
+ ['vHome','vDes','vBk','vCodes','vTx','vReady','vSet'].forEach(v=>$('#'+v).classList.toggle('hidden',v!==b.dataset.v));window.scrollTo(0,0)});
 function segs(){
  const mk=(el,list,cur,cb)=>{el.innerHTML=list.map(([k,l])=>`<button class="${k===cur?'on':''}" data-k="${k}">${l}</button>`).join('');el.querySelectorAll('button').forEach(b=>b.onclick=()=>cb(b.dataset.k))};
  mk($('#perSeg'),PERS,PER,k=>{PER=k;segs();loadTx()});mk($('#perSeg2'),PERS,PER,k=>{PER=k;segs();loadTx()});
- mk($('#typeSeg'),[['all','الكل'],['export','حفظ'],['code','أكواد'],['admin','شحن إدارة'],['deduct','خصم إدارة']],TXTYPE,k=>{TXTYPE=k;segs();renderTx()});
+ mk($('#typeSeg'),[['all','الكل'],['ready','جاهزة'],['export','حفظ'],['code','أكواد'],['admin','شحن إدارة'],['deduct','خصم إدارة']],TXTYPE,k=>{TXTYPE=k;segs();renderTx()});
 }
 
 /* ---- login ---- */
@@ -333,9 +417,10 @@ function startData(){
  unsubs.push(FB.db.collection('codes').orderBy('createdAt','desc').limit(500).onSnapshot(q=>{CODES=q.docs.map(d=>({id:d.id,...d.data()}));renderCodes();renderHome()}));
  FB.db.doc('settings/main').get().then(async s=>{let v=s.exists?s.data():{};
   if(!s.exists||v.pricePerPage==null||v.trialPages==null){v={pricePerPage:v.pricePerPage||150,trialPages:v.trialPages!=null?v.trialPages:3};await FB.db.doc('settings/main').set(v,{merge:true})}
-  PRICE=+v.pricePerPage;$('#price').value=PRICE;$('#trial').value=v.trialPages});
+  PRICE=+v.pricePerPage;$('#price').value=PRICE;$('#trial').value=v.trialPages;RPP=+v.readyPagePrice||0;$('#rpp').value=RPP||'';R2U=v.r2Url||'';$('#r2u').value=R2U;renderReady()});
+ unsubs.push(FB.db.collection('ready').onSnapshot(q=>{RD=q.docs.map(d=>({id:d.id,...d.data()}));RD.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));renderReady()},e=>{$('#rdList').innerHTML='<div class="muted" style="padding:16px;color:#c62828">⚠️ حدّث قواعد Firebase من الإعدادات حتى تشتغل الملازم الجاهزة</div>'}));
  unsubs.push(FB.db.collection('secrets').onSnapshot(q=>{SECRETS={};q.docs.forEach(d=>SECRETS[d.id]=d.data());renderDes()}));
- unsubs.push(FB.db.collection('booklets').orderBy('lastAt','desc').limit(500).onSnapshot(q=>{BK=q.docs.map(d=>({id:d.id,...d.data()}));renderBk()}));
+ unsubs.push(FB.db.collection('booklets').orderBy('lastAt','desc').limit(500).onSnapshot(q=>{BK=q.docs.map(d=>({id:d.id,...d.data()}));renderBk();renderReady()}));
  loadTx();
 }
 async function loadTx(){
@@ -470,7 +555,7 @@ function renderCodes(){
 async function delCode(id){if(!confirm('حذف الكود '+id+'؟'))return;await FB.db.doc('codes/'+id).delete();toast('تم الحذف')}
 
 /* ---- transactions ---- */
-const TN={page:'إضافة صفحات',refund:'إرجاع صفحات',export:'حفظ PDF',code:'شحن بكود',admin:'شحن من الإدارة',deduct:'خصم من الإدارة'},KN={pdf:'PDF',word:'Word',print:'طباعة'};
+const TN={ready:'شراء ملزمة جاهزة',page:'إضافة صفحات',refund:'إرجاع صفحات',export:'حفظ PDF',code:'شحن بكود',admin:'شحن من الإدارة',deduct:'خصم من الإدارة'},KN={pdf:'PDF',word:'Word',print:'طباعة'};
 function txRow(t){return `<div class="item" style="cursor:default"><div class="mid"><b>${TN[t.type]||t.type}${t.kind?' '+KN[t.kind]:''}${t.pages?' — '+t.pages+' صفحة':''}${t.free?' (🎁 '+t.free+' مجانية)':''}</b>${t.teacher?'<span class="muted"> 👨‍🏫 '+esc(t.teacher)+'</span>':''}
  <span class="muted">${esc(t.name||'')} ${t.title?'• '+esc(t.title):''}${t.note?' • '+esc(t.note):''}${t.code?' • '+t.code:''} • ${dstr(t.at)}</span></div><span class="amt ${t.amount>0?'p':'n'}">${t.amount>0?'+':''}${fmt(t.amount)}</span></div>`}
 function renderTx(){const l=TX.filter(t=>TXTYPE==='all'||t.type===TXTYPE);
