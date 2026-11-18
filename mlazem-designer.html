@@ -1087,7 +1087,8 @@ let S=demoSample();
 const DB={db:null,
  open(){return new Promise(res=>{try{const r=indexedDB.open('mlazem-designer',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>{this.db=r.result;res()};r.onerror=()=>res()}catch(e){res()}})},
  get(k){return new Promise(res=>{try{const q=this.db.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>res(null)}catch(e){res(null)}})},
- set(k,v){try{this.db.transaction('kv','readwrite').objectStore('kv').put(v,k)}catch(e){}}};
+ set(k,v){try{this.db.transaction('kv','readwrite').objectStore('kv').put(v,k)}catch(e){}},
+ del(k){try{this.db.transaction('kv','readwrite').objectStore('kv').delete(k)}catch(e){}}};
 let saveT,PJ=[];
 function save(){clearTimeout(saveT);saveT=setTimeout(saveNow,500);if(typeof liveSoon==='function')liveSoon();if(typeof snapSoon==='function')snapSoon()}
 function saveNow(){if(!S.pid)S.pid=uid();DB.set('p:'+S.pid,JSON.stringify(S));SAVED_AT=Date.now();if(typeof updSaved==='function')updSaved();
@@ -1628,8 +1629,8 @@ function itemEl(it,color){
 }
 function TXS(t){const empty=!String(t||'').replace(/\u200b/g,'').trim();return `<span class="etx${empty?' emp':''}" data-ph="${isEN()?'Type here...':'اكتب هنا...'}">${inline(t)}</span>`}
 function figEl(fi,b){
- const d=document.createElement('div');d.className='fig'+(fi.ann?'':' plain');
- const r=fi.w/fi.h;let w=BODYW*(b.width||65)/100,h=w/r;if(h>660){h=660;w=h*r}
+ const d=document.createElement('div');d.className='fig'+(fi.ann?'':' plain');if(b.full)d.style.margin='0';
+ const r=fi.w/fi.h;let w=BODYW*(b.width||65)/100,h=w/r;const MH=b.full?880:660;if(h>MH){h=MH;w=h*r}
  d.innerHTML=`<img src="${fi.src}" style="width:${Math.round(w)}px;height:${Math.round(h)}px">`+(b.caption?`<div class="cap">${esc(b.caption)}</div>`:'');
  return d;
 }
@@ -2986,7 +2987,7 @@ function v2l(s){const a=[...s].reverse().map(c=>MIR[c]||c);const o=[];for(let i=
 const isBoldF=n=>/bold|black|heavy|semibold|demi|,b$|-b$/i.test(n||'');
 function mapFont(n){n=(n||'').replace(/^[A-Z]{6}\+/,'').toLowerCase();
  const R=[[/cairo/,'Cairo'],[/tajawal/,'Tajawal'],[/almarai/,'Almarai'],[/amiri/,'Amiri'],[/messiri/,'El Messiri'],[/changa/,'Changa'],[/readex/,'Readex Pro'],[/lateef/,'Lateef'],[/marhey/,'Marhey'],[/lalezar/,'Lalezar'],[/rakkas/,'Rakkas'],[/mada\b/,'Mada'],[/alexandria/,'Alexandria'],
-  [/kufi/,'Noto Kufi Arabic'],[/thuluth|diwani|ruqaa|reqaa|ruqa/,'Aref Ruqaa'],[/typesetting|scheherazade|uthman|quran|mushaf|hafs/,'Scheherazade New'],
+  [/kufi/,'Noto Kufi Arabic'],[/pt bold|heading|mudhir/,'Cairo'],[/typesetting|scheherazade|uthman|quran|mushaf|hafs/,'Scheherazade New'],
   [/naskh|simplified|traditional|lotus|mudir|badr|yagut|zar|nazanin|times|majalla|sakkal|arabic transparent|akhbar/,'Noto Naskh Arabic'],
   [/plex|tahoma|segoe|dubai|noto ?sans/,'IBM Plex Sans Arabic'],[/din|ge ?ss|helvetica|frutiger|myriad|sst|hacen/,'Tajawal'],[/arial|calibri/,'Noto Naskh Arabic'],
   [/poppins/,'Poppins'],[/montserrat/,'Montserrat'],[/roboto/,'Roboto'],[/open ?sans/,'Open Sans'],[/lato/,'Lato'],[/georgia|cambria|garamond/,'Merriweather']];
@@ -3054,11 +3055,14 @@ function buildLines(P,ctx){ctx=ctx||{};
  for(const it of its){const ln=L.find(l=>Math.abs(l.bl-it.bl)<Math.max(l.h,it.h)*.5);if(ln){ln.its.push(it);ln.h=Math.max(ln.h,it.h)}else L.push({bl:it.bl,h:it.h,its:[it]})}
  const AR=/[؀-ۿ]/g,LA=/[A-Za-z]/g;
  return L.sort((a,b)=>a.bl-b.bl).map(l=>{const txt=l.its.map(i=>i.s).join(' ');const nAr=(txt.match(AR)||[]).length;const lx0=Math.min(...l.its.map(i=>i.x0)),lx1=Math.max(...l.its.map(i=>i.x1));
+  {const mh=Math.max(...l.its.map(i=>i.h)),big=l.its.filter(i=>i.h>mh*.8).map(i=>i.bl).sort((a,b)=>a-b),mbl=big[big.length>>1];
+   l.its=l.its.map(i=>{const t=i.s.trim();if(i.ocr||i.h>mh*.8||!/^[0-9+\-−]{1,3}$/.test(t))return i;const up=i.bl<mbl-mh*.12,dn=i.bl>mbl+mh*.08;if(!up&&!dn)return i;
+    const U='⁰¹²³⁴⁵⁶⁷⁸⁹',D='₀₁₂₃₄₅₆₇₈₉';return{...i,s:[...t].map(c=>/[0-9]/.test(c)?(up?U:D)[+c]:c==='+'?(up?'⁺':'₊'):(up?'⁻':'₋')).join(''),tight:1}})}
   const rtl=nAr>=(txt.match(LA)||[]).length||(ctx.rtl&&nAr>0)||(ctx.rtl&&!nAr&&lx1>794*.8&&lx0>794*.15);
   if(ctx.rtl&&!nAr)l.its.forEach(i=>{if(/^[?!.:;,،؟]+[A-Za-z]/.test(i.s)&&/[A-Za-z0-9)'"]$/.test(i.s)){const m=i.s.match(/^([?!.:;,،؟]+)(.*)$/);i.s=m[2]+m[1]}});
   let a=[...l.its].sort((p,q)=>p.x0-q.x0);
   if(rtl){a.reverse();const o=[];for(let k=0;k<a.length;){if(!/[؀-ۿ]/.test(a[k].s)&&/[A-Za-z]/.test(a[k].s)){let j=k;while(j<a.length&&!/[؀-ۿ]/.test(a[j].s))j++;let e=j;while(e>k&&!/[A-Za-z0-9]/.test(a[e-1].s))e--;o.push(...a.slice(k,e).reverse(),...a.slice(e,j));k=j}else o.push(a[k++])}a=o}
-  const runs=[];a.forEach((it,k)=>{let sp='';if(k){const pv=a[k-1];const gap=Math.max(pv.x0-it.x1,it.x0-pv.x1);if(gap>it.h*.16)sp=' '}
+  const runs=[];a.forEach((it,k)=>{let sp='';if(k&&!it.tight&&!a[k-1].tight2){const pv=a[k-1];const gap=Math.max(pv.x0-it.x1,it.x0-pv.x1);if(gap>it.h*.16)sp=' '}
    const b=!!it.b;if(runs.length&&runs[runs.length-1].b===b)runs[runs.length-1].t+=sp+it.s;else runs.push({b,t:(runs.length?sp:'')+it.s})});
   const clean=t=>fixPF(t).replace(/\s+([ً-ْ])/g,'$1').replace(/[ \t]+/g,' ');
   runs.forEach(r=>r.t=clean(r.t));const plain=runs.map(r=>r.t).join('').replace(/\s+/g,' ').trim();
@@ -3074,7 +3078,13 @@ async function ocrLib(){if(window.Tesseract)return window.Tesseract;const U=['ht
 async function ocrWorker(say){if(OCRW)return OCRW;const T=await ocrLib();say&&say('📥 جاري تحميل قارئ الكتابة العربي والإنكليزي (أول مرة فقط)...');
  OCRW=await T.createWorker(['ara','eng'],1,{logger:m=>{if(say&&m&&/loading|initializ/i.test(m.status||'')&&m.progress!=null)say('📥 جاري تحميل قارئ الكتابة... '+Math.round(m.progress*100)+'%')}});
  try{await OCRW.setParameters({preserve_interword_spaces:'1',tessedit_pageseg_mode:'3'})}catch(_){}return OCRW}
-async function ocrPage(cv,R,mask,say,segL,darkR){const w=await ocrWorker(say);
+const OCRP={free:[],all:[],wait:[]};
+async function ocrPool(n,say){const T=await ocrLib();if(!OCRW)await ocrWorker(say);if(!OCRP.all.length){OCRP.all.push(OCRW);OCRP.free.push(OCRW)}
+ while(OCRP.all.length<n){try{const w=await T.createWorker(['ara','eng'],1);try{await w.setParameters({preserve_interword_spaces:'1',tessedit_pageseg_mode:'3'})}catch(_){}OCRP.all.push(w);OCRP.free.push(w)}catch(e){break}}}
+async function ocrGet(say){if(!OCRP.all.length)await ocrPool(1,say);if(OCRP.free.length)return OCRP.free.pop();return new Promise(ok=>OCRP.wait.push(ok))}
+function ocrPut(w){const n=OCRP.wait.shift();if(n)n(w);else OCRP.free.push(w)}
+async function ocrPage(cv,R,mask,say,segL,darkR){const w=await ocrGet(say);try{return await ocrPage2(w,cv,R,mask,segL,darkR)}finally{ocrPut(w)}}
+async function ocrPage2(w,cv,R,mask,segL,darkR){
  const c2=document.createElement('canvas');c2.width=cv.width;c2.height=cv.height;const g=c2.getContext('2d');g.drawImage(cv,0,0);g.fillStyle='#fff';
  mask.forEach(b=>g.fillRect(b.x0*R-2,b.y0*R-2,(b.x1-b.x0)*R+4,(b.y1-b.y0)*R+4));
  (segL||[]).forEach(l=>{const t=2.2*R;if(l.o==='h')g.fillRect(l.s0*R-t,l.a*R-t,(l.s1-l.s0)*R+2*t,2*t);else g.fillRect(l.a*R-t,l.s0*R-t,2*t,(l.s1-l.s0)*R+2*t)});
@@ -3084,9 +3094,9 @@ async function ocrPage(cv,R,mask,say,segL,darkR){const w=await ocrWorker(say);
  const r=await w.recognize(c2,{},{blocks:true,text:true});c2.width=c2.height=0;const d=r.data||{};
  let lines=d.lines;if(!lines||!lines.length){lines=[];(d.blocks||[]).forEach(b=>(b.paragraphs||[]).forEach(p=>(p.lines||[]).forEach(l=>lines.push(l))))}
  const LN=[],WD=[];const bx=b=>({x0:b.x0/R,y0:b.y0/R,x1:b.x1/R,y1:b.y1/R});
- (lines||[]).forEach(l=>{let t=fixPF((l.text||'').replace(/\s+/g,' ').trim()).replace(/^[°·٠o.»«•*]+\s+(?=[ء-ي])/,'• ');const bb=l.bbox;if(!t||(bb.y1-bb.y0)/R<6||(!/[ء-ي]/.test(t)&&t.replace(/[^A-Za-z0-9]/g,'').length<=3)||(t.replace(/[^ء-يA-Za-z0-9]/g,'').length<3&&!/[ء-ي]{2}|[0-9]/.test(t))||(l.confidence!=null&&l.confidence<20)||!/[؀-ۿA-Za-z0-9]/.test(t))return;
-  const b=bx(l.bbox);const h=(b.y1-b.y0)*.72;LN.push(Object.assign(b,{s:t,h,bl:b.y1-(b.y1-b.y0)*.2,ocr:1}));
-  (l.words||[]).forEach(wd=>{const s=fixPF((wd.text||'').trim());if(!s)return;const q=bx(wd.bbox);WD.push(Object.assign(q,{s,h,bl:q.y1-(q.y1-q.y0)*.2}))})});
+ (lines||[]).forEach(l=>{let t=fixPF((l.text||'').replace(/\s+/g,' ').trim()).replace(/^[|\]\[]\s*|\s*[|\]\[]$/g,'').replace(/^(\S{0,2}[<>])\s+(?=[ء-ي])/,'').trim().replace(/^[°·٠o.»«•*©®@¢€]+\s*(?=[ء-ي(])/,'• ');const bb=l.bbox;if(!t||(bb.y1-bb.y0)/R<6||(!/[ء-ي]/.test(t)&&t.replace(/[^A-Za-z0-9]/g,'').length<=3)||(t.replace(/[^ء-يA-Za-z0-9]/g,'').length<3&&!/[ء-ي]{2}|[0-9]/.test(t))||(l.confidence!=null&&l.confidence<20)||!/[؀-ۿA-Za-z0-9]/.test(t))return;
+  const b=bx(l.bbox);const h=(b.y1-b.y0)*.72;const wc=(l.words||[]).map(w=>w.confidence).filter(v=>v!=null);const cf=wc.length?wc.reduce((a,v)=>a+v,0)/wc.length:(l.confidence!=null?l.confidence:90);LN.push(Object.assign(b,{s:t,h,bl:b.y1-(b.y1-b.y0)*.2,ocr:1,cf,junk:/[*<>\]\[{}|~^]|[A-Za-z]{2,}\d|\d[A-Za-z]{2,}/.test(t)&&/[ء-ي]/.test(t)}));
+  const LW=LN[LN.length-1];LW.ws=[];(l.words||[]).forEach(wd=>{const s=fixPF((wd.text||'').trim());if(!s)return;const q=bx(wd.bbox);const W=Object.assign(q,{s,h,bl:b.y1-(b.y1-b.y0)*.2,ocr:1,cf:wd.confidence});WD.push(W);LW.ws.push(W)})});
  return{LN,WD}}
 /* ---- قراءة صفحة كاملة ---- */
 async function pdfPageRead(pdf,lib,i,R){
@@ -3102,6 +3112,8 @@ async function pdfPageRead(pdf,lib,i,R){
   its.push({s:str,x0:Math.min(x,x+w),x1:Math.max(x,x+w),y0:bl-h*.8,y1:bl+h*.2,bl,h,f,b:isBoldF(f)})});
  const geo=pdfGeo(ol,lib,vp.transform,794,PHp);pg.cleanup();
  return{its,geo,cv,R,PH:PHp}}
+const imgKey=b=>[b.x0,b.y0,b.x1-b.x0,b.y1-b.y0].map(v=>Math.round(v/8)).join(','),imgSz=b=>Math.round((b.x1-b.x0)/3)+'x'+Math.round((b.y1-b.y0)/3);
+const isLat=t=>/^[\x20-\x7E⁰¹²³⁴-⁹₀-₉⁺⁻₊₋]+$/.test(t)&&/[A-Za-z0-9]/.test(t);
 const inB=(p,b,m=1.5)=>{const cx=(p.x0+p.x1)/2,cy=p.bl!=null?p.bl-p.h*.3:(p.y0+p.y1)/2;return cx>=b.x0-m&&cx<=b.x1+m&&cy>=b.y0-m&&cy<=b.y1+m};
 const area=b=>(b.x1-b.x0)*(b.y1-b.y0);
 const ovl=(a,b,g=0)=>a.x0<=b.x1+g&&b.x0<=a.x1+g&&a.y0<=b.y1+g&&b.y0<=a.y1+g;
@@ -3109,20 +3121,39 @@ function unionBoxes(L,g){const B=L.map(b=>({...b,n:1}));let ch=true;while(ch){ch
 const isColor=c=>{if(!c||c[0]!=='#'||c.length<7)return false;const r=parseInt(c.slice(1,3),16),g=parseInt(c.slice(3,5),16),b=parseInt(c.slice(5,7),16),mx=Math.max(r,g,b),mn=Math.min(r,g,b);return mx-mn>45&&mx>70&&mn<235};
 const isLight=c=>{if(!c||c[0]!=='#')return true;const r=parseInt(c.slice(1,3),16),g=parseInt(c.slice(3,5),16),b=parseInt(c.slice(5,7),16);return(r*299+g*587+b*114)/1000>150};
 /* ---- تحليل الصفحة إلى عناصر بأدوات البرنامج ---- */
-function pageLayout(P,useOcr,ocr){
+function pageComplex(P,tables){tables=tables||geoTables(P.geo.segs).tables;const tiny=tables.filter(t=>(t.x1-t.x0)/(t.xs.length-1)<42).length,shortLat=P.its.filter(t=>isLat(t.s)&&t.s.trim().length<=3).length;return tiny>=3||shortLat>=50}
+function pageLayout(P,useOcr,ocr,noExp){
  const PH=P.PH,PA=794*PH,{segs,rects,imgs,curv}=P.geo;
  // صور ورسوم
  let figs=imgs.filter(b=>b.x1-b.x0>=24&&b.y1-b.y0>=24&&area(b)<PA*.8);
  const cc=unionBoxes(curv.filter(b=>area(b)<PA*.5),10).filter(b=>b.n>=3&&b.x1-b.x0>=50&&b.y1-b.y0>=40);
- figs=unionBoxes([...figs,...cc],6).filter(b=>area(b)<PA*.85).map(b=>({x0:Math.max(0,b.x0),y0:Math.max(0,b.y0),x1:Math.min(794,b.x1),y1:Math.min(PH,b.y1)}));
+ figs=unionBoxes([...figs,...cc],12).filter(b=>area(b)<PA*.85).map(b=>({x0:Math.max(0,b.x0),y0:Math.max(0,b.y0),x1:Math.min(794,b.x1),y1:Math.min(PH,b.y1)}));
+ const faint=b=>{try{const c=P.cv,R=P.R,x=Math.max(0,b.x0*R|0),y=Math.max(0,b.y0*R|0),w=Math.min(c.width-x,(b.x1-b.x0)*R|0),h=Math.min(c.height-y,(b.y1-b.y0)*R|0);if(w<2||h<2)return false;const D=c.getContext('2d').getImageData(x,y,w,h).data;let dk=0,t=0;for(let q=0;q<D.length;q+=80){t++;if(D[q]*.3+D[q+1]*.59+D[q+2]*.11<170)dk++}return dk/t<.015}catch(_){return false}};
+ const TX=useOcr&&ocr?ocr.LN:P.its;const badges=[];
+ figs=figs.filter(f=>{if(faint(f))return false;const ins=TX.filter(p=>ovl(p,f,-2));const n=ins.reduce((a,p)=>a+p.s.length,0);
+  if(n>=(useOcr?120:200))return false;
+  if(f.y1-f.y0<52&&f.x1-f.x0<560&&n>=3&&n<=90&&ins.filter(p=>/[ء-ي]{2}/.test(p.s)).length){badges.push(f);return false}return true});
  const {tables,frames}=geoTables(segs);
+ // صفحة رسومات معقدة (صناديق أوربيتالات، مخططات كثيرة): تبقى طبق الأصل كصورة وحدة
+ if(!noExp&&pageComplex(P,tables))return{EL:[{y:0,k:'img',b:{x0:36,y0:PH*.08,x1:758,y1:PH*.94},whole:1}],col:null};
  figs=figs.filter(f=>!tables.some(t=>f.x0>=t.x0-2&&f.x1<=t.x1+2&&f.y0>=t.y0-2&&f.y1<=t.y1+2));
  // الكتابة
  let pieces,words;
  if(useOcr){pieces=ocr.LN;words=ocr.WD;const _t=pieces.map(p=>p.s).join(' ');if((_t.match(/[؀-ۿ]/g)||[]).length>(_t.match(/[A-Za-z]/g)||[]).length)pieces.forEach(l=>{if(/[؀-ۿ]/.test(l.s))return;let t=l.s;const m=t.match(/^([?!.:;,،؟]+)\s*(.*)$/);if(m)t=m[2]+m[1];const n=t.match(/^(.*?)\s+\.?([0-9]{1,3})\.?([?!.:]*)$/);if(n&&/[A-Za-z]/.test(n[1]))t=n[2]+'. '+n[1]+n[3];l.s=t});
-  pieces.forEach(l=>{const ov=P.its.filter(it=>ovl(it,l,1));if(ov.length){const hs=ov.map(i=>i.h).sort((a,b)=>a-b);l.h=hs[hs.length>>1];l.b=ov.filter(i=>i.b).length>ov.length/2;l.f=ov[0].f}})}
+  pieces.forEach(l=>{const ov=P.its.filter(it=>ovl(it,l,1));if(ov.length){const hs=ov.map(i=>i.h).sort((a,b)=>a-b);l.h=hs[hs.length>>1];l.b=ov.filter(i=>i.b).length>ov.length/2;l.f=ov[0].f}});
+  // الإنكليزي والأرقام والرموز ناخذها من الملف نفسه (مضبوطة 100%) والعربي من قراءة الشكل
+  const LT=P.its.filter(it=>isLat(it.s));if(LT.length){const np=[],nw=words.filter(w=>!isLat(w.s));
+   pieces.forEach(l=>{if(LT.some(it=>ovl(it,l,1))&&l.ws&&l.ws.length){l.ws.forEach(w=>{if(!isLat(w.s)){w.h=l.h;w.b=l.b;w.f=l.f;w.cf=l.cf;np.push(w)}})}else np.push(l)});
+   LT.forEach(it=>{np.push(it);nw.push(it)});pieces=np;words=nw}}
  else{pieces=P.its;words=P.its}
+ if(P.deco){const DS=P.deco.filter(d=>area(d)<PA*.06);pieces=pieces.filter(p=>!DS.some(d=>inB(p,d,3)))}
+ pieces=pieces.filter(p=>{const y=p.bl!=null?p.bl:p.y1;return !((y<PH*.09||y>PH*.93)&&p.s.replace(/\s/g,'').length<14)});
  const used=new Set();const EL=[];const _all=pieces.map(p=>p.s).join(' ');const CX={rtl:(_all.match(/[؀-ۿ]/g)||[]).length>(_all.match(/[A-Za-z]/g)||[]).length};
+ // كتابة صغيرة ملتصقة بالرسم (مثل 1S2 تحت الصناديق) تنضم للصورة حتى ما تنقص
+ const L0=noExp?[]:buildLines(pieces.filter(p=>!figs.some(f=>inB(p,f,2))),{rtl:true}).map(l=>({...l,s:l.t}));
+ figs.forEach(f=>{let ch=true;while(ch){ch=false;for(const p of L0){if(inB(p,f,2))continue;const w=f.x1-f.x0;if(p.x1>f.x0-8&&p.x0<f.x1+8&&(p.x1-p.x0)<w*1.15&&((p.y0>=f.y1-2&&p.y0-f.y1<14)||(p.y1<=f.y0+2&&f.y0-p.y1<10))&&(!/[ء-ي]{3}/.test(p.s)||p.s.length<=12)){f.x0=Math.min(f.x0,p.x0);f.x1=Math.max(f.x1,p.x1);f.y0=Math.min(f.y0,p.y0-2);f.y1=Math.max(f.y1,p.y1+2);ch=true}}}});
+ // سطر انقرا غلط (رموز/أرقام صغيرة/معادلات) يبقى بشكله الأصلي كصورة
+ if(useOcr)pieces.forEach(p=>{if(p.ocr&&(p.cf<28||(p.junk&&p.cf<55))&&!tables.some(t=>inB(p,t,1))){figs.push({x0:Math.max(0,p.x0-4),y0:Math.max(0,p.y0-4),x1:Math.min(794,p.x1+4),y1:p.y1+4,line:1})}});
  pieces=pieces.filter(p=>!figs.some(f=>inB(p,f,2)));words=words.filter(p=>!figs.some(f=>inB(p,f,2)));
  figs.forEach(f=>EL.push({y:f.y0,k:'img',b:f}));
  // جداول
@@ -3153,10 +3184,10 @@ function pageLayout(P,useOcr,ocr){
   if(lab&&!(BOXK[lab]||BOXK[lab.toLowerCase()]))body=lab+': '+body,lab='';
   EL.push({y:f.y0,k:'md',t:lab?`[${lab}] ${body}`:`[إطار] ${body}`})});
  pieces=pieces.filter(p=>!used.has(p));
- buildLines(pieces,CX).forEach(l=>EL.push({y:l.y0,k:'ln',l}));
+ buildLines(pieces,CX).forEach(l=>{if(badges.some(b=>inB({x0:l.x0,x1:l.x1,bl:l.bl,h:l.h},b,3)))l.badge=1;EL.push({y:l.y0,k:'ln',l})});
  EL.sort((a,b)=>a.y-b.y);
  return{EL,col:tCol||bandCols[0]||null}}
-function lineKind(l,med){const t=l.t;
+function lineKind(l,med){const t=l.t;if(l.badge&&t.length<90)return'h2';
  if(/^[•▪●◦■◆►✓➢❖➤▶✔*\-–]\s*/.test(t)&&t.length>2)return'li';
  if(/^([0-9٠-٩]{1,3})\s*[.)\-]\s*\S/.test(t)||/^([أ-ي]|هـ)\s*[)\-]\s*\S/.test(t)||/^[a-zA-Z]\s*\)\s*\S/.test(t))return'nl';
  if(l.h>=med*1.45&&t.length<90)return'h1';
@@ -3167,7 +3198,7 @@ function lineMd(l,k){let t=l.md;if((k==='li'||k==='nl')&&/^\*\*/.test(t))t=l.t;
  if(k==='nl'){const m=t.replace(/^\*\*/,'').match(/^([0-9٠-٩]{1,3}|[أ-ي]|هـ|[a-zA-Z])\s*[.)\-]\s*(.*)$/);if(m)return(/[0-9٠-٩]/.test(m[1])?m[1]+'. ':m[1]+') ')+m[2]}
  if(k==='h1')return '# '+l.t;if(k==='h2')return '## '+l.t;return mdSafe(l.bold&&l.t.length>1?'**'+l.t+'**':t)}
 /* ---- الاستيراد الكامل ---- */
-async function smartImport(pdf,lib,N,o,forceOcr,name){
+async function smartImport(pdf,lib,N,o,forceOcr,name,fp){
  const say=m=>{o=overlay(m)};let R=2.4;const pages=[];
  // 1) فحص: هل الكتابة سليمة؟
  let toks=[];for(let i=1;i<=Math.min(N,6)&&toks.length<400;i++){const pg=await pdf.getPage(i);const K=794/pg.getViewport({scale:1}).width,vp=pg.getViewport({scale:K});const tc=await pg.getTextContent();
@@ -3175,41 +3206,62 @@ async function smartImport(pdf,lib,N,o,forceOcr,name){
   toks=toks.concat(arTok(buildLines(its,{rtl:true}).map(l=>l.t).join(' ')));pg.cleanup()}
  const alR=toks.length?toks.filter(w=>w.includes('ال')).length/toks.length:0;const LT=toks.join(''),topR=LT.length?[...LT].filter(c=>'اليمونهرتب'.includes(c)).length/LT.length:1;const sc=arScore(toks),scR=arScore(toks.map(w=>[...w].reverse().join('')));
  const reversed=toks.length>=25&&scR>sc*2&&scR>.06;const garbled=!reversed&&toks.length>=25&&(sc<.045||(toks.length>=40&&(alR<.2||topR<.62)));
- const ocrDoc=forceOcr||garbled;if(ocrDoc)R=3.1;
- for(let i=1;i<=N;i++){say(`${ocrDoc?'🔎 جاري قراءة الكتابة من شكل الصفحة':'✍️ جاري تحويل الصفحة'} ${i} من ${N}...`);
-  const P=await pdfPageRead(pdf,lib,i,R);
+ const ocrDoc=forceOcr||garbled;if(ocrDoc)R=2.7;
+ // الزخارف المتكررة (شعار الترويسة، رقم الصفحة، العلامة المائية، أيقونات الأسئلة) ما تنحسب صور
+ const posC={},sizeC={};let sampled=0;{const st=Math.max(1,Math.floor(N/30));for(let i=1;i<=N;i+=st){say('🔍 جاري فحص تصميم الصفحات...');const pg=await pdf.getPage(i);const K=794/pg.getViewport({scale:1}).width,vp=pg.getViewport({scale:K});
+  const g=pdfGeo(await pg.getOperatorList(),lib,vp.transform,794,vp.height);const seen=new Set();g.imgs.forEach(b=>{const k=imgKey(b);if(!seen.has(k)){seen.add(k);posC[k]=(posC[k]||0)+1}const z=imgSz(b);sizeC[z]=(sizeC[z]||0)+1});sampled++;pg.cleanup()}}
+ const decoImg=b=>{if(sampled>=3&&posC[imgKey(b)]>=Math.max(2,sampled*.35))return true;const w=b.x1-b.x0,h=b.y1-b.y0;return Math.max(w,h)<46&&sizeC[imgSz(b)]>=4};
+ const CONC=ocrDoc?Math.max(1,Math.min(3,(navigator.hardwareConcurrency||4)-1)):2;if(ocrDoc){say('📥 جاري تجهيز قارئ الكتابة...');await ocrPool(CONC,say)}
+ const RES=new Array(N);let done=0,next=1;const t0=Date.now();
+ // حفظ تدريجي: إذا انقطع الرفع، ترفع نفس الملف ويكمّل من مكان ما وقف
+ const CK='imp:'+(fp||name+N);const IX=(await DB.get(CK))||{N,d:[]};if(IX.N!==N){IX.N=N;IX.d=[]}
+ for(const i of IX.d){const r=await DB.get(CK+':'+i);if(r)RES[i-1]=r}
+ const resumed=RES.filter(Boolean).length;done=resumed;
+ let WL=null;const wake=async()=>{try{if(navigator.wakeLock&&document.visibilityState==='visible')WL=await navigator.wakeLock.request('screen')}catch(_){}};await wake();
+ const onVis=()=>{if(document.visibilityState==='visible')wake()};document.addEventListener('visibilitychange',onVis);
+ const tick=()=>{const el=(Date.now()-t0)/1000,left=done?Math.round(el/done*(N-done)):0;say(`${ocrDoc?'🔎 جاري قراءة الكتابة':'✍️ جاري التحويل'} — خلصت ${done} من ${N} صفحة${left>5?` (باقي تقريباً ${left>90?Math.round(left/60)+' دقيقة':left+' ثانية'})`:''}<br><small>خلّي الشاشة مفتوحة لحد ما يخلص</small>`)};
+ const doPage=async i=>{if(RES[i-1])return;
+  const P=await pdfPageRead(pdf,lib,i,R);P.deco=P.geo.imgs.filter(b=>decoImg(b));P.geo.imgs=P.geo.imgs.filter(b=>!decoImg(b));
   if(reversed)P.its.forEach(it=>{if(/[؀-ۿ]/.test(it.s))it.s=[...it.s].reverse().join('')});
   const scanned=P.its.length<3&&P.geo.imgs.some(b=>area(b)>794*P.PH*.5);
-  const useOcr=ocrDoc||scanned;let ocr=null;
-  if(useOcr){const pre=pageLayout(P,false);const mask=pre.EL.filter(e=>e.k==='img').map(e=>e.b);
+  const cx=!scanned&&pageComplex(P);const useOcr=(ocrDoc||scanned)&&!cx;let ocr=null;
+  if(useOcr){const pre=pageLayout(P,false,null,1);const mask=[].concat(P.its.filter(it=>isLat(it.s)).map(it=>({x0:it.x0,x1:it.x1,y0:it.bl-it.h*.85,y1:it.bl+it.h*.25})));
    if(scanned)P.geo.imgs=[];
-   ocr=await ocrPage(P.cv,R,scanned?[]:mask,say,scanned?[]:P.geo.segs,scanned?[]:P.geo.rects.filter(r=>r.fill&&!isLight(r.fill)));say(`🔎 جاري ترتيب الصفحة ${i} من ${N}...`)}
+   ocr=await ocrPage(P.cv,R,scanned?[]:mask,say,scanned?[]:P.geo.segs,scanned?[]:P.geo.rects.filter(r=>r.fill&&!isLight(r.fill)))}
   const lay=pageLayout(P,useOcr,ocr);
   lay.EL.forEach(e=>{if(e.k!=='img')return;const b=e.b,c=document.createElement('canvas');const sx=Math.max(0,b.x0-3)*R,sy=Math.max(0,b.y0-3)*R,sw=Math.min(P.cv.width-sx,(b.x1-b.x0+6)*R),sh=Math.min(P.cv.height-sy,(b.y1-b.y0+6)*R);
-   const k=Math.min(1,1400/Math.max(sw,sh));c.width=Math.max(1,Math.round(sw*k));c.height=Math.max(1,Math.round(sh*k));const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(P.cv,sx,sy,sw,sh,0,0,c.width,c.height);
-   e.img={src:c.toDataURL('image/jpeg',.9),w:c.width,h:c.height,pw:b.x1-b.x0};c.width=c.height=0});
+   const k=Math.min(1,(e.whole?2300:1400)/Math.max(sw,sh));c.width=Math.max(1,Math.round(sw*k));c.height=Math.max(1,Math.round(sh*k));const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(P.cv,sx,sy,sw,sh,0,0,c.width,c.height);
+   let dk=0,tot=0;try{const D=g.getImageData(0,0,c.width,c.height).data;for(let q=0;q<D.length;q+=64){tot++;if(D[q]*.3+D[q+1]*.59+D[q+2]*.11<185)dk++}}catch(_){tot=0}
+   e.img=tot&&dk/tot<.012&&!e.whole?null:{src:c.toDataURL('image/jpeg',.9),w:c.width,h:c.height,pw:b.x1-b.x0,key:imgKey(b),sz:imgSz(b),small:Math.max(b.x1-b.x0,b.y1-b.y0)<70,whole:e.whole};c.width=c.height=0});
+  lay.EL=lay.EL.filter(e=>e.k!=='img'||e.img);
   P.cv.width=P.cv.height=0;
-  pages.push({EL:lay.EL,col:lay.col,PH:P.PH,its:P.its})}
+  RES[i-1]={EL:lay.EL,col:lay.col,PH:P.PH,its:P.its.map(t=>({s:t.s,f:t.f}))};DB.set(CK+':'+i,RES[i-1]);IX.d.push(i);DB.set(CK,IX);done++;tick()};
+ if(resumed)toast(`▶️ نكمّل من مكان ما وقف (${resumed} صفحة جاهزة)`);tick();await Promise.all(Array.from({length:Math.min(CONC,N)},async()=>{while(next<=N){const i=next++;await doPage(i)}}));RES.forEach(r=>pages.push(r));
+ document.removeEventListener('visibilitychange',onVis);try{WL&&WL.release()}catch(_){}
+
  // 2) حذف الترويسة والتذييل المتكررة وأرقام الصفحات
  const key=t=>t.replace(/[\d٠-٩]+/g,'#').replace(/\s+/g,' ').trim();const cnt={};
- pages.forEach(pg=>{const seen=new Set();pg.EL.forEach(e=>{if(e.k!=='ln')return;const z=e.l.y1<pg.PH*.11||e.l.y0>pg.PH*.89;if(!z)return;const k=key(e.l.t);if(!seen.has(k)){seen.add(k);cnt[k]=(cnt[k]||0)+1}})});
+ pages.forEach(pg=>{const seen=new Set();pg.EL.forEach(e=>{if(e.k!=='ln')return;const z=e.l.y1<pg.PH*.15||e.l.y0>pg.PH*.9;if(!z)return;const k=key(e.l.t);if(!seen.has(k)){seen.add(k);cnt[k]=(cnt[k]||0)+1}})});
  const lim=Math.max(2,Math.ceil(N*.4));
- pages.forEach(pg=>{pg.EL=pg.EL.filter(e=>{if(e.k!=='ln')return true;const z=e.l.y1<pg.PH*.11||e.l.y0>pg.PH*.89;if(!z)return true;
+ pages.forEach(pg=>{pg.EL=pg.EL.filter(e=>{if(e.k!=='ln')return true;const z=e.l.y1<pg.PH*.15||e.l.y0>pg.PH*.9;if(!z)return true;
   if(/^\s*(صفحة|الصفحة|page|ص)?\s*[-–—(]?\s*[\d٠-٩]{1,4}\s*[-–—)]?\s*$/i.test(e.l.t))return false;return !(N>=3&&cnt[key(e.l.t)]>=lim)})});
+ {const fc={};pages.forEach(pg=>{const sn=new Set();pg.EL.forEach(e=>{if(e.k==='img'&&!sn.has(e.img.key)){sn.add(e.img.key);fc[e.img.key]=(fc[e.img.key]||0)+1}})});
+  const zc={};pages.forEach(pg=>pg.EL.forEach(e=>{if(e.k==='img'&&e.img.small)zc[e.img.sz]=(zc[e.img.sz]||0)+1}));
+  pages.forEach(pg=>{pg.EL=pg.EL.filter(e=>e.k!=='img'||((N<3||fc[e.img.key]<Math.max(2,N*.35))&&!(e.img.small&&zc[e.img.sz]>=4))||e.img.whole)})}
  // 3) الحجم والخط واللون مثل الملف
  const LL=pages.flatMap(pg=>pg.EL.filter(e=>e.k==='ln').map(e=>e.l));const hs=LL.map(l=>l.h).sort((a,b)=>a-b),med=hs[hs.length>>1]||16;
  const fBody={},fHead={},allIts=pages.flatMap(pg=>pg.its);
- LL.forEach(l=>{const k=lineKind(l,med),f=mapFont(l.font);if(!f)return;const T=(k==='h1'||k==='h2')?fHead:fBody;T[f]=(T[f]||0)+l.t.length});
- if(!Object.keys(fBody).length)allIts.forEach(i=>{const f=mapFont(i.f);if(f)fBody[f]=(fBody[f]||0)+i.s.length});
+ const latF=f=>(FONTS.find(x=>x.n===f)||{}).lat;LL.forEach(l=>{const k=lineKind(l,med),f=mapFont(l.font);if(!f||(latF(f)&&/[ء-ي]/.test(l.t)))return;const T=(k==='h1'||k==='h2')?fHead:fBody;T[f]=(T[f]||0)+l.t.length});
+ if(!Object.keys(fBody).length)allIts.forEach(i=>{const f=mapFont(i.f);if(f&&!(latF(f)&&/[ء-ي]/.test(i.s)))fBody[f]=(fBody[f]||0)+i.s.length});
  const top=o=>Object.keys(o).sort((a,b)=>o[b]-o[a])[0];
- const bodyFont=top(fBody)||null,headFont=top(fHead)||bodyFont;
+ const bodyFont=top(fBody)||null,headFont=(top(fHead)&&!(latF(top(fHead))&&!latF(bodyFont||'')))?top(fHead):bodyFont;
  const bodyHs=LL.filter(l=>lineKind(l,med)==='p').map(l=>l.h).sort((a,b)=>a-b);const fs=Math.round(Math.max(13,Math.min(22,(bodyHs[bodyHs.length>>1]||med)*1.0)));
  const col=(pages.find(p=>p.col)||{}).col;
  // 4) بناء الملزمة
  const blocks=[];let cur=[];const flush=()=>{if(cur.length){blocks.push({id:uid(),type:'text',text:cur.join('\n')});cur=[]}};let title='';
  pages.forEach((pg,pi)=>{if(pi)cur.push('---');let prev=null;
   pg.EL.forEach(e=>{
-   if(e.k==='img'){flush();prev=null;const I=e.img;blocks.push({id:uid(),type:'image',src:I.src,w:I.w,h:I.h,width:Math.max(12,Math.min(100,Math.round(I.pw/BODYW*100))),caption:'',ann:[],annStyle:'box',annSize:'m'});return}
+   if(e.k==='img'){flush();prev=null;const I=e.img;blocks.push({id:uid(),type:'image',src:I.src,w:I.w,h:I.h,full:I.whole?1:0,width:I.whole?100:Math.max(12,Math.min(100,Math.round(I.pw/BODYW*100))),caption:'',ann:[],annStyle:'box',annSize:'m'});return}
    if(e.k==='md'){cur.push(e.t);prev=null;return}
    if(e.k==='h'){const t=mdSafe(e.t);if(!title&&pi===0&&!blocks.length&&!cur.filter(x=>x!=='---').length&&e.wide){title=e.t;prev=null;return}cur.push((e.h>=med*1.35?'# ':'## ')+e.t);prev=null;return}
    const l=e.l,k=lineKind(l,med);
@@ -3217,6 +3269,7 @@ async function smartImport(pdf,lib,N,o,forceOcr,name){
    if(prev&&prev.k==='p'&&k==='p'&&Math.abs(prev.h-l.h)<=Math.max(1.5,l.h*.2)&&(l.y0-prev.y1)<l.h*1.1&&!/[.:؟?!؛]$/.test(prev.t)&&cur.length){cur[cur.length-1]+=' '+l.md;prev={k,t:l.t,h:l.h,y1:l.y1};return}
    if(prev&&prev.k==='li'&&k==='p'&&(l.y0-prev.y1)<l.h*.9&&cur.length&&l.x1<prev.x1-l.h*.8){cur[cur.length-1]+=' '+l.md;prev.y1=l.y1;return}
    cur.push(lineMd(l,k));prev={k,t:l.t,h:l.h,y1:l.y1,x1:l.x1}})});
+ for(let i=1;i<=N;i++)DB.del(CK+':'+i);DB.del(CK);
  flush();if(!blocks.length)blocks.push({id:uid(),type:'text',text:''});
  if(blocks[0].type==='text')blocks[0].text=blocks[0].text.replace(/^(---\n)+/,'');
  return{blocks,title:title.replace(/\*\*/g,'')||name,bodyFont,headFont,fs,col,ocr:ocrDoc,reversed,empty:!LL.length&&!pages.some(p=>p.EL.length)}}
@@ -3225,10 +3278,10 @@ async function importPdf(file,mode){
  let o=overlay('⏳ جاري تحميل قارئ PDF...');
  try{const lib=await pdfLib();o=overlay('📖 جاري فتح الملف...');
   const pdf=await lib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;const N=pdf.numPages;
-  if(mode==='img'&&N>80){o.remove();popup('⚠️','الملف كبير',`الملف بيه ${N} صفحة — الحد 80 صفحة. قسّمه لملفين.`);return}
+  if(mode==='img'&&N>400){o.remove();popup('⚠️','الملف كبير',`الملف بيه ${N} صفحة — الحد 400 صفحة.`);return}
   const name=file.name.replace(/\.pdf$/i,'').trim()||'ملزمة مستوردة';
   clearTimeout(saveT);saveNow();const NS=blankProject();NS.title=name;NS.showToc=false;NS.chapterPage=false;
-  if(mode==='txt'||mode==='ocr'){const res=await smartImport(pdf,lib,N,o,mode==='ocr',name);
+  if(mode==='txt'||mode==='ocr'){const res=await smartImport(pdf,lib,N,o,mode==='ocr',name,file.name+'|'+file.size+'|'+mode);
    if(res.empty){o.remove();popup('📷','ما لگينا كتابة','الملف ما بيه كتابة نگدر نقراها.<br>جرّب خيار <b>«صفحات كصور + الكتابة فوقها»</b>.<br><button class="btn primary" style="width:100%;margin-top:12px" onclick="$(\'#popM\').classList.add(\'hidden\');openPdfImport()">📥 رجوع</button>');return}
    if(res.bodyFont)NS.bodyFont=res.bodyFont;if(res.headFont)NS.headFont=res.headFont;NS.fontSize=res.fs;
    NS.topics=[{id:uid(),unit:'',title:res.title,color:res.col||NS.topics[0].color,blocks:res.blocks}];NS.pdfOcr=res.ocr?1:0;
@@ -3242,7 +3295,7 @@ async function importPdf(file,mode){
   S=NS;saveNow();bindInfo();renderTopics();renderProjects();o.remove();
   showTab('vPreview');await renderPages();showPage(mode==='img'?0:1);liveSoon(300);
   popup('✅','تم رفع الملزمة',mode!=='img'?`صارت ملزمة جديدة باسم <b>${esc(name)}</b> (${N} صفحة PDF).<br>الكتابة والجداول والإطارات والصور صارت بأدوات البرنامج — اضغط على أي شي وعدّله.${S.pdfOcr?'<br><span style="color:#b45309;font-size:13px">الكتابة انقرت من شكل الصفحة — راجعها، ممكن كلمة أو كلمتين تحتاج تصحيح.</span>':''}`:`صارت ملزمة جديدة باسم <b>${esc(name)}</b> — ${N} صفحة بنفس شكلها.<br>أضف <b>🔤 كتابة حرة</b> أو صور أو علامة مائية فوق أي صفحة.`)
- }catch(e){console.warn(e);try{o.remove()}catch(_){}popup('⚠️','تعذّر فتح الملف','تأكد من الإنترنت (أول مرة يحتاج يحمّل قارئ PDF) وإن الملف PDF سليم.<br><small style="color:#94a3b8">'+esc(String(e&&e.message||e).slice(0,120))+'</small>')}}
+ }catch(e){console.warn(e);try{o.remove()}catch(_){}popup('⚠️','تعذّر فتح الملف','تأكد من الإنترنت (أول مرة يحتاج يحمّل قارئ PDF) وإن الملف PDF سليم.<br>إذا انقطع بالنص، ارفع <b>نفس الملف</b> مرة ثانية ويكمّل من مكان ما وقف.<br><small style="color:#94a3b8">'+esc(String(e&&e.message||e).slice(0,120))+'</small>')}}
 /* ================= العلامة المائية ================= */
 function bwmHTML(){const w=S.wm;if(!w||!(w.t||'').trim())return '';const st=`font-size:${w.s||90}px;color:${w.c||'#64748b'};opacity:${w.o!=null?w.o:.1};transform:rotate(${w.r!=null?w.r:-30}deg)`;
  return w.tile?`<div class="bwm tile">${Array(8).fill(`<span style="${st};font-size:${Math.round((w.s||90)*.55)}px">${esc(w.t)}</span>`).join('')}</div>`:`<div class="bwm"><span style="${st}">${esc(w.t)}</span></div>`}
