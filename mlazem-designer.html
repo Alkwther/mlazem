@@ -551,6 +551,7 @@ body.nui{padding-bottom:calc(70px + env(safe-area-inset-bottom));background:#eef
 .tpl .tps{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px}
 .tpl .tpt{aspect-ratio:794/1123;position:relative;overflow:hidden;border-radius:4px;border:1.5px solid #e6ebf3;cursor:pointer}
 .tpl .tpt>div{position:absolute;top:0;left:0;transform-origin:top left}
+.fsU{font-size:20px!important;font-weight:900}
 .tban{width:100%;display:flex;align-items:center;gap:3px;border:0;border-radius:15px;padding:7px 5px 7px 3px;margin:0 0 8px;cursor:pointer;color:#fff;font-family:Cairo,sans-serif;text-align:right;box-shadow:0 5px 12px rgba(30,58,138,.25);overflow:hidden;direction:rtl}
 .tban.hw{background:linear-gradient(135deg,#1d4ed8,#2563eb 55%,#3b82f6)}.tban.cv{background:linear-gradient(135deg,#6d28d9,#9333ea 55%,#c026d3)}
 .tban span{flex:1;min-width:0;line-height:1.2;order:1}.tban b{display:block;font-size:12.5px;font-weight:900}.tban small{display:block;color:#fde047;font-weight:900;font-size:11.5px}
@@ -877,7 +878,7 @@ body:has(#cvEd) #obM,body:has(#cvEd) #popM{z-index:99}body:has(#cvEd) .overlay{z
  </div>
  <div class="phint ui"><span>👆 اضغط على أي سطر بالورقة لتعديله</span><span><button class="btn sm" onclick="toggleZoom()" id="zBtn">🔍 تكبير</button> <button class="btn sm" onclick="toggleAll()" id="allBtn">📚 كل الصفحات</button></span></div>
  <div class="muted ui" id="pgInfo" style="text-align:center;margin-bottom:6px"></div>
- <div id="fsTop" class="ui"><button class="x" onclick="exitFS()">✕</button><button id="fsPrev" onclick="showPage(CURP-1)">›</button><div class="lb" id="fsLb"></div><button id="fsNext" onclick="showPage(CURP+1)">‹</button><button onclick="toggleAll()" id="fsAll" style="font-size:12px">📚 كل الصفحات</button><button onclick="zoomBy(-.25)">−</button><button onclick="zoomBy(.25)">+</button></div>
+ <div id="fsTop" class="ui"><button class="x" onclick="exitFS()">✕</button><button onclick="undo()" class="fsU" title="رجوع للسابق">↶</button><button onclick="redo()" class="fsU" title="إعادة">↷</button><button id="fsPrev" onclick="showPage(CURP-1)">›</button><div class="lb" id="fsLb"></div><button id="fsNext" onclick="showPage(CURP+1)">‹</button><button onclick="toggleAll()" id="fsAll" style="font-size:12px">📚 كل الصفحات</button><button onclick="zoomBy(-.25)">−</button><button onclick="zoomBy(.25)">+</button></div>
  <div class="work">
   <div class="stage">
    <div class="stb ui"><button onclick="undo()" id="uBtn" title="تراجع">↶</button><button onclick="redo()" id="rBtn" title="إعادة">↷</button><button onclick="zoomBy(-.25)">➖</button><span class="zp" id="zPct">100%</span><button onclick="zoomBy(.25)">➕</button><button onclick="toggleAll()" title="كل الصفحات" id="stAll">📚</button><button onclick="enterFS()" title="ملء الشاشة" style="font-size:18px">⛶</button></div>
@@ -900,7 +901,7 @@ body:has(#cvEd) #obM,body:has(#cvEd) #popM{z-index:99}body:has(#cvEd) .overlay{z
  <div id="sbarSlot"></div>
  <div class="abar ui"><button class="ab3 sv" onclick="manualSave()"><i>💾</i>حفظ</button><button class="ab3 pd" onclick="exportPDF()"><i>📕</i>تصدير PDF</button><button class="ab3 pv" onclick="enterFS(true)"><i>👁️</i>معاينة</button></div>
  <div id="fsBar" class="ui">
-  <button onclick="addHere()"><i>✍️</i>سطر</button><button onclick="openElements()"><i>🧩</i>عناصر</button><button onclick="toolImage()"><i>🖼️</i>صورة</button><button onclick="toolPage()"><i>📄</i>صفحة</button>
+  <button onclick="undo()"><i>↶</i>رجوع</button><button onclick="addHere()"><i>✍️</i>سطر</button><button onclick="openElements()"><i>🧩</i>عناصر</button><button onclick="toolImage()"><i>🖼️</i>صورة</button><button onclick="toolPage()"><i>📄</i>صفحة</button>
   <button onclick="newTopicHere()"><i>📘</i>موضوع</button><button onclick="newChapterHere()"><i>📗</i>فصل</button><button onclick="openColors()"><i>🎨</i>ألوان</button><button onclick="openFrames()"><i>🔲</i>إطار</button>
   <button onclick="openCoverSheet('front')"><i>📕</i>الغلاف</button><button onclick="addTextFloat()"><i>🔤</i>كتابة حرة</button><button onclick="openFonts()"><i>🔠</i>الخطوط</button><button onclick="openWM()"><i>💧</i>علامة مائية</button><button onclick="newTableSheet()"><i>▦</i>جدول</button><button onclick="openMath()"><i style="font-family:serif">∑</i>رموز</button><button onclick="openShapes()"><i>📐</i>أشكال</button><button onclick="undo()"><i>↶</i>تراجع</button><button onclick="redo()"><i>↷</i>إعادة</button>
   <button onclick="openAllTools()"><i>🧰</i>الكل</button><button class="pdfb" onclick="exportPDF()"><i>📕</i>PDF</button>
@@ -1696,7 +1697,8 @@ async function _render(){
   Object.assign(th.dataset,{ed:'th',t:ti});heads[t.id]=th;add(th);}else heads[t.id]=cur.body;
   t.blocks.forEach((b,bi)=>{
    if(full){cur=newPageFn();full=false}
-   if(b.type==='hwpage'){if(cur.body.children.length)cur=newPageFn();const bh=cur.body.clientHeight,HH=bh>200?bh:(PH-(S.frame&&S.frame!=='none'?194:170));const rows=hwFlowRows(b,ti,bi,HH);if(rows){rows.forEach(add);full=true;return}const el=hwPageEl(b,ti,bi,HH);cur.body.appendChild(el);full=true;return}
+   if(b.type==='hwpage'){if(cur.body.children.length)cur=newPageFn();const bh=cur.body.clientHeight,HH=bh>200?bh:(PH-(S.frame&&S.frame!=='none'?194:170));let rows=hwFlowRows(b,ti,bi,HH);if(rows){rows.forEach(add);full=true;return}const el=hwPageEl(b,ti,bi,HH);cur.body.appendChild(el);
+    if(cur.body.clientHeight&&hwBad(el)){el.remove();rows=hwFlowRows(b,ti,bi,HH,true);if(rows){rows.forEach(add);full=true;return}cur.body.appendChild(el)}full=true;return}
    if(b.type==='text'){parseItemsLn(b.text).forEach(it=>{if(it.k==='pb'){if(cur.body.children.length)cur=newPageFn();return}const el=itemEl(it,t.color);if((it.k==='p'||it.k==='nl'||it.k==='li')&&!/[ء-ي]/.test(it.t||'')&&/[0-9√∛=+×÷]/.test(it.t||'')){el.dir='ltr';el.style.textAlign='left'}setVars(el,t.color);Object.assign(el.dataset,{ed:'line',t:ti,b:bi,ln:it.ln,ln2:it.ln2,ty:itemType(it),n:it.n||'',lab:it.lab||''});add(el)})}
    else{const el=figEl(figs[b.id],b);setVars(el,t.color);Object.assign(el.dataset,{ed:'img',t:ti,b:bi});add(el)}
   });
@@ -3485,9 +3487,12 @@ function hwFs(it,H){const L=String(it.t).split('\n');const tb=L.filter(x=>x.trim
  const ml=Math.max(1,...L.filter(x=>!x.trim().startsWith('|')).map(hwVlen),...tb.map(x=>x.replace(/\s/g,'').length*1.6));
  return{h:it.h*H/lines*.74,w:it.w*BODYW/(ml*.5)}}
 // إذا الكتابة تطلع صغيرة بصفحة وحدة: نفس الترتيب بس تكمل على صفحة ثانية وثالثة
-function hwFlowRows(b,ti,bi,H){const MINF=Math.max(16,(S.fontSize||18)*.9);
+function hwBad(d){const R0=d.getBoundingClientRect();if(!R0.height)return false;const E=[...d.querySelectorAll('.hwi:not(.img)')].map(e=>e.getBoundingClientRect());
+ if(E.some(r=>r.bottom>R0.bottom+2))return true;
+ for(let i=0;i<E.length;i++)for(let j=i+1;j<E.length;j++){const a=E[i],c=E[j];const ox=Math.min(a.right,c.right)-Math.max(a.left,c.left),oy=Math.min(a.bottom,c.bottom)-Math.max(a.top,c.top);if(ox>8&&oy>Math.min(a.height,c.height)*.35)return true}return false}
+function hwFlowRows(b,ti,bi,H,force){const MINF=Math.max(16,(S.fontSize||18)*.9);
  const T=(b.items||[]).filter(x=>x.k!=='img'),F=T.map(x=>hwFs(x,H)),base=F.map(f=>Math.min(f.h,f.w)).sort((x,y)=>x-y),med=base[base.length>>1]||16;
- if(med>=MINF)return null;const k=MINF/med;
+ if(med>=MINF&&!force)return null;const k=Math.max(1,MINF/med);
  const its=[...(b.items||[])].sort((a,c)=>a.y-c.y);const rows=[];
  its.forEach(it=>{const r=rows[rows.length-1];if(r&&it.y<r.y1-Math.min(it.h,r.y1-r.y0)*.35){r.its.push(it);r.y1=Math.max(r.y1,it.y+it.h)}else rows.push({y0:it.y,y1:it.y+it.h,its:[it]})});
  let prev=0;return rows.map((r,ri)=>{const row=document.createElement('div');row.className='hwrow'+(ri?'':' keep');Object.assign(row.dataset,{hwt:ti,hwb:bi});
