@@ -925,6 +925,26 @@ body.exporting #pages .pw{content-visibility:visible}
 body.pscr:not(.fs) #pages .pw>*{pointer-events:none!important;user-select:none;-webkit-user-select:none}
 body.pscr:not(.fs) #pages .pw{cursor:pointer;-webkit-tap-highlight-color:rgba(37,99,235,.12)}
 body.pscr:not(.fs) #pages .pw:active{outline:3px solid rgba(37,99,235,.45);outline-offset:2px}
+/* ===== الرفع الدقيق + أدوات الأغلفة ===== */
+.cvp .ly .gim{position:absolute;max-width:none;pointer-events:none;user-select:none;-webkit-user-drag:none}
+#cvEd .cest{touch-action:none;overscroll-behavior:contain}
+.lyl{display:flex;flex-direction:column;gap:5px;max-height:240px;overflow-y:auto}
+.lyr{display:flex;align-items:center;gap:4px;background:#f1f5f9;border-radius:12px;padding:5px 6px}.lyr.off{opacity:.5}
+.lyr .nm{flex:1;min-width:0;font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;padding:4px}
+.lyr button{border:0;background:#fff;border-radius:9px;min-width:34px;height:32px;font-size:15px;cursor:pointer}
+.algg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.algg button{border:2px solid #e2e8f0;background:#fff;border-radius:12px;padding:9px 2px;font:800 13px Cairo,sans-serif;cursor:pointer}
+.algn{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.algn label{font-size:11.5px;font-weight:800;color:#475569;display:flex;flex-direction:column;gap:2px}
+.algn input{width:100%;border:1.5px solid #cbd5e1;border-radius:9px;padding:6px;font:700 14px Cairo,sans-serif;text-align:center}
+/* ===== شاشة الإطارات ===== */
+.frbig{display:flex;gap:12px;align-items:stretch;background:#f1f5fb;border-radius:18px;padding:10px;margin:4px 0 8px}
+.frbp{position:relative;width:46%;flex:0 0 46%;aspect-ratio:794/1123;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.16)}
+.frbi{flex:1;display:flex;flex-direction:column;justify-content:center;gap:4px}.frbi b{font-size:16px;color:#0b1f45}.frbi small{font-size:12px;color:#334155}
+.frpvp{position:absolute;top:0;left:0;width:794px;height:1123px;transform-origin:top left}.frpvp>.page{position:absolute!important;top:0;left:0;margin:0!important}
+.frcats{display:flex;gap:6px;overflow-x:auto;margin:10px 0 6px;padding-bottom:2px}.frcats button{flex:0 0 auto;border:2px solid #e2e8f0;background:#fff;border-radius:20px;padding:6px 14px;font:800 13px Cairo,sans-serif;cursor:pointer}.frcats button.on{background:#0b1f45;color:#fff;border-color:#0b1f45}
+.frgrid2{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.frt2{position:relative;border:2px solid #e2e8f0;border-radius:14px;padding:5px;background:#fff;cursor:pointer;text-align:center}.frt2.on{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.18);background:#eff6ff}
+.frt2 .frm2{position:relative;width:100%;aspect-ratio:794/1123;border-radius:7px;overflow:hidden;background:#fff;border:1px solid #eef2f7}
+.frt2 b{display:block;font-size:12px;margin-top:4px;color:#0b1f45}.frt2 i{position:absolute;top:8px;right:8px;font-style:normal;font-size:10px;font-weight:900;background:#16a34a;color:#fff;border-radius:8px;padding:1px 6px}
 </style>
 </head>
 <body>
@@ -5063,7 +5083,7 @@ function cvxMaskFill(g,W,H,items){// يمسح بس بكسلات الكتابة (
  g.putImageData(id,0,0)}
 function cvxMerge(bx){let a=bx.slice(),ch=true;while(ch){ch=false;for(let i=0;i<a.length;i++)for(let j=i+1;j<a.length;j++){const p=a[i],q=a[j];if(p.x0<=q.x1&&q.x0<=p.x1&&p.y0<=q.y1&&q.y0<=p.y1){a[i]={x0:Math.min(p.x0,q.x0),y0:Math.min(p.y0,q.y0),x1:Math.max(p.x1,q.x1),y1:Math.max(p.y1,q.y1)};a.splice(j,1);ch=true;break}}}return a}
 function cvxRoles(L){const has=r=>L.some(l=>l.role===r);
- L.forEach(l=>{if(CVX_ROLES.includes(l.role))return;const t=l.t;if(/0?7[3-9]\d[\s-]?\d{3}[\s-]?\d{4}|٠?٧[٣-٩]/.test(normD(t))&&normD(t).replace(/\D/g,'').length>=10)l.role='phone';else if(/(الصف|السادس|الخامس|الرابع|الثالث|الثاني|الأول|الاول|الإعدادي|الاعدادي|المتوسط|الابتدائي|العلمي|الأدبي|الادبي)/.test(t)&&t.length<30&&!/(الأستاذ|الاستاذ|المدرس)/.test(t))l.role='grade';else if(/(^|\s)(الأستاذ|الاستاذ|الأستاذة|الاستاذة|المدرس|المدرسة|إعداد|اعداد|تأليف|م\.|أ\.)(\s|:|$)/.test(t))l.role='teacher';else l.role='custom'});
+ L.forEach(l=>{if(CVX_ROLES.includes(l.role))return;const t=l.t;if(/0?7[3-9]\d[\s-]?\d{3}[\s-]?\d{4}|٠?٧[٣-٩]/.test(normD(t))&&normD(t).replace(/\D/g,'').length>=10)l.role='phone';else if(/(الصف|السادس|الخامس|الرابع|الثالث|الثاني|الأول|الاول|الإعدادي|الاعدادي|المتوسط|الابتدائي|العلمي|الأدبي|الادبي)/.test(t)&&t.length<30&&!/(الأستاذ|الاستاذ|المدرس)/.test(t))l.role='grade';else if(/(^|\s)(الأستاذ|الاستاذ|الأستاذة|الاستاذة|المدرس|المدرسة|إعداد|اعداد|تأليف|م\.|أ\.|د\.)(\s|:|$)/.test(t))l.role='teacher';else l.role='custom'});
  const roleOnce=r=>{const xs=L.filter(l=>l.role===r);xs.slice(1).forEach(l=>l.role='custom')};['teacher','phone','grade'].forEach(roleOnce);
  if(!has('title')){const c=L.filter(l=>l.role==='custom').sort((a,b)=>b.hh-a.hh)[0];if(c)c.role='title'}
  return L}
@@ -5152,11 +5172,6 @@ function pgOpen(i){if(i<0)return;try{if(typeof hwSelect==='function')hwSelect(nu
 document.getElementById('pages').addEventListener('click',e=>{const b=document.body;if(!b.classList.contains('pscr')||b.classList.contains('fs')||b.classList.contains('editing'))return;const pw=e.target.closest&&e.target.closest('.pw');if(!pw)return;
  e.preventDefault();e.stopPropagation();pgOpen(pagesList().indexOf(pw))},true);
 setTimeout(()=>{try{if(document.body.classList.contains('pscr')&&!localStorage.getItem('pgBrowseTip')){localStorage.setItem('pgBrowseTip','1');toast('👆 اسحب حتى تتصفح الصفحات — واضغط على أي صفحة حتى تفتحها وتعدّل عليها',5000)}}catch(e){}},4000);
-/* زر الرجوع بالتلفون يرجع لتصفح الصفحات بدل ما يطلع من البرنامج */
-let FS_HIST=0;
-{const _po=pgOpen;pgOpen=function(i){_po.apply(this,arguments);if(document.body.classList.contains('fs')){try{history.pushState({mfs:1},'');FS_HIST=1}catch(e){}}}}
-window.addEventListener('popstate',()=>{if(FS_HIST){FS_HIST=0;if(document.body.classList.contains('fs'))exitFS()}});
-{const _xf2=exitFS;exitFS=function(){const r=_xf2.apply(this,arguments);if(FS_HIST){FS_HIST=0;try{history.back()}catch(e){}}return r}}
 
 /* ---------- 5) كتابة الأغلفة بالصورة والـ PDF: نرسمها بالمتصفح نفسه حتى ما تتقطع الحروف العربية ---------- */
 function cvShParse(css){if(!css)return [];return css.split(/,(?![^(]*\))/).map(s=>{const m=s.trim().match(/^(-?[\d.]+)(?:px)?\s+(-?[\d.]+)(?:px)?\s+(-?[\d.]+)(?:px)?\s+(.+)$/);return m?{x:+m[1],y:+m[2],b:+m[3],c:m[4].trim()}:null}).filter(Boolean)}
@@ -5196,6 +5211,317 @@ async function cvAdmStore(){const G=$('#cvG');if(!G)return;let R=[];try{const q=
   c.querySelector('.ti').onclick=()=>cvOpenStore(r);c.querySelector('[data-a=e]').onclick=e=>{e.stopPropagation();cvAdmEdit(r)};
   c.querySelector('[data-a=h]').onclick=e=>{e.stopPropagation();cvAdmPub(r,!r.published)};c.querySelector('[data-a=d]').onclick=e=>{e.stopPropagation();cvAdmDel(r)};G.appendChild(c)})}
 {const _cs2=cvSheet;cvSheet=async function(){const r=await _cs2.apply(this,arguments);try{if(IS_ADMIN&&FB&&CVTAB==='store')await cvAdmStore()}catch(e){}return r}}
+
+/* ================= 🎯 الرفع الدقيق: الملف يبقى مثل ما هو بالضبط، وكل كتابة تصير قابلة للتعديل ================= */
+/* الفكرة: كل سطر كتابة يظهر بصورته الأصلية بالضبط (نفس الخط واللون والشكل) — وأول ما تعدّل الكلمات يتحول لكتابة حيّة بخط البرنامج.
+   PDF: نرسم الصفحة مرتين — مرة الخلفية بدون كتابة، ومرة الكتابة وحدها بخلفية شفافة. ما ينمسح ولا يتلف أي شي.
+   صورة: الخلفية تبقى الأصلية، ونقص كل سطر من الصورة نفسها. المكان القديم للكلمة ينمسح بس لحظة ما تعدّلها أو تحرّكها. */
+const UPX_TXT=new Set(['fillText','strokeText']);
+function upxCanvas(w,h){const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w));c.height=Math.max(1,Math.round(h));return c}
+function upxHex(r,g,b){return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('')}
+async function upxPdfPage(lib,pg,vp){const W=Math.round(vp.width),H=Math.round(vp.height);const P=CanvasRenderingContext2D.prototype;
+ const N=['fillText','strokeText','fill','stroke','fillRect','strokeRect','drawImage','putImageData','clearRect'],O={};N.forEach(n=>O[n]=P[n]);let G=null,M='',nt=0;
+ N.forEach(n=>{P[n]=function(...a){if(this===G){const t=UPX_TXT.has(n);if(M==='bg'&&t){nt++;return}if(M==='tx'&&!t)return}return O[n].apply(this,a)}});
+ const bg=upxCanvas(W,H),tx=upxCanvas(W,H);
+ try{G=bg.getContext('2d',{willReadFrequently:true});M='bg';await pg.render({canvasContext:G,viewport:vp}).promise;G=tx.getContext('2d',{willReadFrequently:true});M='tx';await pg.render({canvasContext:G,viewport:vp}).promise}
+ finally{N.forEach(n=>P[n]=O[n]);G=null}
+ let tc={items:[]};try{tc=await pg.getTextContent()}catch(e){}
+ const U=lib.Util,its=[];
+ for(const it of tc.items){if(!it.str||(!it.str.trim()&&!it.width))continue;const m=U.transform(vp.transform,it.transform);const s=Math.hypot(m[2],m[3]);if(s<4)continue;
+  let fn='';try{if(pg.commonObjs.has(it.fontName))fn=(pg.commonObjs.get(it.fontName)||{}).name||''}catch(e){}
+  its.push({s:fixPF(it.str),dir:it.dir,x:m[4],b:m[5],w:Math.abs(it.width*vp.scale),sz:s,fn})}
+ return {bg,tx,W,H,nt,its}}
+function upxLines(its){its=its.filter(i=>i.s);its.sort((a,b)=>a.b-b.b);const rows=[];
+ for(const it of its){let r=rows.find(r=>Math.abs(r.b-it.b)<Math.max(r.sz,it.sz)*.3&&Math.abs(r.sz-it.sz)<Math.max(r.sz,it.sz)*.4);if(!r){r={b:it.b,sz:it.sz,a:[]};rows.push(r)}r.a.push(it)}
+ const L=[];rows.forEach(r=>{r.a.sort((p,q)=>p.x-q.x);let cur=[];const fl=()=>{if(cur.some(i=>i.s.trim()))L.push(cur);cur=[]};r.a.forEach(it=>{const last=cur[cur.length-1];if(last&&it.x-(last.x+last.w)>r.sz*1.5)fl();cur.push(it)});fl()});
+ return L.map(a=>{const ar=a.some(i=>/[؀-ۿ]/.test(i.s));let seq=a.slice();
+  if(ar){seq.sort((p,q)=>q.x-p.x);const out=[];let run=[];const fl=()=>{if(run.length){out.push(...run.reverse());run=[]}};seq.forEach(i=>{if(/[A-Za-z0-9]/.test(i.s)&&!/[؀-ۿ]/.test(i.s))run.push(i);else if(!i.s.trim()&&run.length)run.push(i);else{fl();out.push(i)}});fl();seq=out}
+  let t='';seq.forEach((i,k)=>{if(k){const p=seq[k-1];const gap=ar?(p.x-(i.x+i.w)):(i.x-(p.x+p.w));if(!/\s$/.test(t)&&!/^\s/.test(i.s)&&gap>i.sz*.2)t+=' '}t+=i.s});t=t.replace(/\s+/g,' ').trim();
+  try{if(ar){const a1=arScore(arTok(t)),a2=arScore(arTok(v2l(t)));if(a2>a1+.15)t=v2l(t)}}catch(e){}
+  const sz=Math.max(...a.map(i=>i.sz)),b=a.reduce((s,i)=>s+i.b,0)/a.length,fn=(a.find(i=>i.fn)||{}).fn||'';
+  return {t,ar,sz,b,x0:Math.min(...a.map(i=>i.x)),x1:Math.max(...a.map(i=>i.x+i.w)),fn}})}
+/* نقص صورة كل سطر من طبقة الكتابة الشفافة */
+function upxCutPdf(txc,lines){const W=txc.width,H=txc.height,g=txc.getContext('2d',{willReadFrequently:true});
+ lines.forEach((l,li)=>{const rx0=Math.max(0,Math.floor(l.x0-l.sz*.5)),rx1=Math.min(W,Math.ceil(l.x1+l.sz*.5)),ry0=Math.max(0,Math.floor(l.b-l.sz*1.35)),ry1=Math.min(H,Math.ceil(l.b+l.sz*.65));const w=rx1-rx0,h=ry1-ry0;if(w<2||h<2)return;
+  const nb=lines.filter((o,j)=>j!==li&&o.x0<rx1&&o.x1>rx0&&Math.abs(o.b-l.b)<Math.max(o.sz,l.sz)*2.6);const cy=l.b-l.sz*.35;
+  const id=g.getImageData(rx0,ry0,w,h),d=id.data;let mx0=w,my0=h,mx1=-1,my1=-1,r=0,gg=0,bb=0,n=0;
+  for(let y=0;y<h;y++){const Y=ry0+y;const mine=nb.every(o=>Math.abs(Y-cy)<=Math.abs(Y-(o.b-o.sz*.35)));for(let x=0;x<w;x++){const i=(y*w+x)*4;if(!mine){d[i+3]=0;continue}const a=d[i+3];if(a>10){if(x<mx0)mx0=x;if(x>mx1)mx1=x;if(y<my0)my0=y;if(y>my1)my1=y}if(a>200){r+=d[i];gg+=d[i+1];bb+=d[i+2];n++}}}
+  if(mx1<0)return;const cw=mx1-mx0+1,ch=my1-my0+1;const c=upxCanvas(cw,ch);const tmp=upxCanvas(w,h);tmp.getContext('2d').putImageData(id,0,0);c.getContext('2d').drawImage(tmp,mx0,my0,cw,ch,0,0,cw,ch);
+  l.g={src:c.toDataURL('image/png'),x0:rx0+mx0,y0:ry0+my0,w:cw,h:ch};l.c=n?upxHex(r/n,gg/n,bb/n):'#111827'})
+ return lines.filter(l=>l.g)}
+/* صورة: نحدد مكان الكتابة بدقة ونقص حروفها بلون الكتابة بس */
+function upxCutImg(cv,lines){const W=cv.width,H=cv.height,g=cv.getContext('2d',{willReadFrequently:true});const all=g.getImageData(0,0,W,H).data;const hex=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16));
+ lines.forEach(l=>{const bh=l.y1-l.y0,bw=l.x1-l.x0;const rx0=Math.max(1,Math.floor(l.x0-bw*.06-bh*.3)),rx1=Math.min(W-2,Math.ceil(l.x1+bw*.06+bh*.3)),ry0=Math.max(1,Math.floor(l.y0-bh*.35)),ry1=Math.min(H-2,Math.ceil(l.y1+bh*.35));
+  const tc=hex(l.c);let ring=[0,0,0],rn=0;for(let x=rx0;x<=rx1;x+=2)for(const y of [ry0,ry1]){const i=(y*W+x)*4;ring[0]+=all[i];ring[1]+=all[i+1];ring[2]+=all[i+2];rn++}for(let y=ry0;y<=ry1;y+=2)for(const x of [rx0,rx1]){const i=(y*W+x)*4;ring[0]+=all[i];ring[1]+=all[i+1];ring[2]+=all[i+2];rn++}ring=ring.map(v=>v/Math.max(1,rn));
+  const sep=Math.max(40,Math.hypot(tc[0]-ring[0],tc[1]-ring[1],tc[2]-ring[2]));const w=rx1-rx0+1,h=ry1-ry0+1;const c=upxCanvas(w,h),cg=c.getContext('2d');const id=cg.createImageData(w,h),d=id.data;let mx0=w,my0=h,mx1=-1,my1=-1,cnt=0;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=((ry0+y)*W+(rx0+x))*4;const dd=Math.hypot(all[i]-tc[0],all[i+1]-tc[1],all[i+2]-tc[2]);let a=(sep*.78-dd)/(sep*.5);a=a<0?0:a>1?1:a;if(!a)continue;const o=(y*w+x)*4;d[o]=tc[0];d[o+1]=tc[1];d[o+2]=tc[2];d[o+3]=Math.round(a*255);if(a>.5){cnt++;if(x<mx0)mx0=x;if(x>mx1)mx1=x;if(y<my0)my0=y;if(y>my1)my1=y}}
+  if(mx1<0||cnt<6)return;mx0=Math.max(0,mx0-2);my0=Math.max(0,my0-2);mx1=Math.min(w-1,mx1+2);my1=Math.min(h-1,my1+2);cg.putImageData(id,0,0);const cw=mx1-mx0+1,ch=my1-my0+1;const o=upxCanvas(cw,ch);o.getContext('2d').drawImage(c,mx0,my0,cw,ch,0,0,cw,ch);
+  l.g={src:o.toDataURL('image/png'),x0:rx0+mx0,y0:ry0+my0,w:cw,h:ch};l.sz=Math.max(8,ch/1.15);l.b=ry0+my1;l.x0=rx0+mx0;l.x1=rx0+mx1;
+  const p=Math.max(3,ch*.12);l.er={x0:l.g.x0-p,y0:l.g.y0-p,x1:l.g.x0+cw+p,y1:l.g.y0+ch+p,c:l.c}});
+ return lines.filter(l=>l.g)}
+/* الملف ← {bg (canvas), lines, how} — مقصوص على نسبة القياس المطلوب */
+async function upxLoad(fl,say,aspect){let src=null,pdfR=null;
+ if(/pdf/i.test(fl.type)||/\.pdf$/i.test(fl.name||'')){say&&say('📄 جاري قراءة PDF...');const lib=await pdfLib();const pdf=await lib.getDocument({data:new Uint8Array(await fl.arrayBuffer())}).promise;const pg=await pdf.getPage(1);const v1=pg.getViewport({scale:1});const vp=pg.getViewport({scale:2600/Math.max(v1.width,v1.height)});
+  const R=await upxPdfPage(lib,pg,vp);if(R.nt>0&&R.its.length){pdfR=R}else{src=R.bg.toDataURL('image/jpeg',.93);const g=R.bg.getContext('2d');g.drawImage(R.tx,0,0);src=R.bg.toDataURL('image/jpeg',.93)}}
+ else src=await new Promise((ok,no)=>{const fr=new FileReader();fr.onload=()=>ok(fr.result);fr.onerror=no;fr.readAsDataURL(fl)});
+ return upxFrom(pdfR,src,say,aspect)}
+async function upxFrom(pdfR,src,say,aspect){let bg,lines=[],how='';
+ if(pdfR){bg=pdfR.bg;lines=upxCutPdf(pdfR.tx,upxLines(pdfR.its));how='pdf'}
+ else{const im=await cvxLoad(src);const k=Math.min(1,2600/Math.max(im.width,im.height));bg=upxCanvas(im.width*k,im.height*k);const g=bg.getContext('2d',{willReadFrequently:true});g.fillStyle='#fff';g.fillRect(0,0,bg.width,bg.height);g.drawImage(im,0,0,bg.width,bg.height);
+  const W=bg.width,H=bg.height;let raw=[];const base=bg.toDataURL('image/jpeg',.9);
+  try{say&&say('🤖 جاري قراءة كل الكتابة على الملف...');raw=(await cvxAI(base)).map(l=>{const [y0,x0,y1,x1]=l.box.map(Number);return {t:l.t,x0:x0/1000*W,y0:y0/1000*H,x1:x1/1000*W,y1:y1/1000*H,bd:l.b,role:l.role}});how='ai'}
+  catch(e){try{raw=(await cvxOCR(bg,say)).map(l=>({t:l.t,x0:l.px[0],y0:l.px[1],x1:l.px[2],y1:l.px[3]}));how='ocr'}catch(e2){raw=[];how='none'}}
+  raw=raw.filter(l=>l.t&&l.x1-l.x0>4&&l.y1-l.y0>4);const d0=g.getImageData(0,0,W,H).data;raw.forEach(l=>{l.c=cvxColor(d0,W,H,{x0:l.x0|0,y0:l.y0|0,x1:l.x1|0,y1:l.y1|0});l.ar=/[؀-ۿ]/.test(l.t)});
+  lines=upxCutImg(bg,raw)}
+ lines.forEach(l=>{l.hh=l.sz;l.bold=l.bd===true||isBoldF(l.fn)||(!pdfR&&l.sz>bg.height*.03);l.font=mapFont(l.fn)||'Cairo'});try{cvxRoles(lines)}catch(e){}
+ // القص على نسبة القياس
+ let sx=0,sy=0,sw=bg.width,sh=bg.height;if(aspect){const a=sw/sh;if(Math.abs(a-aspect)>.01){if(a>aspect){const nw=sh*aspect;sx=(sw-nw)/2;sw=nw}else{const nh=sw/aspect;sy=(sh-nh)/2;sh=nh}}}
+ const out=upxCanvas(sw,sh);out.getContext('2d').drawImage(bg,sx,sy,sw,sh,0,0,out.width,out.height);
+ lines.forEach(l=>{l.g.x0-=sx;l.g.y0-=sy;l.x0-=sx;l.x1-=sx;l.b-=sy;if(l.er){l.er.x0-=sx;l.er.x1-=sx;l.er.y0-=sy;l.er.y1-=sy}});
+ lines=lines.filter(l=>l.g.x0+l.g.w>0&&l.g.x0<out.width&&l.g.y0+l.g.h>0&&l.g.y0<out.height);
+ return {bg:out,W:out.width,H:out.height,lines,how}}
+/* سطر ← طبقة بمصمم الأغلفة */
+function upxLayer(l,f){const size=Math.max(8,Math.round(l.sz*f));const gx=l.g.x0*f,gy=l.g.y0*f,gw=l.g.w*f,gh=l.g.h*f;const pad=Math.round(size*.35);const lh=1.3;
+ const x=Math.round(gx-pad),w=Math.round(gw+2*pad),y=Math.round(gy+gh/2-size*lh/2);
+ const L={id:uid(),t:'text',role:l.role||'custom',text:l.t,x,y,w,rot:0,font:l.font||'Cairo',size,color:l.c,bold:l.bold?1:0,align:'center',lh,op:1,ol:0,olc:'#ffffff',sh:0,bgc:'',pad:0,rad:0,ph:false,
+  gi:{src:l.g.src,dx:+(gx-x).toFixed(1),dy:+(gy-y).toFixed(1),w:+gw.toFixed(1),h:+gh.toFixed(1)},gs:size,gt:l.t,gc:l.c,gf:l.font||'Cairo',gb:l.bold?1:0};
+ if(l.er)L.er={x0:Math.round(l.er.x0),y0:Math.round(l.er.y0),x1:Math.round(l.er.x1),y1:Math.round(l.er.y1),c:l.er.c};return L}
+function upxReport(r){const n=r.lines.length;if(!n)return '⚠️ ما گدرت أقرا كتابة على هذا الملف — انحط مثل ما هو، وتگدر تضيف كتابة جديدة فوقه';return `✅ الملف انحط مثل ما هو بالضبط — و ${n} كتابة صارت قابلة للتعديل. اضغط على أي كتابة حتى تعدّلها أو تحرّكها أو تحذفها`}
+function upxBg(r){return r.bg.toDataURL('image/jpeg',.93)}
+
+/* ---- عرض الكتابة بصورتها الأصلية لحد ما تتعدّل ---- */
+function cvGlyph(l){return !!(l&&l.t==='text'&&l.gi&&!l.ge&&l.text===l.gt&&l.color===l.gc&&(l.font||'')===(l.gf||'')&&!!l.bold===!!l.gb&&!l.ol&&!l.sh)}
+{const _le=cvLayerEl;cvLayerEl=function(l,i){const d=_le(l,i);if(l.hid){d.style.display='none';d.classList.add('hidl')}
+ if(cvGlyph(l)){const k=l.size/(l.gs||l.size);d.classList.add('gly');d.style.color='transparent';d.style.textShadow='none';const im=document.createElement('img');im.className='gim';im.src=l.gi.src;im.draggable=false;
+  Object.assign(im.style,{left:(l.gi.dx*k)+'px',top:(l.gi.dy*k)+'px',width:(l.gi.w*k)+'px',height:(l.gi.h*k)+'px'});d.insertBefore(im,d.firstChild)}
+ else if(l.t==='text'&&l.op!=null&&l.op<1)d.style.opacity=l.op;return d}}
+{const _se=cvStartEdit;cvStartEdit=function(l,a){if(l&&cvGlyph(l)){l.ge=1;cvRender();l=cvL(l.id)||l}return _se.call(this,l,a)}}
+{const _ee=cvEndEdit;cvEndEdit=function(){const c=CEDIT&&CEDIT.l;const r=_ee.apply(this,arguments);if(c&&c.ge){delete c.ge;cvRender()}return r}}
+{const _ft=cvFixText;cvFixText=function(doc,k){const keep=[];doc.querySelectorAll('#ceP .ly.gly').forEach(e=>{keep.push(e);e.classList.remove('tx')});const r=_ft(doc,k);keep.forEach(e=>e.classList.add('tx'));doc.querySelectorAll('#ceP .ly.hidl').forEach(e=>e.remove());return r}}
+/* ---- مسح الكتابة القديمة من الخلفية (للصور) بس لحظة ما تختار الكتابة ---- */
+let CVBGC=null;
+async function cvBgCv(){if(CVBGC&&CVBGC.src===CV.bg)return CVBGC.cv;const im=await cvxLoad(CV.bg);const c=upxCanvas(im.width,im.height);c.getContext('2d',{willReadFrequently:true}).drawImage(im,0,0);CVBGC={src:CV.bg,cv:c};return c}
+let CVER_BUSY=false;
+async function cvErasePend(){const l=CSEL&&cvL(CSEL);if(!l||!l.er||l.ers||!CV.bg||CVER_BUSY)return;CVER_BUSY=true;try{const c=await cvBgCv();const er=l.er;
+  {const it=[{x0:er.x0,y0:er.y0,x1:er.x1,y1:er.y1,c:er.c,lh:er.y1-er.y0}];const g2=c.getContext('2d',{willReadFrequently:true});cvxMaskFill(g2,c.width,c.height,it);cvxMaskFill(g2,c.width,c.height,it)}l.ers=1;CV.bg=c.toDataURL('image/jpeg',.93);CVBGC.src=CV.bg;
+  const im=document.querySelector('#ceP .cbg');if(im)im.src=CV.bg;cvSave()}catch(e){}finally{CVER_BUSY=false}}
+function cvAutoW(l){if(!l||l.t!=='text'||!l.gi||cvGlyph(l)||/\n/.test(l.text||''))return;try{const c=cvAutoW.c||(cvAutoW.c=document.createElement('canvas').getContext('2d'));c.font=`${l.bold?900:400} ${l.size}px '${l.font||'Cairo'}',Cairo,sans-serif`;
+ const need=Math.ceil(c.measureText(l.text||'').width+l.size*.6);if(need>l.w){const cx=l.x+l.w/2;l.w=need;l.x=Math.round(cx-need/2)}}catch(e){}}
+{const _cr2=cvRender;cvRender=function(){try{if(CV&&!CEDIT)CV.layers.forEach(cvAutoW)}catch(e){}const r=_cr2.apply(this,arguments);const l=CSEL&&cvL(CSEL);if(l&&l.er&&!l.ers)cvErasePend();return r}}
+
+/* ---- الرفع لمصمم الأغلفة (كلشي يبقى مثل ما هو) ---- */
+async function cvUpRun(fl,SZ){const o=overlay('📥 جاري التجهيز...');const say=m=>{o.innerHTML='<div class="spin"></div><div>'+m+'</div>'};
+ try{const Z=CSZ[SZ];const r=await upxLoad(fl,say,Z.w/Z.h);const f=Z.w/r.W;let layers=r.lines.map(l=>upxLayer(l,f));const hasT=layers.some(l=>l.role==='teacher');layers=cvxEnsure(layers,SZ);
+  if(!hasT){const t=layers.find(l=>l.role==='teacher'&&l.ph);if(t)t.hid=0}
+  CV={id:uid(),title:(r.lines.find(l=>l.role==='title')||{}).t||'غلاف جديد',size:SZ,bg:upxBg(r),bgColor:'#ffffff',layers,at:Date.now()};CUNDO=[];CREDO=[];await cvSave();o.remove();cvOpenEditor();toast(upxReport(r),6000)}
+ catch(e){try{o.remove()}catch(_){}popup('⚠️','تعذّر رفع الملف',esc(e.message||String(e)))}}
+{const _un=cvUpNew;cvUpNew=function(){_un.apply(this,arguments);const S0=()=>{const b=document.querySelector('#nzS [data-z].on');return b?b.dataset.z:'a4p'};
+ const muted=document.querySelector('#obBody .muted');if(muted)muted.innerHTML='ارفع أي غلاف (صورة أو PDF) — <b>ينحط مثل ما هو بالضبط بدون أي تغيير</b>، وكل كتابة عليه تصير قابلة للتعديل والتحريك والحذف، وتگدر تضيف كتابة وصور جديدة.';
+ ['nzI','nzP'].forEach(id=>{const i=$('#'+id);if(i)i.onchange=e=>{const fl=e.target.files[0];if(!fl)return;$('#obM').classList.add('hidden');cvUpRun(fl,S0())}})}}
+cvNew=cvUpNew;
+/* فك الكتابة لغلاف موجود (الخلفية صورة) */
+{const _ca2=cvAct;cvAct=async function(a){if(a==='ext'){if(!CV||!CV.bg)return;const o=overlay('🪄 جاري التجهيز...');const say=m=>{o.innerHTML='<div class="spin"></div><div>'+m+'</div>'};
+  try{const Z=CSZ[CV.size]||CSZ.a3l;const r=await upxFrom(null,CV.bg,say,Z.w/Z.h);if(!r.lines.length){o.remove();toast(upxReport(r),4500);return}cvPush();CV.bg=upxBg(r);const f=Z.w/r.W;
+   const L=r.lines.map(l=>upxLayer(l,f));L.forEach(l=>{if(CV.layers.some(x=>x.role===l.role&&l.role!=='custom'))l.role='custom'});CV.layers=CV.layers.concat(L);CSEL=null;cvRender();await cvSave();o.remove();toast(upxReport(r),5500)}
+  catch(e){try{o.remove()}catch(_){}popup('⚠️','تعذّر',esc(e.message||String(e)))}return}
+ return _ca2.apply(this,arguments)}}
+
+/* ---- غلاف الملزمة + صفحات الملزمة: كتابة بصورتها الأصلية كعناصر حرة ---- */
+function upxFloat(l,f){const gx=l.g.x0*f,gy=l.g.y0*f,gw=Math.max(4,l.g.w*f),gh=Math.max(4,l.g.h*f);const fl={id:uid(),src:l.g.src,iw:l.g.w,ih:l.g.h,x:Math.round(gx),y:Math.round(gy),w:Math.round(gw),h:Math.round(gh),z:1,ox:0,oy:0,r:0,tx:[],
+  gt:{t:l.t,s:Math.max(10,Math.round(l.sz*f)),c:l.c,b:l.bold?1:0}};if(l.er)fl.er={x0:Math.round(l.er.x0),y0:Math.round(l.er.y0),x1:Math.round(l.er.x1),y1:Math.round(l.er.y1),c:l.er.c};return fl}
+cbUpEditable=async function(kind,fl){const B=kind==='back';const o=overlay('📥 جاري التجهيز...');const say=m=>{o.innerHTML='<div class="spin"></div><div>'+m+'</div>'};
+ try{const r=await upxLoad(fl,say,794/1123);const img={src:upxBg(r),w:r.W,h:r.H};if(B){S.back.bg=img;S.back.on=true;S.back.text=false}else{S.coverBg=img;S.coverText=false}
+  await renderPages();const L=pagesList();const pi=B?L.length-1:0;const key=FLKEY(pi);S.floats=S.floats||{};S.floats[key]=(S.floats[key]||[]).filter(f=>!f.cvx&&!f.gt);const f=794/r.W;
+  r.lines.forEach(l=>{const x=upxFloat(l,f);x.cvx=1;if(x.er)x.erk=B?'back':'cover';S.floats[key].push(x)});
+  if(!B){const t=r.lines.find(l=>l.role==='title');if(t&&(!S.title||/ملزمة جديدة/.test(S.title)))S.title=t.t}
+  save();bindInfo();await renderPages();showPage(pi);o.remove();toast(r.lines.length?`✅ الغلاف انحط مثل ما هو — و ${r.lines.length} كتابة صارت قابلة للتعديل (اضغط على الصفحة ثم على الكتابة)`:upxReport(r),6000)}
+ catch(e){try{o.remove()}catch(_){}popup('⚠️','تعذّر رفع الغلاف',esc(e.message||String(e)))}};
+/* شريط الكتابة الأصلية */
+async function flGlyphEdit(F){const f=F.f,g=f.gt;const v=await ask('✏️ تعديل الكتابة',{icon:'✍️',input:g.t,ph:'اكتب الكلمات',yes:'حفظ',no:'إلغاء'});if(v==null)return;const t=String(v).trim();if(!t)return;
+ if(t===g.t){toast('ما تغيّر شي');return}await flErase(f);const s=g.s;let w=f.w;try{const c=document.createElement('canvas').getContext('2d');c.font=`900 ${s}px Cairo`;w=Math.max(f.w,Math.ceil(c.measureText(t).width+s*.8))}catch(e){}
+ const cx=f.x+f.w/2;f.src='';f.w=w;f.iw=w;f.h=Math.round(s*1.6);f.ih=f.h;f.x=Math.round(cx-w/2);f.y=Math.round(f.y+(F.f.h-f.h)/2);f.tx=[{id:uid(),t,x:Math.round(w/2),y:Math.round(f.h/2),s,c:g.c,bg:'',sh:0}];delete f.gt;
+ save();renderFloats();FSEL=f.id;flBarShow();toast('✅ تعدّلت الكتابة')}
+async function flErase(f){if(!f.er||f.ers)return;try{const cur=f.erk==='back'?S.back.bg:S.coverBg;if(!cur)return;const im=await cvxLoad(cur.src);const c=upxCanvas(im.width,im.height);const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(im,0,0);
+  {const it=[{x0:f.er.x0,y0:f.er.y0,x1:f.er.x1,y1:f.er.y1,c:f.er.c,lh:f.er.y1-f.er.y0}];cvxMaskFill(g,c.width,c.height,it);cvxMaskFill(g,c.width,c.height,it)}const n={src:c.toDataURL('image/jpeg',.93),w:c.width,h:c.height};if(f.erk==='back')S.back.bg=n;else S.coverBg=n;f.ers=1;save();await renderPages()}catch(e){}}
+{const _fb=flBarShow;flBarShow=function(){const F=FSEL&&flFind(FSEL);if(!F||!F.f.gt)return _fb.apply(this,arguments);const b=$('#flBar');const f=F.f;if(f.er&&!f.ers)flErase(f);
+ b.innerHTML=`<button class="ok" data-a="ok">✓ تم</button><button data-a="ged" style="background:#2563eb;color:#fff">✏️ تعديل الكتابة</button><button data-a="zi">🔠＋</button><button data-a="zo">🔠－</button><button data-a="up">⬆ قدّام</button><button data-a="del" class="del">🗑 حذف</button><span style="color:#fff;font-size:12px;padding:0 6px">اسحبها بإصبعك حتى تحرّكها</span>`;
+ b.querySelectorAll('[data-a]').forEach(x=>x.onclick=async e=>{e.stopPropagation();const a=x.dataset.a;const F2=flFind(FSEL);if(!F2)return;const g=F2.f;
+  if(a==='ged'){flGlyphEdit(F2);return}if(a==='zi'||a==='zo'){const k=a==='zi'?1.1:1/1.1;const cx=g.x+g.w/2,cy=g.y+g.h/2;g.w=Math.round(g.w*k);g.h=Math.round(g.h*k);g.x=Math.round(cx-g.w/2);g.y=Math.round(cy-g.h/2);if(g.gt)g.gt.s=Math.round(g.gt.s*k);save();renderFloats();return}
+  flAct(a)});b.classList.add('on')}}
+
+/* ---- ملزمة PDF كاملة: نفس التصميم بالضبط + كل كتابة قابلة للتعديل ---- */
+async function importPdfExact(file){let o=overlay('📥 جاري فتح الملف...');try{const lib=await pdfLib();const pdf=await lib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;const N=pdf.numPages;
+ if(N>300){o.remove();popup('⚠️','الملف كبير',`الملف بيه ${N} صفحة — الحد 300 صفحة لهذا الخيار.`);return}
+ const name=file.name.replace(/\.pdf$/i,'').trim()||'ملزمة مستوردة';clearTimeout(saveT);saveNow();const NS=blankProject();NS.title=name;NS.showToc=false;NS.chapterPage=false;NS.pageBg={};NS.floats={};const segs=[];let nl=0,flat=0;
+ for(let i=1;i<=N;i++){o.remove();o=overlay(`🎯 جاري تجهيز الصفحة ${i} من ${N}...`);const pg=await pdf.getPage(i);const v1=pg.getViewport({scale:1});const AW=1240,AH=1754;const vp=pg.getViewport({scale:Math.min(AW/v1.width,AH/v1.height)});
+  const R=await upxPdfPage(lib,pg,vp);let lines=[];if(R.nt>0&&R.its.length)lines=upxCutPdf(R.tx,upxLines(R.its));else{R.bg.getContext('2d').drawImage(R.tx,0,0);flat++}
+  const A=upxCanvas(AW,AH),ag=A.getContext('2d');ag.fillStyle='#fff';ag.fillRect(0,0,AW,AH);const ox=Math.round((AW-R.W)/2),oy=Math.round((AH-R.H)/2);ag.drawImage(R.bg,ox,oy);lines.forEach(l=>{l.g.x0+=ox;l.g.y0+=oy});
+  const src=A.toDataURL('image/jpeg',.82);A.width=A.height=0;R.W=AW;R.H=AH;const f=794/AW;lines.forEach(l=>{l.bold=isBoldF(l.fn)});
+  const fls=lines.map(l=>upxFloat(l,f));nl+=fls.length;R.bg.width=R.bg.height=R.tx.width=R.tx.height=0;pg.cleanup();
+  if(i===1){NS.coverBg={src,w:R.W,h:R.H};NS.coverText=false;if(fls.length)NS.floats.p1=fls}else{NS.pageBg['p'+i]=src;if(fls.length)NS.floats['p'+i]=fls;segs.push(' ')}}
+ NS.topics=[{id:uid(),unit:'',title:'',color:NS.topics[0].color,blocks:[{id:uid(),type:'text',text:segs.join('\n---\n')}]}];
+ S=NS;saveNow();bindInfo();await renderPages();showPage(0);o.remove();
+ popup('✅','انفتحت الملزمة مثل ما هي',`${N} صفحة بنفس التصميم بالضبط — و ${nl} سطر كتابة صار قابل للتعديل.<br>اضغط على أي صفحة حتى تفتحها، وبعدين اضغط على أي سطر حتى تعدّله أو تحرّكه أو تحذفه.${flat?`<br><small>⚠️ ${flat} صفحة مصوّرة (سكانر) — هاي تبقى صورة وتگدر تكتب فوقها</small>`:''}`)}
+ catch(e){try{o.remove()}catch(_){}popup('⚠️','تعذّر فتح الملف',esc(e.message||String(e)))}}
+{const _op=openPdfImport;openPdfImport=function(){_op.apply(this,arguments);const B=$('#obBody');if(!B||B.querySelector('#piExact'))return;const lb=document.createElement('label');lb.className='pimp';lb.style.cssText='border-color:#16a34a;background:#f0fdf4';
+ lb.innerHTML='<b>🎯 نفس التصميم بالضبط + كل كتابة قابلة للتعديل (الأفضل)</b><span>كل صفحة تبقى مثل ما هي 100% بدون أي تغيير أو تلف — والخلفيات والإطارات والصور بمكانها، وكل سطر كتابة تگدر تعدّله أو تحرّكه أو تحذفه، وتضيف كتابة وصور جديدة.</span><input type="file" accept="application/pdf,.pdf" hidden id="piExact">';
+ const first=B.querySelector('.pimp');B.insertBefore(lb,first);$('#piExact').onchange=e=>{const fl=e.target.files[0];$('#obM').classList.add('hidden');if(fl)importPdfExact(fl)}}}
+
+/* ================= 🖐️ تكبير الغلاف بإصبعين وتحريكه بكل اتجاه ================= */
+function cvPinchBind(){const S2=$('#ceS');if(!S2||S2._pz)return;S2._pz=1;const pts=new Map();let g=null,onLayer=false;
+ const start2=()=>{const a=[...pts.values()];const r=S2.getBoundingClientRect();const mx=(a[0].x+a[1].x)/2,my=(a[0].y+a[1].y)/2;g={d:Math.max(10,Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)),z:CZ,k:CK,cx:S2.scrollLeft+mx-r.left,cy:S2.scrollTop+my-r.top}};
+ S2.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')return;if(e.target.closest('#ceP .ly')||e.target.closest('.ch')){onLayer=true;return}pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(onLayer)return;if(pts.size===2)start2();else if(pts.size===1)g={pan:1,x:e.clientX,y:e.clientY,sl:S2.scrollLeft,st:S2.scrollTop}},true);
+ S2.addEventListener('pointermove',e=>{if(onLayer||!pts.has(e.pointerId)||!g)return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(g.pan&&pts.size===1){S2.scrollLeft=g.sl-(e.clientX-g.x);S2.scrollTop=g.st-(e.clientY-g.y);return}
+  if(pts.size>=2&&g.d){e.preventDefault();const a=[...pts.values()];const d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);const r=S2.getBoundingClientRect();const mx=(a[0].x+a[1].x)/2,my=(a[0].y+a[1].y)/2;
+   CZ=Math.max(1,Math.min(6,g.z*d/g.d));cvFit();const q=CK/g.k;S2.scrollLeft=g.cx*q-(mx-r.left);S2.scrollTop=g.cy*q-(my-r.top)}},{capture:true,passive:false});
+ const up=e=>{pts.delete(e.pointerId);if(!pts.size){g=null;onLayer=false}else if(pts.size===1&&!onLayer){const a=[...pts.values()][0];g={pan:1,x:a.x,y:a.y,sl:S2.scrollLeft,st:S2.scrollTop}}};
+ S2.addEventListener('pointerup',up,true);S2.addEventListener('pointercancel',up,true);
+ S2.addEventListener('wheel',e=>{if(!e.ctrlKey)return;e.preventDefault();CZ=Math.max(1,Math.min(6,CZ*(e.deltaY<0?1.1:1/1.1)));cvFit()},{passive:false})}
+{const _oe=cvOpenEditor;cvOpenEditor=function(){const r=_oe.apply(this,arguments);try{cvPinchBind()}catch(e){}return r}}
+
+/* ================= 🧰 أدوات احترافية للأغلفة ================= */
+{const _cb2=cvBar;cvBar=function(){const r=_cb2.apply(this,arguments);const B=$('#ceB');if(!B)return r;const l=CSEL&&cvL(CSEL);
+ const mk=(a,ic,t,on)=>{const b=document.createElement('button');b.dataset.a=a;if(on)b.className='on';b.innerHTML=`<i>${ic}</i>${t}`;b.onclick=()=>cvAct(a);return b};
+ if(!l){const z=B.querySelector('[data-a="zi"]');B.insertBefore(mk('lay','🗂️','الطبقات',CPANEL==='lay'),z||null);B.insertBefore(mk('fitv','⛶','ملء الشاشة'),z||null)}
+ else{const ref=B.querySelector('[data-a="ctr"]');B.insertBefore(mk('alg','🎯','المكان',CPANEL==='alg'),ref||null);if(l.t==='text')B.insertBefore(mk('topa','◐','الشفافية',CPANEL==='topa'),ref||null);
+  if(l.t==='text'&&l.gi&&!cvGlyph(l))B.insertBefore(mk('gorig','↩️','الأصلي'),ref||null);B.insertBefore(mk('hide','🙈','إخفاء'),ref||null)}
+ return r}}
+{const _cp=cvPanel;cvPanel=function(){const X=$('#ceX');if(!X)return _cp.apply(this,arguments);const l=CSEL&&cvL(CSEL);
+ if(CPANEL==='lay'&&!l){X.classList.add('on');cvLayersPanel(X);return}
+ if((CPANEL==='alg'||CPANEL==='topa')&&l){X.classList.add('on');if(CPANEL==='alg')cvAlignPanel(X,l);else cvOpaPanel(X,l);return}
+ return _cp.apply(this,arguments)}}
+function cvLyName(l){if(l.t==='text')return '🔤 '+esc((l.text||'').slice(0,26)||'نص');if(l.t==='img')return '🖼️ صورة';return '🔷 شكل'}
+function cvLayersPanel(X){const L=CV.layers.slice().reverse();X.innerHTML=`<label>🗂️ الطبقات — اللي فوق تظهر قدّام</label><div class="lyl">${L.map(l=>`<div class="lyr${l.hid?' off':''}" data-id="${l.id}"><span class="nm">${cvLyName(l)}${l.lk?' 🔒':''}</span><button data-x="eye">${l.hid?'🙈':'👁️'}</button><button data-x="up">⬆</button><button data-x="dn">⬇</button>${l.lk?'':'<button data-x="del">🗑</button>'}</div>`).join('')||'<div class="muted">ما كو طبقات</div>'}</div>`;
+ X.querySelectorAll('.lyr').forEach(row=>{const l=cvL(row.dataset.id);row.querySelector('.nm').onclick=()=>{if(l.hid){toast('👁️ اضغط العين حتى تظهرها أولاً');return}CSEL=l.id;CPANEL='';cvRender()};
+  row.querySelectorAll('[data-x]').forEach(b=>b.onclick=async e=>{e.stopPropagation();const x=b.dataset.x;const i=CV.layers.indexOf(l);
+   if(x==='del'){if(!await ask('حذف هذا العنصر؟',{danger:true}))return;cvPush();if(l.er&&!l.ers){CSEL=l.id;await cvErasePend();CSEL=null}CV.layers=CV.layers.filter(y=>y!==l)}
+   else{cvPush();if(x==='eye')l.hid=l.hid?0:1;else if(x==='up'&&i<CV.layers.length-1){CV.layers.splice(i,1);CV.layers.splice(i+1,0,l)}else if(x==='dn'&&i>0){CV.layers.splice(i,1);CV.layers.splice(i-1,0,l)}}
+   if(x==='eye'&&l.hid&&l.er&&!l.ers){CSEL=l.id;await cvErasePend();CSEL=null}cvRender();cvSave()})})}
+function cvSide(l){const Z=CSZ[CV.size]||CSZ.a3l;if(!Z.sp)return {x0:0,x1:Z.w};const front=l.x+l.w/2<Z.w/2;return front?{x0:0,x1:Z.w/2}:{x0:Z.w/2,x1:Z.w}}
+function cvLH(l){const n=document.querySelector(`#ceP .ly[data-id="${l.id}"]`);return n?n.offsetHeight:(l.h||l.size*1.35)}
+function cvAlignPanel(X,l){const Z=CSZ[CV.size]||CSZ.a3l;const sd=cvSide(l);const M=Math.round(Z.w*.04);
+ X.innerHTML=`<label>🎯 المكان ${Z.sp?'(بالوجه اللي بيه العنصر)':''}</label><div class="algg">
+  <button data-g="r">➡️ يمين</button><button data-g="c">↔️ وسط</button><button data-g="l">⬅️ يسار</button>
+  <button data-g="t">⬆️ فوق</button><button data-g="m">↕️ منتصف</button><button data-g="b">⬇️ جوه</button></div>
+  ${Z.sp?'<div class="seg" style="margin-top:6px"><button class="btn sm" data-g="sw">🔁 نقل للوجه الثاني</button></div>':''}
+  <div class="algn"><label>X<input type="number" data-n="x" value="${Math.round(l.x)}"></label><label>Y<input type="number" data-n="y" value="${Math.round(l.y)}"></label><label>العرض<input type="number" data-n="w" value="${Math.round(l.w)}"></label>${l.t==='text'?`<label>الحجم<input type="number" data-n="size" value="${l.size}"></label>`:`<label>الارتفاع<input type="number" data-n="h" value="${Math.round(l.h||0)}"></label>`}<label>الدوران<input type="number" data-n="rot" value="${l.rot||0}"></label></div>`;
+ X.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{cvPush();const h=cvLH(l),g=b.dataset.g;
+  if(g==='r')l.x=Math.round(sd.x1-M-l.w);else if(g==='l')l.x=Math.round(sd.x0+M);else if(g==='c')l.x=Math.round((sd.x0+sd.x1)/2-l.w/2);
+  else if(g==='t')l.y=Math.round(Z.h*.04);else if(g==='b')l.y=Math.round(Z.h-Z.h*.04-h);else if(g==='m')l.y=Math.round(Z.h/2-h/2);
+  else if(g==='sw'){l.x=Math.round(l.x+(l.x+l.w/2<Z.w/2?Z.w/2:-Z.w/2))}cvRender();cvSave()});
+ X.querySelectorAll('[data-n]').forEach(i=>i.onchange=()=>{const v=+i.value;if(isNaN(v))return;cvPush();const k=i.dataset.n;if(k==='size'){const r=Math.max(6,v)/l.size;l.size=Math.max(6,Math.round(v));l.w=Math.round(l.w*r)}else l[k]=Math.round(v);cvRender();cvSave()})}
+function cvOpaPanel(X,l){X.innerHTML=`<label>◐ شفافية الكتابة: <b id="cxOp">${Math.round((l.op!=null?l.op:1)*100)}%</b></label><input type="range" min="10" max="100" value="${Math.round((l.op!=null?l.op:1)*100)}" id="cxOpR">`;
+ let pushed=false;$('#cxOpR').oninput=e=>{if(!pushed){cvPush();pushed=true}l.op=+e.target.value/100;$('#cxOp').textContent=e.target.value+'%';const n=document.querySelector(`#ceP .ly[data-id="${l.id}"]`);if(n)n.style.opacity=l.op};$('#cxOpR').onchange=()=>cvSave()}
+{const _ca3=cvAct;cvAct=async function(a){const l=CSEL&&cvL(CSEL);
+ if(a==='lay'){CSEL=null;CPANEL=CPANEL==='lay'?'':'lay';cvRender();return}
+ if(a==='fitv'){CZ=1;cvFit();const S2=$('#ceS');if(S2){S2.scrollLeft=0;S2.scrollTop=0}return}
+ if((a==='alg'||a==='topa')&&l){cvEndEdit();CPANEL=CPANEL===a?'':a;cvBar();return}
+ if(a==='hide'&&l){cvPush();l.hid=1;if(l.er&&!l.ers)await cvErasePend();CSEL=null;CPANEL='';cvRender();cvSave();toast('🙈 انخفى — ترجعه من 🗂️ الطبقات');return}
+ if(a==='gorig'&&l&&l.gi){cvPush();Object.assign(l,{text:l.gt,color:l.gc,font:l.gf,bold:l.gb,ol:0,sh:0});delete l.ge;cvRender();cvSave();toast('↩️ رجعت الكتابة الأصلية');return}
+ if(a==='del'&&l&&l.er&&!l.ers){await cvErasePend()}
+ return _ca3.apply(this,arguments)}}
+
+/* ================= 🖼️ إطارات احترافية + معاينة حقيقية قبل التطبيق ================= */
+const FRAMES_PRO=[['p_quran','زخرفة المصحف','فاخر'],['p_islamic','إسلامي هندسي','فاخر'],['p_lux','ذهبي ملكي','فاخر'],['p_arab','أرابيسك','فاخر'],['p_deco','آرت ديكو','فاخر'],
+ ['p_geo','هندسي عصري','عصري'],['p_tab','بطاقة بشريط','عصري'],['p_neo','زوايا مقطوعة','عصري'],['p_wave','خطوط موجية','عصري'],['p_band','شريط زخرفي','عصري'],
+ ['p_leaf','أغصان وأوراق','ناعم'],['p_dots','نقاط فاخرة','ناعم'],['p_chain','سلسلة حلقات','ناعم'],['p_note','دفتر بحلقات','مدرسي']];
+FRAMES_PRO.forEach(f=>{if(!FRAMES.some(x=>x[0]===f[0]))FRAMES.push([f[0],f[1]])});
+const FR_CAT={none:'كلاسيك',thin:'كلاسيك',double:'كلاسيك',elegant:'كلاسيك',corners:'عصري',ornament:'فاخر',ribbon:'عصري',gold:'فاخر',gradient:'عصري',accent:'عصري',card:'ناعم',school:'مدرسي',dashed:'ناعم',dotted:'ناعم',bubbles:'ناعم'};
+FRAMES_PRO.forEach(f=>FR_CAT[f[0]]=f[2]);
+function frStar(n,R,r){let p=[];for(let k=0;k<n*2;k++){const a=Math.PI*k/n-Math.PI/2,rr=k%2?r:R;p.push((R+rr*Math.cos(a)).toFixed(1)+','+(R+rr*Math.sin(a)).toFixed(1))}return p.join(' ')}
+function frSvg(css,w,h,body){return `<div style="position:absolute;${css};width:${w}px;height:${h}px"><svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">${body}</svg></div>`}
+function frameProHTML(id,c){const cd=mix(c,'k',.35),cm=mix(c,'w',.6),cl=mix(c,'w',.88),G='#b8892b',G2='#e8c766';
+ const B=(i,css)=>`<div style="position:absolute;inset:${i}px;${css}"></div>`,D=css=>`<div style="position:absolute;${css}"></div>`;
+ const corners=fn=>[['top','left',1,1],['top','right',-1,1],['bottom','left',1,-1],['bottom','right',-1,-1]].map(([v,h,sx,sy])=>fn(v,h,sx,sy)).join('');
+ const rosette=(R,col,col2)=>`<polygon points="${frStar(8,R,R*.72)}" fill="${col}"/><polygon points="${frStar(8,R,R*.72)}" fill="none" stroke="${col2}" stroke-width="1.5" transform="translate(${R*.25},${R*.25}) scale(.75)"/><circle cx="${R}" cy="${R}" r="${R*.28}" fill="${col2}"/>`;
+ switch(id){
+ case 'p_quran':{const med=(css,w,h)=>frSvg(css,w,h,`<ellipse cx="${w/2}" cy="${h/2}" rx="${w/2-2}" ry="${h/2-2}" fill="${cl}" stroke="${G}" stroke-width="2.5"/><ellipse cx="${w/2}" cy="${h/2}" rx="${w/2-8}" ry="${h/2-8}" fill="none" stroke="${c}" stroke-width="1.5"/><polygon points="${frStar(8,Math.min(w,h)*.28,Math.min(w,h)*.17)}" fill="${c}" transform="translate(${w/2-Math.min(w,h)*.28},${h/2-Math.min(w,h)*.28})"/>`);
+  return B(10,`border:9px solid ${c}`)+B(19,`border:2.5px solid ${G}`)+B(25,`border:1px solid ${cm}`)+B(30,`border:1px solid ${G2}`)+corners((v,h)=>frSvg(`${v}:0;${h}:0`,58,58,rosette(29,G,'#fff')))
+   +med('top:4px;left:calc(50% - 50px)',100,40)+med('bottom:4px;left:calc(50% - 50px)',100,40)+med('left:2px;top:calc(50% - 50px)',40,100)+med('right:2px;top:calc(50% - 50px)',40,100)}
+ case 'p_islamic':{const st=(css,R,col)=>frSvg(css,R*2,R*2,`<polygon points="${frStar(8,R,R*.7)}" fill="${col}"/><circle cx="${R}" cy="${R}" r="${R*.32}" fill="#fff"/><circle cx="${R}" cy="${R}" r="${R*.18}" fill="${col}"/>`);
+  return B(16,`border:3px solid ${c}`)+B(24,`border:1.2px solid ${cm}`)+B(30,`border:3px double ${cm}`)+corners((v,h)=>st(`${v}:2px;${h}:2px`,32,c))
+   +st('top:7px;left:calc(50% - 16px)',16,cd)+st('bottom:7px;left:calc(50% - 16px)',16,cd)+st('left:7px;top:calc(50% - 16px)',16,cd)+st('right:7px;top:calc(50% - 16px)',16,cd)}
+ case 'p_lux':{const gg=`linear-gradient(135deg,${G},${G2} 30%,#9a6f1c 55%,${G2} 80%,${G})`;const sq=(v,h)=>D(`${v}:6px;${h}:6px;width:40px;height:40px;background:${gg};border:3px solid #fff;box-shadow:0 0 0 1.5px ${G}`)+frSvg(`${v}:15px;${h}:15px`,28,28,`<polygon points="${frStar(4,14,6)}" fill="#fff"/>`);
+  return D(`top:10px;left:10px;right:10px;height:10px;background:${gg}`)+D(`bottom:10px;left:10px;right:10px;height:10px;background:${gg}`)+D(`top:10px;bottom:10px;left:10px;width:10px;background:${gg}`)+D(`top:10px;bottom:10px;right:10px;width:10px;background:${gg}`)+B(26,`border:1.5px solid ${G}`)+B(31,`border:1px solid ${c}`)+corners((v,h)=>sq(v,h))}
+ case 'p_arab':{const fl=(v,h,sx,sy)=>`<div style="position:absolute;${v}:6px;${h}:6px;width:120px;height:120px;transform:scale(${sx},${sy});transform-origin:${h} ${v}">${frSvg('top:0;left:0',120,120,
+   `<path d="M8 112 V40 Q8 8 40 8 H112" fill="none" stroke="${c}" stroke-width="3"/><path d="M18 112 V46 Q18 18 46 18 H112" fill="none" stroke="${cm}" stroke-width="1.3"/><path d="M40 40 C60 20 86 28 80 48 C76 62 58 58 60 46 C62 38 72 40 70 46" fill="none" stroke="${c}" stroke-width="2.2"/><path d="M40 40 C20 60 28 86 48 80 C62 76 58 58 46 60 C38 62 40 72 46 70" fill="none" stroke="${c}" stroke-width="2.2"/><circle cx="40" cy="40" r="6" fill="${c}"/><circle cx="40" cy="40" r="2.5" fill="#fff"/><path d="M58 8 Q66 0 74 8 Q66 16 58 8Z" fill="${cm}"/><path d="M8 58 Q0 66 8 74 Q16 66 8 58Z" fill="${cm}"/>`)}</div>`;
+  const mid=(css,rot)=>frSvg(css+`;transform:rotate(${rot}deg)`,140,24,`<path d="M0 12 H48 M92 12 H140" stroke="${cm}" stroke-width="1.3"/><path d="M56 12 L70 2 L84 12 L70 22Z" fill="${c}"/><circle cx="50" cy="12" r="3" fill="${c}"/><circle cx="90" cy="12" r="3" fill="${c}"/>`);
+  return B(22,`border:1.5px solid ${c}`)+B(28,`border:.8px solid ${cm}`)+corners(fl)+mid('top:10px;left:calc(50% - 70px)',0)+mid('bottom:10px;left:calc(50% - 70px)',0)}
+ case 'p_deco':{const st=(v,h,sx,sy)=>`<div style="position:absolute;${v}:8px;${h}:8px;transform:scale(${sx},${sy});transform-origin:${h} ${v}">${frSvg('top:0;left:0',96,96,
+   `<path d="M2 94 V2 H94" fill="none" stroke="${c}" stroke-width="4"/><path d="M12 94 V24 H24 V12 H94" fill="none" stroke="${c}" stroke-width="2"/><path d="M22 94 V34 H34 V22 H94" fill="none" stroke="${cm}" stroke-width="1.5"/><path d="M34 34 L58 34 M34 34 L34 58 M34 34 L52 52" stroke="${c}" stroke-width="1.5"/><rect x="40" y="40" width="10" height="10" fill="${c}" transform="rotate(45 45 45)"/>`)}</div>`;
+  return B(20,`border:1.5px solid ${cm}`)+B(26,`border:1px solid ${c}`)+corners(st)+D(`top:8px;left:calc(50% - 60px);width:120px;height:6px;background:repeating-linear-gradient(90deg,${c} 0 12px,transparent 12px 18px)`)+D(`bottom:8px;left:calc(50% - 60px);width:120px;height:6px;background:repeating-linear-gradient(90deg,${c} 0 12px,transparent 12px 18px)`)}
+ case 'p_geo':return B(22,`border:1.5px solid ${cm}`)+frSvg('top:0;left:0',170,170,`<polygon points="0,0 170,0 0,170" fill="${cl}"/><polygon points="0,0 120,0 0,120" fill="${cm}"/><polygon points="0,0 74,0 0,74" fill="${c}"/><polygon points="96,0 130,0 96,34" fill="${cd}"/>`)
+  +frSvg('bottom:0;right:0',170,170,`<polygon points="170,170 0,170 170,0" fill="${cl}"/><polygon points="170,170 50,170 170,50" fill="${cm}"/><polygon points="170,170 96,170 170,96" fill="${c}"/><polygon points="74,170 40,170 74,136" fill="${cd}"/>`)
+  +D(`top:22px;right:22px;width:60px;height:5px;background:${c}`)+D(`bottom:22px;left:22px;width:60px;height:5px;background:${c}`);
+ case 'p_tab':{const side=isEN()?'left':'right';return B(16,`border:2px solid ${cm};border-radius:22px`)+D(`top:60px;${side}:6px;width:18px;height:180px;border-radius:9px;background:linear-gradient(${c},${cd})`)+D(`top:260px;${side}:9px;width:12px;height:60px;border-radius:6px;background:${cm}`)
+  +D(`bottom:16px;left:16px;right:16px;height:8px;border-radius:0 0 22px 22px;background:linear-gradient(90deg,${cl},${c})`)}
+ case 'p_neo':return frSvg('top:0;left:0',794,1123,`<polygon points="52,14 742,14 780,52 780,1071 742,1109 52,1109 14,1071 14,52" fill="none" stroke="${c}" stroke-width="3.5"/><polygon points="58,24 736,24 770,58 770,1065 736,1099 58,1099 24,1065 24,58" fill="none" stroke="${cm}" stroke-width="1.2"/>`
+  +[[33,33],[761,33],[33,1090],[761,1090]].map(([x,y])=>`<rect x="${x-6}" y="${y-6}" width="12" height="12" fill="${c}" transform="rotate(45 ${x} ${y})"/>`).join(''));
+ case 'p_wave':{const wv=(y,amp,col,w)=>{let d=`M24 ${y}`;for(let x=24;x<770;x+=28)d+=` Q${x+14} ${y-amp} ${x+28} ${y}`;return `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}"/>`};const wvV=(x,amp,col,w)=>{let d=`M${x} 24`;for(let y=24;y<1099;y+=28)d+=` Q${x-amp} ${y+14} ${x} ${y+28}`;return `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}"/>`};
+  return frSvg('top:0;left:0',794,1123,wv(18,7,c,2.5)+wv(26,7,cm,1.2)+wv(1105,7,c,2.5)+wv(1097,7,cm,1.2)+wvV(18,7,c,2.5)+wvV(26,7,cm,1.2)+wvV(776,7,c,2.5)+wvV(768,7,cm,1.2))}
+ case 'p_band':{const bd=css=>D(css+`;background:${cl};background-image:linear-gradient(45deg,${c} 25%,transparent 25%,transparent 75%,${c} 75%),linear-gradient(45deg,${c} 25%,transparent 25%,transparent 75%,${c} 75%);background-size:16px 16px;background-position:0 0,8px 8px;opacity:.85`);
+  return bd('top:10px;left:10px;right:10px;height:16px')+bd('bottom:10px;left:10px;right:10px;height:16px')+D(`top:26px;bottom:26px;left:10px;width:4px;background:${c}`)+D(`top:26px;bottom:26px;right:10px;width:4px;background:${c}`)+B(32,`border:1px solid ${cm}`)}
+ case 'p_leaf':{const vine=(css,sx,sy)=>`<div style="position:absolute;${css};transform:scale(${sx},${sy})">${frSvg('top:0;left:0',170,170,
+   `<path d="M10 160 C20 100 60 60 160 10" fill="none" stroke="${cd}" stroke-width="2.5"/>`+[[30,118,-50],[48,92,-40],[70,70,-35],[96,48,-30],[124,30,-25],[40,128,40],[60,100,50],[84,76,55],[110,56,60]].map(([x,y,r],i)=>`<ellipse cx="${x}" cy="${y}" rx="14" ry="6" fill="${i%2?c:cm}" transform="rotate(${r} ${x} ${y})"/>`).join('')+`<circle cx="160" cy="10" r="5" fill="${c}"/>`)}</div>`;
+  return B(24,`border:1.5px solid ${cm};border-radius:12px`)+vine('top:2px;right:2px;width:170px;height:170px',-1,1)+vine('bottom:2px;left:2px;width:170px;height:170px',1,-1)}
+ case 'p_dots':{let s='';for(let x=30;x<=764;x+=17){const r=(Math.round((x-30)/17)%3===0)?4.5:2.5;s+=D(`left:${x-r}px;top:${14-r}px;width:${r*2}px;height:${r*2}px;border-radius:50%;background:${c}`)+D(`left:${x-r}px;bottom:${14-r}px;width:${r*2}px;height:${r*2}px;border-radius:50%;background:${c}`)}
+  for(let y=47;y<=1076;y+=17){const r=(Math.round((y-47)/17)%3===0)?4.5:2.5;s+=D(`top:${y-r}px;left:${14-r}px;width:${r*2}px;height:${r*2}px;border-radius:50%;background:${c}`)+D(`top:${y-r}px;right:${14-r}px;width:${r*2}px;height:${r*2}px;border-radius:50%;background:${c}`)}
+  return s+B(26,`border:1.2px solid ${cm};border-radius:8px`)+corners((v,h)=>D(`${v}:6px;${h}:6px;width:16px;height:16px;border-radius:50%;background:${cd};border:3px solid #fff;box-shadow:0 0 0 1.5px ${c}`))}
+ case 'p_chain':{let s='';const ring=(x,y,hz)=>D(`left:${x-(hz?11:6)}px;top:${y-(hz?6:11)}px;width:${hz?22:12}px;height:${hz?12:22}px;border-radius:12px;border:2.5px solid ${(Math.round(x+y)/20|0)%2?c:cm}`);
+  for(let x=40;x<=754;x+=18){s+=ring(x,14,1)+ring(x,1109,1)}for(let y=40;y<=1083;y+=18){s+=ring(14,y,0)+ring(780,y,0)}return s+B(28,`border:1px solid ${cm}`)}
+ case 'p_note':{const side=isEN()?'left':'right';let s='';for(let y=70;y<=1060;y+=46)s+=D(`top:${y}px;${side}:10px;width:26px;height:14px;border-radius:8px;border:3px solid ${cd};border-${side}:0;background:transparent`)+D(`top:${y+3}px;${side}:30px;width:9px;height:9px;border-radius:50%;background:${cl};border:1.5px solid ${cm}`);
+  return B(14,`border:2.5px solid ${c};border-radius:18px`)+D(`top:14px;bottom:14px;${side}:48px;width:2px;background:#ef4444;opacity:.55`)+D(`top:14px;bottom:14px;${side}:52px;width:1px;background:#ef4444;opacity:.4`)+s}
+ }return ''}
+{const _fh=frameHTML;frameHTML=function(id,c){if(id&&id.startsWith('p_'))return frameProHTML(id,c);return _fh.apply(this,arguments)}}
+
+/* ---- شاشة الإطارات: معاينة حقيقية على صفحتك قبل التطبيق ---- */
+function frSamplePage(){const L=pagesList();for(const pw of L){const p=pw.firstChild;if(p&&p.querySelector('.pb')&&!p.classList.contains('cover')&&!p.classList.contains('bcover')&&!p.querySelector('.toc-h')&&p.querySelector('.pb').children.length)return p}
+ for(const pw of L){const p=pw.firstChild;if(p&&p.querySelector('.pb'))return p}return null}
+function frBuild(base,id,c){const wr=document.createElement('div');wr.className='frpvp';let p;
+ if(base){p=base.cloneNode(true);p.style.transform='none';p.querySelectorAll('.frm,.flt,.cv-hint,.fh,.wm').forEach(x=>x.remove())}
+ else{p=document.createElement('div');p.className='page';p.style.cssText='position:relative;width:794px;height:1123px;background:#fff';p.innerHTML=`<div style="position:absolute;top:70px;left:70px;right:70px;height:60px;border-radius:14px;background:linear-gradient(135deg,${c},${mix(c,'k',.35)})"></div>`+[0,1,2,3,4,5,6,7,8,9].map(i=>`<div style="position:absolute;top:${180+i*80}px;right:80px;width:${560-(i%3)*90}px;height:18px;border-radius:9px;background:#e3e7ef"></div>`).join('')}
+ const f=frameHTML(id,c);if(f){const d=document.createElement('div');d.className='frm';d.innerHTML=f;p.appendChild(d)}wr.appendChild(p);return wr}
+openFrames=function(){const sample=(S.topics[0]&&S.topics[0].color)||'#1e88e5';let pick=S.frame||'none',col=S.frameColor||'';const base=frSamplePage();
+ const list=frList();const cats=S.kids?['الكل']:['الكل','فاخر','عصري','ناعم','كلاسيك','مدرسي'];let cat='الكل';
+ $('#obBody').innerHTML=`<div class="sheet-h"><b>🖼️ إطار الصفحات</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
+ <div class="frbig"><div class="frbp" id="frBig"></div><div class="frbi"><b id="frBN"></b><small>معاينة على صفحة من ملزمتك</small><small style="color:#64748b">الإطار ينطبق على كل الصفحات عدا الغلاف وصفحات الفصول</small>
+  <button class="btn green" id="frApply" style="width:100%;margin-top:8px">✅ تطبيق الإطار</button></div></div>
+ <label class="f">🎨 اللون</label><div class="row" style="gap:6px"><button class="btn sm" id="frTopic">🎨 حسب لون كل موضوع</button></div><div class="sw" id="frSw" style="margin-top:6px"></div>
+ ${cats.length>1?`<div class="frcats" id="frCats">${cats.map(k=>`<button data-k="${k}" class="${k===cat?'on':''}">${k}</button>`).join('')}</div>`:''}
+ <div class="frgrid2" id="frGrid"></div>`;
+ const C=()=>col||sample;const name=id=>{const f=FRAMES.concat(typeof FRAMES_K!=='undefined'?FRAMES_K:[]).find(x=>x[0]===id);return f?f[1]:'بدون إطار'};
+ const big=()=>{const B=$('#frBig');B.innerHTML='';const w=frBuild(base,pick,C());w.style.transform=`scale(${(B.clientWidth||150)/794})`;B.appendChild(w);$('#frBN').textContent=name(pick)+(pick===(S.frame||'none')&&(col||'')===(S.frameColor||'')?' — المطبّق حالياً':'');
+  const ap=$('#frApply');const same=pick===(S.frame||'none')&&(col||'')===(S.frameColor||'');ap.disabled=same;ap.style.opacity=same?.5:1};
+ const grid=()=>{const G=$('#frGrid');G.innerHTML='';list.filter(([id])=>cat==='الكل'||FR_CAT[id]===cat).forEach(([id,nm])=>{const t=document.createElement('div');t.className='frt2'+(id===pick?' on':'')+(id===(S.frame||'none')?' cur':'');t.dataset.f=id;
+   t.innerHTML=`<div class="frm2"></div><b>${nm}</b>${id===(S.frame||'none')?'<i>✓ مطبّق</i>':''}`;G.appendChild(t);
+   t.onclick=()=>{pick=id;G.querySelectorAll('.frt2').forEach(x=>x.classList.toggle('on',x===t));big();const B=$('#frBig');if(B)B.scrollIntoView({block:'nearest',behavior:'smooth'})}});
+  requestAnimationFrame(()=>G.querySelectorAll('.frt2').forEach(t=>{const m=t.querySelector('.frm2');const w=frBuild(null,t.dataset.f,C());w.style.transform=`scale(${(m.clientWidth||90)/794})`;m.appendChild(w)}))};
+ swatches($('#frSw'),col,c=>{col=c;$('#frTopic').classList.toggle('primary',!col);big();grid()});$('#frTopic').classList.toggle('primary',!col);
+ $('#frTopic').onclick=()=>{col='';$('#frTopic').classList.add('primary');$('#frSw').querySelectorAll('.on').forEach(x=>x.classList.remove('on'));big();grid()};
+ if($('#frCats'))$('#frCats').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{cat=b.dataset.k;$('#frCats').querySelectorAll('[data-k]').forEach(x=>x.classList.toggle('on',x===b));grid()});
+ $('#frApply').onclick=async()=>{S.frame=pick;S.frameColor=col;save();const lb=$('#frName');if(lb)lb.textContent=frameName();$('#obM').classList.add('hidden');await renderPages();toast('🖼️ تم تطبيق الإطار: '+name(pick))};
+ $('#obM').classList.remove('hidden');requestAnimationFrame(()=>{big();grid()})};
+
+/* ================= ↩️ زر الرجوع بالتلفون: يسكّر اللي مفتوح بدل ما يطلع من البرنامج ================= */
+const HM={st:[],ign:0,t:0};
+function hmLayers(){return [
+ ['ask',()=>!!document.getElementById('askM'),()=>{const n=document.getElementById('askN');if(n)n.click();else{const m=document.getElementById('askM');if(m)m.remove()}}],
+ ['pop',()=>{const m=document.getElementById('popM');return !!m&&!m.classList.contains('hidden')},()=>$('#popM').classList.add('hidden')],
+ ['sheet',()=>{const m=document.getElementById('obM');return !!m&&!m.classList.contains('hidden')},()=>{const x=document.querySelector('#obBody .sheet-h .btn.sm');if(x&&/✕/.test(x.textContent))x.click();else $('#obM').classList.add('hidden')}],
+ ['ptool',()=>!!document.getElementById('ptool'),()=>{const p=document.getElementById('ptool');const x=p&&p.querySelector('.x,[onclick*="remove"]');if(x)x.click();else if(p)p.remove()}],
+ ['cved',()=>!!document.getElementById('cvEd'),()=>{if(typeof CPANEL!=='undefined'&&(CPANEL||CSEL)){CPANEL='';CSEL=null;cvRender();HM.st.push('cved');history.pushState({hm:'cved'},'');return}cvClose()}],
+ ['fsel',()=>typeof FSEL!=='undefined'&&!!FSEL,()=>{try{flDeselect()}catch(e){}}],
+ ['fs',()=>document.body.classList.contains('fs'),()=>exitFS()]]}
+function hmSync(){clearTimeout(HM.t);HM.t=setTimeout(()=>{const L=hmLayers();const open=L.filter(x=>{try{return x[1]()}catch(e){return false}}).map(x=>x[0]);
+ const closed=HM.st.filter(k=>!open.includes(k));if(closed.length){HM.st=HM.st.filter(k=>open.includes(k));HM.ign++;try{history.go(-closed.length)}catch(e){HM.ign--}}
+ open.forEach(k=>{if(!HM.st.includes(k)){HM.st.push(k);try{history.pushState({hm:k},'')}catch(e){}}})},60)}
+window.addEventListener('popstate',()=>{if(HM.ign>0){HM.ign--;return}const k=HM.st.pop();if(!k)return;const it=hmLayers().find(x=>x[0]===k);try{if(it&&it[1]())it[2]()}catch(e){}hmSync()});
+(function(){const go=()=>{const mo=new MutationObserver(hmSync);mo.observe(document.body,{childList:true,attributes:true,attributeFilter:['class']});
+  ['obM','popM'].forEach(id=>{const e=document.getElementById(id);if(e)mo.observe(e,{attributes:true,attributeFilter:['class']})});
+  const fb=document.getElementById('flBar');if(fb)mo.observe(fb,{attributes:true,attributeFilter:['class']})};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go()})();
 
 {const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
 {const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}
