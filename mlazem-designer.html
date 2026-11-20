@@ -5179,6 +5179,24 @@ function cvFixText(doc,k){if(!CV)return;doc.querySelectorAll('#ceP .ly.tx').forE
  window.html2canvas=function(el,o){o=o||{};const oc=o.onclone;return H(el,Object.assign({},o,{onclone:doc=>{try{cvFixText(doc,scale)}catch(e){console.warn(e)}return oc?oc(doc):undefined}}))};
  try{return await _cc.apply(this,arguments)}finally{window.html2canvas=H}}}
 
+/* ---------- 6) المدير: حذف / إخفاء / تعديل الأغلفة الجاهزة من داخل المصمم ---------- */
+async function cvAdmDel(r){if(!await ask('🗑 حذف الغلاف نهائياً؟',{danger:true,msg:'«'+esc(r.title||'')+'» راح ينمسح من كل البرامج وما يظهر لأي أستاذ.<br><small>الأساتذة اللي اشتروه قبل يبقى عندهم بـ «أغلفتي»</small>',yes:'نعم احذفه',no:'لا'}))return;
+ const o=overlay('🗑 جاري الحذف...');try{if(r.store==='r2'&&R2URL){try{await r2Req('DELETE','ready/'+r.id+'.json')}catch(e){}}
+  try{const q=await FB.db.collection('ready/'+r.id+'/parts').get();for(const d of q.docs)await d.ref.delete()}catch(e){}
+  await FB.db.doc('ready/'+r.id).delete();try{DB.db.transaction('kv','readwrite').objectStore('kv').delete('r:'+r.id)}catch(e){}
+  o.remove();toast('✅ تم حذف الغلاف من كل البرامج');cvSheet()}catch(e){o.remove();popup('⚠️','تعذّر الحذف',esc(e.message||String(e))+'<br><small>تأكد إنك داخل بحساب المدير</small>')}}
+async function cvAdmPub(r,on){try{await FB.db.doc('ready/'+r.id).update({published:on});toast(on?'👁️ صار يظهر للأساتذة':'🙈 تم الإخفاء عن الأساتذة');cvSheet()}catch(e){popup('⚠️','تعذّر',esc(e.message||String(e)))}}
+async function cvAdmEdit(r){const o=overlay('🎨 جاري تحميل الغلاف...');try{const data=await rdLoad(r);const d=JSON.parse(data);CV=Object.assign(d,{id:uid(),cid:r.id,thumb:r.thumb||''});delete CV.ready;delete CV.bid;delete CV.lock;CUNDO=[];CREDO=[];await cvSave();o.remove();$('#obM').classList.add('hidden');cvOpenEditor();toast('✏️ عدّل الغلاف وبعدين اضغط 📤 تحديث الغلاف الجاهز',4500)}
+ catch(e){o.remove();popup('⚠️','تعذّر التحميل',esc(e.message||String(e)))}}
+async function cvAdmStore(){const G=$('#cvG');if(!G)return;let R=[];try{const q=await FB.db.collection('ready').get();R=q.docs.map(d=>({id:d.id,...d.data()})).filter(r=>r.type==='cover');R.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))}catch(e){return}
+ if(!$('#cvG')||CVTAB!=='store')return;if(!R.length){G.innerHTML='<div class="muted" style="grid-column:1/-1;text-align:center;padding:30px">ما كو أغلفة جاهزة بعد</div>';return}
+ G.innerHTML='';R.forEach(r=>{const Z=CSZ[r.size]||CSZ.a3l;const c=document.createElement('div');c.className='cvc';if(!r.published)c.style.opacity='.6';
+  c.innerHTML=`${r.thumb?`<img class="ti" src="${r.thumb}" style="aspect-ratio:${Z.w}/${Z.h}">`:`<div class="ti" style="aspect-ratio:${Z.w}/${Z.h}"></div>`}<b>${esc(r.title)}</b><small>${esc(r.subject||'')} • ${Z.n}</small><span class="pr ${r.total?'':'fr'}">${r.total?'💰 '+fmt(r.total)+' دينار':'🎁 مجاني'}</span>${r.published?'':'<small style="color:#b45309;font-weight:900">🙈 مخفي عن الأساتذة</small>'}
+   <div class="row" style="margin-top:6px;gap:4px;flex-wrap:wrap;justify-content:center"><button class="btn sm primary" data-a="e">✏️ تعديل</button><button class="btn sm" data-a="h">${r.published?'🙈 إخفاء':'👁️ إظهار'}</button><button class="btn sm red" data-a="d">🗑 حذف</button></div>`;
+  c.querySelector('.ti').onclick=()=>cvOpenStore(r);c.querySelector('[data-a=e]').onclick=e=>{e.stopPropagation();cvAdmEdit(r)};
+  c.querySelector('[data-a=h]').onclick=e=>{e.stopPropagation();cvAdmPub(r,!r.published)};c.querySelector('[data-a=d]').onclick=e=>{e.stopPropagation();cvAdmDel(r)};G.appendChild(c)})}
+{const _cs2=cvSheet;cvSheet=async function(){const r=await _cs2.apply(this,arguments);try{if(IS_ADMIN&&FB&&CVTAB==='store')await cvAdmStore()}catch(e){}return r}}
+
 {const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
 {const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}
 {const _ap=applyPick;applyPick=function(img){const T=pTarget;if(T&&T.kind==='kidColor'){closePicker();const o=overlay('🖍️ جاري تحويلها لرسمة تلوين...');kLineArt(img.src).then(r=>{o.remove();kAdd([{kind:'color',src:r.src,word:'',lang:'ar'}])}).catch(()=>{o.remove();kAdd([{kind:'color',src:img.src,word:'',lang:'ar'}])});return}return _ap.apply(this,arguments)}}
