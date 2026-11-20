@@ -3329,7 +3329,7 @@ async function hwStart(files){
  const nm=(files[0].name||'').replace(/\.(pdf|jpe?g|png|webp|heic)$/i,'').trim();
  HW={name:(!nm||/IMG|image|Screenshot|WhatsApp|scan|^\d|^[\w-]*\d{6,}/i.test(nm))?'ملزمة خط يد':nm,pages,at:Date.now()};await DB.set('hw:cur',HW);hwReview();hwRun()}
 async function hwAsk(p){const tok=await FB.auth.currentUser.getIdToken();
- const r=await fetch(R2URL.replace(/\/+$/,'')+'/ai/hw',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({image:p.src.split(',')[1],mime:'image/jpeg',subject:S.subject||''})});
+ const r=await fetch(R2URL.replace(/\/+$/,'')+'/ai/hw',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({image:p.src.split(',')[1],mime:'image/jpeg',subject:S.subject||''}),signal:AbortSignal.timeout?AbortSignal.timeout(170000):undefined}).catch(e=>{throw new Error(/abort|timeout/i.test(e&&e.name+e.message)?'القراءة طوّلت هواية — اضغط إعادة المحاولة':'تأكد من الإنترنت')});
  const j=await r.json().catch(()=>({error:'رد غير مفهوم'}));if(!r.ok||!j.ok){console.warn('HW',j.detail);throw new Error((j.error||('خطأ '+r.status))+(j.detail?' — '+String(j.detail).replace(/[{}"\n]/g,' ').slice(0,90):''))}return j}
 function hwFigs(p){const F=[];p.md=p.md.replace(/\[\[\s*شكل\s+([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)\s*\]\]/g,(m,a,b,c,d)=>{F.push([+a,+b,+c,+d]);return `[[شكل ${F.length}]]`});return F}
 async function hwCrop(p,F){const out=[];await new Promise(ok=>{const im=new Image();im.onload=()=>{F.forEach(([y0,x0,y1,x1])=>{const X=Math.max(0,x0/1000*im.width-8),Y=Math.max(0,y0/1000*im.height-8),W=Math.min(im.width-X,(x1-x0)/1000*im.width+16),H=Math.min(im.height-Y,(y1-y0)/1000*im.height+16);
@@ -3338,7 +3338,7 @@ let HWBUSY=0;setInterval(()=>document.querySelectorAll('.hwsec').forEach(e=>e.te
 async function hwRun(){if(HWBUSY||!HW)return;HWBUSY=1;let WL=null;try{if(navigator.wakeLock)WL=await navigator.wakeLock.request('screen')}catch(_){}
  const todo=HW.pages.map((p,i)=>i).filter(i=>!HW.pages[i].md&&!HW.pages[i].busy);let k=0;
  await Promise.all([0,1,2,3].map(async(w)=>{if(w)await new Promise(z=>setTimeout(z,w*700));while(k<todo.length){const i=todo[k++],p=HW.pages[i];if(!HW||p.md)continue;p.busy=Date.now();p.err='';hwCard(i);
-  try{const j=await hwAsk(p);if(Array.isArray(j.blocks)&&j.blocks.length){p.blocks=j.blocks.filter(b=>b&&(b.k==='fig'||String(b.t||'').trim())).map(b=>({k:b.k==='fig'?'fig':'t',box:(b.box||[0,0,1000,1000]).map(Number),n:Math.max(1,+b.n||1),c:b.c||'',t:String(b.t||'').replace(/\r/g,'').trim()}));p.figs=await hwCrop(p,p.blocks.filter(b=>b.k==='fig').map(b=>b.box));p.md=hwJoin(p)||' '}else{p.blocks=null;p.md=(j.md||'').replace(/\r/g,'').trim()||' ';const F=hwFigs(p);p.figs=await hwCrop(p,F)}if(j.title&&!HW.title)HW.title=j.title}catch(e){p.err=e.message||'تعذّرت القراءة'}
+  try{const j=await hwAsk(p);if(Array.isArray(j.blocks)&&j.blocks.length){p.blocks=j.blocks.filter(b=>b&&(b.k==='fig'||String(b.t||'').trim())).map(b=>({k:b.k==='fig'?'fig':'t',box:(b.box||[0,0,1000,1000]).map(Number),n:Math.max(1,+b.n||1),c:b.c||'',t:String(b.t||'').replace(/\r/g,'').trim()}));p.figs=await hwCrop(p,p.blocks.filter(b=>b.k==='fig').map(b=>b.box));p.md=hwJoin(p)||' '}else{p.blocks=null;p.md=(j.md||'').replace(/\r/g,'').trim()||' ';const F=hwFigs(p);p.figs=await hwCrop(p,F)}if(j.title&&!HW.title)HW.title=j.title;p.info=(j.model||'')+(j.ms?' — '+Math.round(j.ms/1000)+' ثانية':'')}catch(e){p.err=e.message||'تعذّرت القراءة'}
   p.busy=0;if(HW){DB.set('hw:cur',HW);hwCard(i);hwFoot()}}}));
  HWBUSY=0;try{WL&&WL.release()}catch(_){}}
 const HWSEP='────';
@@ -3355,7 +3355,7 @@ function hwReview(){const p=ptOpen('✍️','ملزمة خط اليد',`راجع
 function hwCard(i){const el=document.getElementById('hwc'+i);if(!el||!HW)return;const p=HW.pages[i];
  if(!p.md){el.className='hwc';el.innerHTML=`<b>صفحة ${i+1}</b><img src="${p.src}" loading="lazy"><div style="text-align:center;padding:12px;color:${p.err?'#c0182f':'#64748b'}">${p.err?'⚠️ '+esc(p.err):p.busy?`⏳ جاري القراءة... <b class="hwsec" data-t="${p.busy}">0</b> ثانية`:'🕐 بالانتظار...'}</div>${p.err?`<button class="btn primary" style="width:100%" onclick="hwRetry(${i})">🔁 إعادة المحاولة</button>`:''}`;return}
  const u=hwUns(p.md);el.className='hwc'+(p.ok?' ok':'');
- el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><b>صفحة ${i+1}</b><span style="font-size:13px;color:${u?'#b45309':'#16a34a'}">${p.ok?'✅ تمت المراجعة':u?`⚠️ ${u} كلمة للمراجعة`:'👍 جاهزة للمراجعة'}</span></div>
+ el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><b>صفحة ${i+1}${p.info?` <small style="font-weight:400;color:#64748b;font-size:11px">(${esc(p.info)})</small>`:''}</b><span style="font-size:13px;color:${u?'#b45309':'#16a34a'}">${p.ok?'✅ تمت المراجعة':u?`⚠️ ${u} كلمة للمراجعة`:'👍 جاهزة للمراجعة'}</span></div>
  <img src="${p.src}" onclick="hwZoom(${i})"><div class="muted" style="font-size:12px;text-align:center">اضغط الصورة لتكبيرها</div>
  ${u?`<div class="hwchips">${(p.md.match(/⟦[^⟧]*⟧/g)||[]).slice(0,30).map((w,k)=>`<button onclick="hwGo(${i},${k})">${esc(w.slice(1,-1))||'؟'}</button>`).join('')}</div>`:''}
  <textarea id="hwt${i}" oninput="hwEd(${i})">${esc(p.md)}</textarea><div class="hwpv" id="hwp${i}">${hwPrev(p.md)}</div>
