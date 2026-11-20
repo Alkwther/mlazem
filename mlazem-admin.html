@@ -183,7 +183,10 @@ pre{background:#1d2430;color:#d6e2ff;border-radius:10px;padding:10px;font-size:1
  <div class="card">
   <h2>💵 سعر الصفحة</h2>
   <input class="in" id="price" inputmode="numeric">
-  <div class="muted" style="margin-top:6px;line-height:1.8">• يُخصم السعر من رصيد المشترك عند إضافة كل صفحة، ويرجع عند حذفها.<br>• بعد حفظ الملزمة PDF تُثبّت صفحاتها ولا تُرجع.<br>• السعر الجديد يُطبّق على الملازم الجديدة فقط.</div>
+  <div class="muted" style="margin-top:6px;line-height:1.8">• المشترك يصمم ويعدّل ببلاش — الخصم يصير فقط عند حفظ PDF.<br>• يدفع على الصفحات اللي ما دفعها قبل، وإعادة الحفظ بنفس اسم الأستاذ ببلاش.<br>• السعر الجديد يُطبّق على الملازم الجديدة فقط.</div>
+  <label class="f">💵 سعر الغلاف (دينار) — غلاف الملزمة والكراسة وغلاف مصمم الأغلفة</label>
+  <input class="in" id="cvp" inputmode="numeric" placeholder="مثلاً 500 — اكتب 0 إذا مجاني">
+  <div class="muted" style="margin-top:4px">الأغلفة الجاهزة لكل غلاف سعره اللي تحدده عند النشر</div>
   <label class="f">صفحات مجانية لكل مصمم جديد (تجربة)</label>
   <input class="in" id="trial" inputmode="numeric">
   <button class="btn green" style="width:100%;margin-top:10px" onclick="savePrice()">💾 حفظ الإعدادات</button>
@@ -296,7 +299,8 @@ service cloud.firestore {
         && request.resource.data.charged == 0 && request.resource.data.exported == 0
         && request.resource.data.amountPaid == 0 && request.resource.data.freePages == 0
         && request.resource.data.teacher == '' && (request.resource.data.price == cfg().pricePerPage
-          || (request.resource.data.get('hw', false) == true && request.resource.data.price == cfg().get('readyPagePrice', -1)));
+          || (request.resource.data.get('hw', false) == true && request.resource.data.price == cfg().get('readyPagePrice', -1))
+          || (request.resource.data.get('cover', false) == true && request.resource.data.price == cfg().get('coverPrice', -1)));
       allow delete: if isAdmin();
       allow update: if isAdmin() || (signed() && resource.data.uid == request.auth.uid
         && request.resource.data.uid == resource.data.uid
@@ -418,7 +422,7 @@ function startData(){
  unsubs.push(FB.db.collection('codes').orderBy('createdAt','desc').limit(500).onSnapshot(q=>{CODES=q.docs.map(d=>({id:d.id,...d.data()}));renderCodes();renderHome()}));
  FB.db.doc('settings/main').get().then(async s=>{let v=s.exists?s.data():{};
   if(!s.exists||v.pricePerPage==null||v.trialPages==null){v={pricePerPage:v.pricePerPage||150,trialPages:v.trialPages!=null?v.trialPages:3};await FB.db.doc('settings/main').set(v,{merge:true})}
-  PRICE=+v.pricePerPage;$('#price').value=PRICE;$('#trial').value=v.trialPages;RPP=+v.readyPagePrice||0;$('#rpp').value=RPP||'';R2U=v.r2Url||'';$('#r2u').value=R2U;renderReady()});
+  PRICE=+v.pricePerPage;$('#price').value=PRICE;$('#trial').value=v.trialPages;$('#cvp').value=v.coverPrice!=null?v.coverPrice:'';RPP=+v.readyPagePrice||0;$('#rpp').value=RPP||'';R2U=v.r2Url||'';$('#r2u').value=R2U;renderReady()});
  unsubs.push(FB.db.collection('ready').onSnapshot(q=>{RD=q.docs.map(d=>({id:d.id,...d.data()}));RD.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));renderReady()},e=>{$('#rdList').innerHTML='<div class="muted" style="padding:16px;color:#c62828">⚠️ حدّث قواعد Firebase من الإعدادات حتى تشتغل الملازم الجاهزة</div>'}));
  unsubs.push(FB.db.collection('secrets').onSnapshot(q=>{SECRETS={};q.docs.forEach(d=>SECRETS[d.id]=d.data());renderDes()}));
  unsubs.push(FB.db.collection('booklets').orderBy('lastAt','desc').limit(500).onSnapshot(q=>{BK=q.docs.map(d=>({id:d.id,...d.data()}));renderBk();renderReady()}));
@@ -563,8 +567,8 @@ function renderTx(){const l=TX.filter(t=>TXTYPE==='all'||t.type===TXTYPE);
  $('#txList').innerHTML=l.length?l.map(txRow).join(''):'<div class="muted" style="padding:14px">لا توجد حركات بهذه الفترة</div>'}
 
 /* ---- settings ---- */
-async function savePrice(){const p=Math.round(+normD($('#price').value)),t=Math.max(0,Math.round(+normD($('#trial').value)||0));if(!p){toast('اكتب السعر');return}
- await FB.db.doc('settings/main').set({pricePerPage:p,trialPages:t},{merge:true});PRICE=p;toast('تم حفظ الإعدادات ✓')}
+async function savePrice(){const p=Math.round(+normD($('#price').value)),t=Math.max(0,Math.round(+normD($('#trial').value)||0)),cr=normD($('#cvp').value).trim(),cv=cr===''?p:Math.max(0,Math.round(+cr||0));if(!p){toast('اكتب السعر');return}
+ await FB.db.doc('settings/main').set({pricePerPage:p,trialPages:t,coverPrice:cv},{merge:true});$('#cvp').value=cv;PRICE=p;toast('تم حفظ الإعدادات ✓')}
 
 /* ---- init ---- */
 (function(){

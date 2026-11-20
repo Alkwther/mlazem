@@ -859,6 +859,20 @@ body.kids .top{background:linear-gradient(135deg,#f97316 0%,#ec4899 55%,#8b5cf6 
 .kay{font-family:Amiri,'Noto Naskh Arabic','Baloo Bhaijaan 2',serif;font-weight:700;color:#1f2937}.kay i{font-style:normal;color:var(--kc);font-size:.8em}
 .kmem{margin-top:auto;text-align:center;border:2.5px dashed #e5e7eb;border-radius:18px;padding:8px;flex:none}.kmem b{font-size:18px;color:#475569}.kmem div{font-size:36px;letter-spacing:8px;color:#e5e7eb;-webkit-text-stroke:1.5px #f59e0b;font-family:sans-serif}
 .kface{font-size:34px;width:52px;height:52px;border:2.5px dashed #cbd5e1;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;filter:grayscale(1);opacity:.75}
+.ph .kgn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:6px;background:#fff;color:var(--cd,#0b1f45);font-weight:800;font-size:14px;line-height:1.2;padding:3px 12px;border-radius:20px;box-shadow:0 2px 6px rgba(0,0,0,.15);white-space:nowrap;max-width:44%;overflow:hidden}
+.ph .kgn img{height:22px;border-radius:4px}.ph .kgn i{font-style:normal}
+.cv-kg{position:absolute;top:26px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:#fff;color:var(--cd);font:800 26px var(--hf),sans-serif;line-height:1.3;padding:8px 26px;border-radius:40px;box-shadow:0 6px 18px rgba(0,0,0,.18);white-space:nowrap;z-index:5;max-width:86%}
+.cv-kg img{height:46px;border-radius:8px}.cv-kg i{font-style:normal}
+.page.haskg .cv-in{top:50px}
+.tban.lb{background:linear-gradient(135deg,#0f766e,#059669 55%,#10b981)}
+.mlst{margin-bottom:8px}.mlg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.mlg button{border:2px solid #e3e7ef;background:#fff;border-radius:20px;padding:6px 12px;font:800 13px Cairo,sans-serif;color:#0b1f45;cursor:pointer}.mlg button.on{background:#0f766e;border-color:#0f766e;color:#fff}
+.mlh{font:900 15px Cairo,sans-serif;color:#0f766e;margin:4px 0 8px}
+.mls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mlb{border:0;border-radius:16px;padding:12px 8px;background:#fff;box-shadow:inset 0 0 0 2px var(--c,#0f766e);display:flex;flex-direction:column;align-items:center;gap:3px;font-family:Cairo,sans-serif;cursor:pointer}
+.mlb b{font-size:14.5px;color:var(--c,#0f766e)}.mlb small{font-size:11.5px;color:#475569}
+.mlb.soon{box-shadow:inset 0 0 0 2px #e3e7ef;opacity:.75}.mlb.soon b{color:#64748b}
+.mlch{margin:6px 22px 0;line-height:2;font:700 14px Cairo,sans-serif;color:#0b1f45}
 </style>
 </head>
 <body>
@@ -980,6 +994,7 @@ body.kids .top{background:linear-gradient(135deg,#f97316 0%,#ec4899 55%,#8b5cf6 
      <button class="tg" onclick="kMatch()"><i>🔗</i>توصيل</button><button class="tg" onclick="kLinesSheet()"><i>📏</i>سطور</button>
      <button class="tg" onclick="openFrames()"><i>🌈</i>إطار</button><button class="tg" onclick="openColors()"><i>🎨</i>ألوان</button>
      <button class="tg" onclick="toolText()"><i>✍️</i>نص</button><button class="tg" onclick="toolImage()"><i>🖼️</i>صورة</button>
+     <button class="tg" onclick="kKgSheet()" style="grid-column:span 2;flex-direction:row;justify-content:center;gap:5px"><i style="font-size:17px">🏫</i>اسم الروضة</button>
     </div></div>
    <button class="tban kd konly" onclick="kColorAI()"><svg viewBox="0 0 120 90" class="tbi"><rect x="18" y="14" width="64" height="66" rx="8" fill="#fff"/><path d="M34 60c4-16 22-16 26-2c-6 8-20 10-26 2z" fill="none" stroke="#111" stroke-width="3"/><circle cx="44" cy="38" r="8" fill="none" stroke="#111" stroke-width="3"/><path d="M78 20l6-12 6 12 12 6-12 6-6 12-6-12-12-6z" fill="#fde047"/></svg><span><b>رسمة تلوين</b><small>بالذكاء الاصطناعي</small></span><em>›</em></button>
    <button class="tban kd2 konly" onclick="kidsHome()"><svg viewBox="0 0 120 90" class="tbi"><rect x="14" y="16" width="44" height="60" rx="5" fill="#fde047"/><rect x="40" y="10" width="44" height="60" rx="5" fill="#fff"/><text x="62" y="52" font-size="30" font-weight="900" text-anchor="middle" fill="#f97316" font-family="sans-serif">أب</text></svg><span><b>كراسة كاملة</b><small>بضغطة وحدة</small></span><em>›</em></button>
@@ -994,7 +1009,8 @@ body.kids .top{background:linear-gradient(135deg,#f97316 0%,#ec4899 55%,#8b5cf6 
     </div></div>
    <button class="tban hw" onclick="hwPick()"><svg viewBox="0 0 120 90" class="tbi"><defs><linearGradient id="pg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e0ecff"/></linearGradient></defs><g transform="rotate(-12 50 55)"><rect x="8" y="30" width="78" height="50" rx="6" fill="url(#pg1)" stroke="#93c5fd" stroke-width="2"/><path d="M18 52c6-10 10 8 16-2s8 6 14-4" fill="none" stroke="#1d4ed8" stroke-width="3" stroke-linecap="round"/><path d="M18 64h40" stroke="#93c5fd" stroke-width="2.5" stroke-linecap="round"/></g><path d="M64 10 L96 46 L88 52 L58 18Z" fill="#2563eb"/><path d="M58 18 L88 52 L84 56 L54 22Z" fill="#1e40af"/><path d="M84 56 L92 50 L95 62Z" fill="#fde68a"/><path d="M93 58l2 4-4-1z" fill="#111"/><path d="M70 42c10-6 22-4 30 4 6 6 6 16 0 22-8 8-22 8-30 2l-14-10c-4-3-3-8 2-9l8 2z" fill="#fcd9b6" stroke="#e8b48a" stroke-width="1.5"/><path d="M76 60c6 2 12 2 16-2" fill="none" stroke="#e8b48a" stroke-width="1.5"/><path d="M98 50l16-10 4 22-14 10z" fill="#1e3a8a"/></svg><span><b>تحويل<br>خط اليد</b><small>إلى PDF</small></span><em>›</em></button>
    <button class="tban cv" onclick="openCovers('store')"><svg viewBox="0 0 120 90" class="tbi"><g transform="rotate(-14 30 60)"><rect x="6" y="20" width="30" height="62" rx="4" fill="#e11d48"/><rect x="9" y="26" width="24" height="14" rx="2" fill="#fff" opacity=".85"/><circle cx="21" cy="58" r="7" fill="#fde047"/></g><g transform="rotate(-6 52 56)"><rect x="30" y="14" width="30" height="66" rx="4" fill="#0ea5e9"/><rect x="33" y="20" width="24" height="12" rx="2" fill="#fff" opacity=".85"/><path d="M36 50h18M36 56h14" stroke="#fff" stroke-width="3"/></g><g transform="rotate(4 74 52)"><rect x="54" y="12" width="30" height="66" rx="4" fill="#22c55e"/><rect x="57" y="18" width="24" height="12" rx="2" fill="#fff" opacity=".85"/><path d="M62 46l7 8 9-14" fill="none" stroke="#fde047" stroke-width="4"/></g><g transform="rotate(10 98 52)"><rect x="80" y="10" width="32" height="68" rx="4" fill="#1e293b"/><rect x="83" y="16" width="26" height="12" rx="2" fill="#fde047"/><path d="M96 34l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" fill="#fde047"/></g></svg><span><b>الأغلفة<br>الجاهزة</b></span><em>›</em></button>
-<button class="tban kd" onclick="kidsHome()"><svg viewBox="0 0 120 90" class="tbi"><rect x="10" y="18" width="46" height="62" rx="6" fill="#fff"/><text x="33" y="60" font-size="32" font-weight="900" text-anchor="middle" fill="#f97316" font-family="sans-serif">أ</text><rect x="52" y="12" width="46" height="62" rx="6" fill="#fde047"/><text x="75" y="54" font-size="30" font-weight="900" text-anchor="middle" fill="#7c3aed" font-family="sans-serif">A</text><circle cx="98" cy="70" r="12" fill="#22c55e"/><text x="98" y="76" font-size="16" font-weight="900" text-anchor="middle" fill="#fff" font-family="sans-serif">1</text></svg><span><b>كراسات<br>الأطفال</b><small>حروف • أرقام • تلوين</small></span><em>›</em></button>
+<button class="tban lb" onclick="libOpen()"><svg viewBox="0 0 120 90" class="tbi"><rect x="14" y="20" width="20" height="60" rx="3" fill="#fde047"/><rect x="36" y="14" width="20" height="66" rx="3" fill="#fff"/><rect x="58" y="24" width="20" height="56" rx="3" fill="#93c5fd"/><g transform="rotate(14 92 50)"><rect x="82" y="22" width="20" height="58" rx="3" fill="#fca5a5"/></g><path d="M40 30h12M40 38h12M18 34h12M62 36h12" stroke="#0f766e" stroke-width="3"/></svg><span><b>ملازم جاهزة</b><small>حسب الصف والمادة</small></span><em>›</em></button>
+   <button class="tban kd" onclick="kidsHome()"><svg viewBox="0 0 120 90" class="tbi"><rect x="10" y="18" width="46" height="62" rx="6" fill="#fff"/><text x="33" y="60" font-size="32" font-weight="900" text-anchor="middle" fill="#f97316" font-family="sans-serif">أ</text><rect x="52" y="12" width="46" height="62" rx="6" fill="#fde047"/><text x="75" y="54" font-size="30" font-weight="900" text-anchor="middle" fill="#7c3aed" font-family="sans-serif">A</text><circle cx="98" cy="70" r="12" fill="#22c55e"/><text x="98" y="76" font-size="16" font-weight="900" text-anchor="middle" fill="#fff" font-family="sans-serif">1</text></svg><span><b>كراسات<br>الأطفال</b><small>حروف • أرقام • تلوين</small></span><em>›</em></button>
       <div class="tcard tpl"><div class="tph" onclick="openCoverSheet('front')"><span>⭐ قوالب جاهزة</span><span>‹</span></div><div class="tps" id="tplThumbs"></div></div>
    <button class="tmore" onclick="openAllTools()">المزيد من الأدوات ▾</button>
   </div>
@@ -1703,6 +1719,7 @@ function openCoverSheet(kind){
   <div class="frgrid" id="cvGrid"></div>
   <label class="f">اللون</label><div class="sw" id="cvSw"></div></div>
  <div class="cvsec"><b>✏️ المعلومات</b>
+ ${S.kids?`<button class="btn" style="width:100%;margin:6px 0 4px;border:2px solid #0f766e;color:#0f766e" id="cbKg">🏫 اسم الروضة ${S.kgName?': '+esc(S.kgName):'(اختياري)'}</button>`:''}
  ${B?`<label class="f">عبارة الغلاف الخلفي</label><textarea class="in" id="cf_note" rows="2">${esc(S.back.note||'')}</textarea>`
   :`<label class="f">عنوان الملزمة</label><input class="in" id="cf_title" value="${v('title')}">
   <div class="row"><div><label class="f">المادة</label><input class="in" id="cf_subject" value="${v('subject')}"></div><div><label class="f">الصف</label><input class="in" id="cf_grade" value="${v('grade')}"></div></div>`}
@@ -1731,6 +1748,7 @@ function openCoverSheet(kind){
  if(q('cbOn'))q('cbOn').onchange=async e=>{S.back.on=e.target.checked;toast(S.back.on?'📗 تمت إضافة الغلاف الخلفي كآخر ورقة':'تم إخفاء الغلاف الخلفي');await redo()};
  if(q('cbIn'))q('cbIn').onclick=()=>{collect();$('#obM').classList.add('hidden');openPicker({kind:'cover',reopen:1})};
  if(q('cbInDel'))q('cbInDel').onclick=()=>{S.coverImg=null;redo()};
+ if(q('cbKg'))q('cbKg').onclick=()=>{collect();save();kKgSheet(()=>openCoverSheet(kind))};
  q('cbSave').onclick=async()=>{collect();save();bindInfo();$('#obM').classList.add('hidden');toast('✅ تم حفظ الغلاف');await cvGo(kind)};
  $('#obM').classList.remove('hidden')}
 function itemEl(it,color){
@@ -1846,8 +1864,14 @@ async function exportPDF(){
  let justBought=false;if(S.ready&&!S.ready.paid&&!IS_ADMIN){if(!await readyBuy(teacher))return;justBought=true}
  const o=overlay('جاري التأكد من الصفحات والرصيد...');
  if(!IS_ADMIN){await liveSyncNow();if(LIVE.err){o.remove();toast('تعذّر الاتصال — تأكد من الإنترنت');return}
-  if(LIVE.unpaid>0){o.remove();lowBalance(LIVE.unpaid);return}}
- if(!S.lock&&!justBought){o.style.display='none';const go=await ask('حفظ الملزمة PDF باسم الأستاذ',{icon:'📕',msg:`👨‍🏫 ${esc(teacher)}\n\n✅ تگدر تعدّلها وتحفظها مرات بنفس اسم الأستاذ بدون خصم.\n⚠️ إذا غيّرت اسم الأستاذ بعدين، تنحسب ملزمة جديدة.`,yes:'حفظ PDF',no:'إلغاء'});o.style.display='';if(!go){o.remove();return}}
+  const cost=dueCost(),pp=pagePrice(),fl=Math.min(freeLeft(),LIVE.unpaid||0);
+  if(cost>(ME.balance||0)){o.remove();lowBalance(cost);return}
+  if(cost>0||(!S.lock&&!justBought)){o.style.display='none';
+   const lines=[(LIVE.unpaid?`📄 ${LIVE.unpaid} صفحة${fl?` (منها ${fl} مجانية 🎁)`:''} × ${fmt(pp)} دينار`:''),(LIVE.cvDue?`📕 الغلاف: ${LIVE.cvDue} × ${fmt(COVER_P)} دينار`:'')].filter(Boolean).join('\n');
+   const go=await ask('حفظ الملزمة PDF باسم الأستاذ',{icon:'📕',msg:`👨‍🏫 ${esc(teacher)}\n\n${cost?`💰 سينخصم الآن ${fmt(cost)} دينار\n${lines}`:'✅ ما ينخصم شي — الصفحات مدفوعة سابقاً'}\n\n✅ تگدر تعدّلها وتحفظها مرات بنفس اسم الأستاذ — تدفع بس على الصفحات الجديدة.\n⚠️ إذا غيّرت اسم الأستاذ بعدين، تنحسب ملزمة جديدة.`,yes:cost?'دفع وحفظ PDF':'حفظ PDF',no:'إلغاء'});o.style.display='';if(!go){o.remove();return}}
+  try{o.innerHTML='<div class="spin"></div><div>💰 جاري الدفع...</div>';await ensureBooklet();const r=await payExport(S.bid,LIVE.pages,LIVE.cv);Object.assign(LIVE,{charged:r.charged,coverN:r.coverN,unpaid:0,cvDue:0});if(r.pay)toast(`💰 تم خصم ${fmt(r.pay)} دينار`,3500)}
+  catch(e){o.remove();if(String(e.message||'').startsWith('LOW:')){lowBalance(+e.message.slice(4));return}console.warn(e);toast('تعذّر الدفع — تأكد من الإنترنت',4000);return}}
+ else if(!S.lock&&!justBought){o.style.display='none';const go=await ask('حفظ الملزمة PDF باسم الأستاذ',{icon:'📕',msg:`👨‍🏫 ${esc(teacher)}`,yes:'حفظ PDF',no:'إلغاء'});o.style.display='';if(!go){o.remove();return}}
  EXPORT_ID=S.bid||('adm_'+Date.now().toString(36));
  const nPages=await renderPages();
  const q=+$('#q').value;const pages=[...document.querySelectorAll('#pages .page')];
@@ -1865,7 +1889,7 @@ async function exportPDF(){
   }
   const blob=pdf.output('blob');
   let ok=true;
-  if(!IS_ADMIN){o.innerHTML='<div class="spin"></div><div>جاري تثبيت الملزمة...</div>';ok=await markExported(nPages,teacher)}
+  if(!IS_ADMIN){o.innerHTML='<div class="spin"></div><div>جاري تثبيت الملزمة...</div>';ok=await markExported(S.ready?nPages:billInfo(nPages).pages,teacher)}
   if(ok){
    if(!S.lock){S.lock={id:EXPORT_ID,uid:ME?ME.id:'',teacher,phone:(S.phone||'').trim(),at:Date.now()};saveNow();bindInfo()}
    const nm=pdfName();window._lastPdf=blob;download(blob,nm);EXP_DONE={blob,nm,n:pages.length};}
@@ -1893,22 +1917,18 @@ async function changeTeacher(){
  if(S.ready){const nt=await ask('🔁 تغيير اسم الأستاذ',{icon:'👨‍🏫',msg:`هاي ملزمة جاهزة — تغيير الأستاذ يعتبرها شراء جديد، وتدفع سعرها مرة ثانية عند حفظ PDF.\nالملزمة القديمة تبقى بـ «ملازمي».`,input:'',ph:'اسم الأستاذ الجديد',yes:'التالي',no:'إلغاء'});if(nt==null||!nt.trim())return;
   clearTimeout(saveT);saveNow();const d=JSON.parse(JSON.stringify(S));delete d.lock;delete d.bid;d.pid=uid();d.teacher=nt.trim();d.phone='';d.ready.paid=false;S=Object.assign(sample(),d);saveNow();bindInfo();renderTopics();renderProjects();await renderPages();
   popup('✅','تم','صارت نسخة جديدة باسم <b>'+esc(nt.trim())+'</b> — اضغط 📕 تصدير PDF حتى تشتريها وتحمّلها.');return}
- const n=LIVE.n||pagesList().length||0,old=S.lock.teacher;
- const freeLeft=IS_ADMIN?0:Math.max(0,TRIAL-((ME&&ME.usedFree)||0)),payP=Math.max(0,n-freeLeft),cost=IS_ADMIN?0:payP*PRICE;
- const nt=await ask('🔁 تغيير اسم الأستاذ',{icon:'👨‍🏫',msg:`الملزمة محفوظة PDF باسم: ${esc(old)}\nتغيير الاسم يعتبرها ملزمة جديدة:\n${n} صفحة × ${PRICE} = ${fmt(n*PRICE)} دينار${freeLeft?` (منها ${Math.min(freeLeft,n)} مجانية)`:''}\nالملزمة القديمة تبقى بـ «ملازمي».`,input:'',ph:'اسم الأستاذ الجديد',yes:'التالي',no:'إلغاء'});
+ const n=LIVE.n||pagesList().length||0,old=S.lock.teacher,bi=billInfo(n);
+ const freeLeft=IS_ADMIN?0:Math.max(0,TRIAL-((ME&&ME.usedFree)||0)),payP=Math.max(0,bi.pages-freeLeft),cost=IS_ADMIN?0:payP*PRICE+bi.cv*COVER_P;
+ const nt=await ask('🔁 تغيير اسم الأستاذ',{icon:'👨‍🏫',msg:`الملزمة محفوظة PDF باسم: ${esc(old)}\nتغيير الاسم يعتبرها ملزمة جديدة — تنخصم عند حفظ PDF:\n${bi.pages} صفحة × ${PRICE} + الغلاف ${fmt(bi.cv*COVER_P)} = ${fmt(cost)} دينار${freeLeft?` (منها ${Math.min(freeLeft,bi.pages)} صفحة مجانية)`:''}\nالملزمة القديمة تبقى بـ «ملازمي».`,input:'',ph:'اسم الأستاذ الجديد',yes:'التالي',no:'إلغاء'});
  if(nt==null)return;const name=nt.trim();if(!name){toast('اكتب اسم الأستاذ');return}
  if(name===old){toast('نفس اسم الأستاذ — تگدر تحفظها بدون خصم');return}
- if(!IS_ADMIN&&ME&&(ME.balance||0)<cost){lowBalance(payP-Math.floor((ME.balance||0)/PRICE));return}
  const ph=await ask('رقم هاتف الأستاذ الجديد',{icon:'📞',msg:'اختياري — تگدر تتركه فارغ',input:'',ph:'07xxxxxxxxx',tel:1,yes:'التالي',no:'تخطي'});
- if(!await ask('تأكيد تغيير الأستاذ',{icon:'⚠️',msg:`ملزمة جديدة باسم: ${esc(name)}\nسيتم خصم ${fmt(cost)} دينار من رصيدك`,yes:'نعم، متابعة',no:'لا'}))return;
+ if(!await ask('تأكيد تغيير الأستاذ',{icon:'⚠️',msg:`ملزمة جديدة باسم: ${esc(name)}\nسينخصم ${fmt(cost)} دينار عند حفظ PDF`,yes:'نعم، متابعة',no:'لا'}))return;
  clearTimeout(saveT);saveNow();
  const d=JSON.parse(JSON.stringify(S));delete d.lock;delete d.bid;delete d.demo;d.pid=uid();d.teacher=name;d.phone=(ph||'').trim();
  S=Object.assign(sample(),d);saveNow();bindInfo();renderTopics();renderProjects();
- const o=overlay('جاري إنشاء الملزمة باسم الأستاذ الجديد...');
- try{await liveSyncNow()}finally{o.remove()}
- if(LIVE.err){toast('تعذّر الاتصال — تأكد من الإنترنت',4000);return}
- if(LIVE.unpaid>0){lowBalance(LIVE.unpaid);return}
- popup('✅','تم تغيير اسم الأستاذ',`صارت ملزمة جديدة باسم <b>${esc(name)}</b>${cost?`<br>تم خصم <b>${fmt(cost)}</b> دينار`:''}<br>الملزمة القديمة باسم <b>${esc(old)}</b> باقية بـ «ملازمي».<br><button class="btn pdf" style="width:100%;margin-top:12px" onclick="$('#popM').classList.add('hidden');exportPDF()">📕 احفظها PDF الآن</button>`);
+ LIVE.bid=undefined;liveSoon(200);
+ popup('✅','تم تغيير اسم الأستاذ',`صارت ملزمة جديدة باسم <b>${esc(name)}</b>${cost?`<br>💰 ينخصم <b>${fmt(cost)}</b> دينار عند حفظ PDF`:''}<br>الملزمة القديمة باسم <b>${esc(old)}</b> باقية بـ «ملازمي».<br><button class="btn pdf" style="width:100%;margin-top:12px" onclick="$('#popM').classList.add('hidden');exportPDF()">📕 احفظها PDF الآن</button>`);
 }
 async function markExported(n,teacher){
  const bref=FB.db.doc('booklets/'+S.bid);
@@ -2241,7 +2261,7 @@ function forgotPw(){const ph=normD(($('#aPhone')||{}).value||'').replace(/\D/g,'
  <a class="btn wa" id="fpGo" style="width:100%;margin-top:12px;padding:14px;font-size:17px" target="_blank" rel="noopener" href="https://wa.me/${WA_PW}?text=${encodeURIComponent(txt)}">💬 مراسلة واتساب</a>`;
  $('#obM').classList.remove('hidden')}
 const GOVS=['بغداد','البصرة','نينوى','أربيل','النجف','كربلاء','بابل','ذي قار','ميسان','واسط','الديوانية','المثنى','الأنبار','ديالى','صلاح الدين','كركوك','دهوك','السليمانية','حلبجة'];
-let R2URL='',READY_PP=0,WELCOME=0,FB=null,ME=null,PRICE=150,TRIAL=3,IS_ADMIN=false,unsubMe=null,SELF_T=0,PREV_BAL=null;
+let R2URL='',READY_PP=0,COVER_P=0,WELCOME=0,FB=null,ME=null,PRICE=150,TRIAL=3,IS_ADMIN=false,unsubMe=null,SELF_T=0,PREV_BAL=null;
 const fbReady=()=>!!(FIREBASE_CONFIG.apiKey&&FIREBASE_CONFIG.projectId&&window.firebase);
 const fmt=n=>Math.round(n||0).toLocaleString('en');
 const normD=s=>String(s||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
@@ -2317,7 +2337,7 @@ async function openAcct(msg){if(DEMO){popup('👁️','وضع المعاينة',
   L.innerHTML=rows.length?rows.map(r=>`<div class="tx"><div><b>${nm[r.type]||r.type}</b> ${r.pages?'— '+r.pages+' صفحة':''}${r.free?' (🎁'+r.free+')':''}<div class="muted">${esc(r.title||'')} ${r.at?new Date(r.at.seconds*1000).toLocaleString('ar-IQ'):''}</div></div><span class="m ${r.amount>0?'p':r.amount<0?'n':''}">${r.amount>0?'+':''}${fmt(r.amount)}</span></div>`).join(''):'<div class="muted">لا توجد حركات بعد</div>'}
  catch(e){L.innerHTML='<div class="muted">تعذّر تحميل السجل</div>'}}
 function popup(icon,title,body){$('#popBody').innerHTML=`<div class="pop"><div class="big">${icon}</div><h3>${title}</h3><div style="line-height:1.9">${body}</div><button class="btn primary" style="width:100%;margin-top:14px" onclick="$('#popM').classList.add('hidden')">تمام</button></div>`;$('#popM').classList.remove('hidden')}
-function lowBalance(unpaid){popup('💳','رصيدك لا يكفي',`عندك <b>${unpaid}</b> صفحة غير مدفوعة.<br>سعر الصفحة ${PRICE} دينار — رصيدك ${fmt(ME.balance)}<br><a class="btn wa" style="width:100%;margin-top:12px" target="_blank" href="${waLink('أحتاج رصيد لـ '+unpaid+' صفحة')}">💬 اشحن عبر واتساب</a>`)}
+function lowBalance(need){popup('💳','رصيدك لا يكفي',`حفظ الملزمة يحتاج <b>${fmt(need)}</b> دينار — رصيدك <b>${fmt(ME.balance)}</b> دينار.<br>الصفحة ${fmt(pagePrice())} دينار — الغلاف ${fmt(COVER_P)} دينار<br><a class="btn wa" style="width:100%;margin-top:12px" target="_blank" href="${waLink('أحتاج رصيد '+fmt(need)+' دينار لحفظ ملزمة')}">💬 اشحن عبر واتساب</a>`)}
 async function redeem(){
  const code=normD($('#codeIn').value).replace(/\D/g,'');if(code.length!==12){toast('الكود يتكون من 12 رقم');return}
  const cref=FB.db.doc('codes/'+code),dref=FB.db.doc('designers/'+ME.id);let amt=0,nb=0;
@@ -2345,15 +2365,34 @@ async function liveSync(){
   if(!FB||!ME||IS_ADMIN){LIVE.charged=n;LIVE.unpaid=0;return}
   if(ME.active===false){LIVE.unpaid=n;return}
   if(S.bid&&!S.bid.startsWith(ME.id+'_')){delete S.bid;delete S.lock;saveNow();bindInfo()}
-  if(!S.bid){const id=ME.id+'_'+Date.now().toString(36)+uid();
-   await FB.db.doc('booklets/'+id).set({uid:ME.id,designer:ME.name||'',designerPhone:ME.phone||'',teacher:'',teacherPhone:'',title:S.title||'',subject:S.subject||'',price:S.hw?HWPRICE():PRICE,hw:!!S.hw,charged:0,exported:0,amountPaid:0,freePages:0,exports:0,createdAt:TS(),lastAt:TS()});
-   S.bid=id;saveNow()}
-  const r=await setPages(S.bid,n);Object.assign(LIVE,{charged:r.charged,exported:r.exported,unpaid:r.unpaid});
-  if(r.add)toast(r.pay?`➕ ${r.add} صفحة — تم خصم ${fmt(r.pay)} دينار${r.useFree?' (🎁 '+r.useFree+' مجانية)':''}`:`🎁 ${r.add} صفحة مجانية`);
-  else if(r.rem)toast(`➖ ${r.rem} صفحة — رجع لرصيدك ${fmt(r.refund)} دينار`);
+  const bi=billInfo(n);LIVE.pages=bi.pages;LIVE.cv=bi.cv;
+  if(S.bid&&LIVE.bid!==S.bid){const x=await FB.db.doc('booklets/'+S.bid).get();const b=x.exists?x.data():{};LIVE.bid=S.bid;LIVE.charged=b.charged||0;LIVE.exported=b.exported||0;LIVE.coverN=b.coverN!=null?b.coverN:((b.charged||0)>0?bi.cv:0);LIVE.price=b.price||0}
+  if(!S.bid){LIVE.bid=null;LIVE.charged=0;LIVE.exported=0;LIVE.coverN=0;LIVE.price=0}
+  LIVE.unpaid=Math.max(0,bi.pages-LIVE.charged);LIVE.cvDue=Math.max(0,bi.cv-(LIVE.coverN||0));
  }catch(e){console.warn(e);LIVE.err=true}
  finally{LIVE.busy=false;statusBar();if(LIVE.again){LIVE.again=false;liveSoon(400)}}
 }
+const nCovers=()=>1+(S.back&&S.back.on?1:0);
+function billInfo(n){if(S.ready)return{pages:n,cv:0};const cv=Math.min(nCovers(),n);return{pages:n-cv,cv}}
+const pagePrice=()=>LIVE.price||(S.hw?HWPRICE():PRICE);
+function dueCost(){if(IS_ADMIN||S.demo)return 0;const payP=Math.max(0,(LIVE.unpaid||0)-freeLeft());return payP*pagePrice()+(LIVE.cvDue||0)*COVER_P}
+async function ensureBooklet(){if(S.bid)return S.bid;const id=ME.id+'_'+Date.now().toString(36)+uid();
+ await FB.db.doc('booklets/'+id).set({uid:ME.id,designer:ME.name||'',designerPhone:ME.phone||'',teacher:'',teacherPhone:'',title:S.title||'',subject:S.subject||'',price:S.hw?HWPRICE():PRICE,hw:!!S.hw,charged:0,exported:0,amountPaid:0,freePages:0,exports:0,createdAt:TS(),lastAt:TS()});
+ S.bid=id;saveNow();Object.assign(LIVE,{bid:id,charged:0,exported:0,coverN:0,price:S.hw?HWPRICE():PRICE});return id}
+// الدفع عند حفظ PDF فقط: الصفحات الجديدة + الغلاف (بسعره الخاص)
+async function payExport(bid,pages,cv){
+ const dref=FB.db.doc('designers/'+ME.id),bref=FB.db.doc('booklets/'+bid);let out={};SELF_T=Date.now();
+ await FB.db.runTransaction(async tx=>{
+  const d=(await tx.get(dref)).data(),bs=await tx.get(bref);if(!bs.exists)throw new Error('nobk');const b=bs.data();
+  const price=b.price||PRICE,charged=b.charged||0,paid=b.amountPaid||0,free=b.freePages||0,bal=d.balance||0,usedFree=d.usedFree||0,cN=b.coverN!=null?b.coverN:(charged>0?cv:0);
+  const add=Math.max(0,pages-charged),useFree=Math.min(Math.max(0,TRIAL-usedFree),add),cvAdd=Math.max(0,cv-cN),pay=(add-useFree)*price+cvAdd*COVER_P;
+  if(pay>bal)throw new Error('LOW:'+pay);
+  if(add>0||cvAdd>0){const nb=bal-pay;
+   tx.update(dref,{balance:nb,usedFree:usedFree+useFree,totalSpent:(d.totalSpent||0)+pay,totalPages:(d.totalPages||0)+add,lastBooklet:bid,updatedAt:TS()});
+   tx.update(bref,{charged:charged+add,amountPaid:paid+pay,freePages:free+useFree,coverN:Math.max(cN,cv),coverPaid:(b.coverPaid||0)+cvAdd*COVER_P,title:S.title||'',lastAt:TS()});
+   tx.set(txDoc(),{uid:ME.id,name:ME.name||'',type:'page',pages:add,covers:cvAdd,free:useFree,amount:pay?-pay:0,title:S.title||'',booklet:bid,balanceAfter:nb,at:TS()})}
+  out={charged:charged+add,coverN:Math.max(cN,cv),pay,add,useFree,cvAdd}});
+ SELF_T=Date.now();return out}
 async function setPages(bid,n){
  const dref=FB.db.doc('designers/'+ME.id),bref=FB.db.doc('booklets/'+bid);let out={};SELF_T=Date.now();
  await FB.db.runTransaction(async tx=>{
@@ -2379,14 +2418,14 @@ function statusBar(){setTimeout(()=>{if(typeof demoNote==='function')demoNote()}
  if(S.ready&&!S.ready.paid&&!IS_ADMIN){b.innerHTML=`<div class="it"><small>صفحات الملزمة</small><b>${S.ready.pages}</b></div><div class="it gold"><small>سعر الملزمة</small><b>${fmt(S.ready.total)}</b></div><div class="it ${(ME.balance||0)>=S.ready.total?'ok':'bad'}"><small>رصيدك</small><b>${fmt(ME.balance)}</b></div>${(ME.balance||0)<S.ready.total?`<a target="_blank" href="${waLink('أريد إضافة رصيد لشراء ملزمة '+(S.ready.title||''))}">💬 اشحن</a>`:''}`;return}
  const note=$('#expNote');
  if(IS_ADMIN){b.innerHTML=`<div class="it gold"><small>الحساب</small><b>${DEMO?'👁️ معاينة':'👑 المدير'}</b></div><div class="it"><small>صفحات الملزمة</small><b>${LIVE.n||'—'}</b></div><div class="it ok"><small>التصميم</small><b>مجاني</b></div>`;if(note)note.textContent='';return}
- const un=LIVE.unpaid;
+ const un=LIVE.unpaid,cost=dueCost(),low=cost>(ME.balance||0);
  b.innerHTML=`<div class="it"><small>صفحات الملزمة</small><b>${LIVE.n||'—'}</b></div>
-  <div class="it ${un?'bad':'ok'}"><small>${un?'غير مدفوعة':'مدفوعة'}</small><b>${un||LIVE.charged||0}</b></div>
-  <div class="it gold"><small>رصيدك الآن</small><b>${fmt(ME.balance)}</b></div>
+  <div class="it ${cost?'gold':'ok'}"><small>${cost?'تنخصم عند الحفظ':'مدفوعة'}</small><b>${cost?fmt(cost):(LIVE.charged||0)}</b></div>
+  <div class="it ${low?'bad':'gold'}"><small>رصيدك الآن</small><b>${fmt(ME.balance)}</b></div>
   ${freeLeft()?`<div class="it ok"><small>مجانية</small><b>🎁${freeLeft()}</b></div>`:''}
   ${LIVE.err?'<div class="it bad"><small>الاتصال</small><b>⚠️</b></div>':''}
-  ${un?`<a target="_blank" href="${waLink('أحتاج رصيد لـ '+un+' صفحة')}">💬 اشحن</a>`:''}`;
- if(note)note.innerHTML=un?`⚠️ <b style="color:#c0182f">${un} صفحة غير مدفوعة</b> — اشحن رصيدك لحفظ الملزمة`:(LIVE.exported?`الصفحات المحفوظة PDF مثبتة (${LIVE.exported}) — الصفحات الجديدة بعدها تُحسب وتُرجع عند حذفها`:`كل صفحة تُخصم ${S.hw?HWPRICE():PRICE} دينار وترجع لرصيدك إذا حذفتها قبل الحفظ`);
+  ${low?`<a target="_blank" href="${waLink('أحتاج رصيد '+fmt(cost)+' دينار')}">💬 اشحن</a>`:''}`;
+ if(note)note.innerHTML=`💡 الخصم عند حفظ PDF فقط — الصفحة ${fmt(pagePrice())} دينار والغلاف ${fmt(COVER_P)} دينار${LIVE.exported?' — الصفحات المحفوظة سابقاً ما تنحسب مرة ثانية':''}${low?` <b style="color:#c0182f">— رصيدك ما يكفي (${fmt(cost)})</b>`:''}`;
 }
 const APP_URL='https://alkwther.github.io/mlazem/mlazem-designer.html';let DEMO=false;
 function fileChoice(){
@@ -2407,7 +2446,7 @@ function initAuth(){
   if(unsubMe){unsubMe();unsubMe=null}
   if(!u){ME=null;IS_ADMIN=false;PREV_BAL=null;document.body.classList.remove('adm');$('#auth').classList.remove('hidden');authView();updChip();return}
   IS_ADMIN=!!ADMIN_EMAIL&&u.email===ADMIN_EMAIL.trim().toLowerCase();
-  try{const s=await FB.db.doc('settings/main').get();const v=s.exists?s.data():{};if(v.pricePerPage)PRICE=+v.pricePerPage;if(v.trialPages!=null)TRIAL=+v.trialPages;READY_PP=+v.readyPagePrice||0;R2URL=(v.r2Url||'').trim();$('#trialTxt').textContent=TRIAL}catch(e){}
+  try{const s=await FB.db.doc('settings/main').get();const v=s.exists?s.data():{};if(v.pricePerPage)PRICE=+v.pricePerPage;if(v.trialPages!=null)TRIAL=+v.trialPages;READY_PP=+v.readyPagePrice||0;COVER_P=(v.coverPrice!=null&&v.coverPrice!=='')?+v.coverPrice:PRICE;R2URL=(v.r2Url||'').trim();$('#trialTxt').textContent=TRIAL}catch(e){}
   if(IS_ADMIN){ME={id:u.uid,name:'المدير',phone:'',balance:0};document.body.classList.add('adm');$('#auth').classList.add('hidden');updChip();liveSoon(300);showTab('vPreview');return}
   unsubMe=FB.db.doc('designers/'+u.uid).onSnapshot(async s=>{if(!s.exists){let info=null;try{info=JSON.parse(localStorage.getItem('mlz_pending')||'null')}catch(e){}
      try{await ensureProfile(u,info);try{localStorage.removeItem('mlz_pending')}catch(e){}}catch(e){const a=$('#aErr');if(a)a.textContent='تعذّر إكمال الحساب: '+(e.code||e.message)}return}
@@ -2771,7 +2810,8 @@ async function cvCanvas(scale){cvEndEdit();const keepSel=CSEL;CSEL=null;CPANEL='
 async function cvExport(){if(DEMO){toast('حفظ PDF يعمل بعد تسجيل الدخول');return}if(!window.html2canvas||!window.jspdf){toast('مكتبات التصدير لم تُحمّل — تأكد من الإنترنت');return}
  cvEndEdit();const teacher=cvTeacher();
  if(!IS_ADMIN){if(!FB||!ME){toast('سجّل الدخول أولاً');return}if(!teacher){toast('✍️ اكتب اسم الأستاذ على الغلاف أولاً',3500);const t=CV.layers.find(l=>l.role==='teacher');if(t){CSEL=t.id;cvRender();setTimeout(()=>cvStartEdit(t,true),80)}else cvInfo();return}
-  if(CV.ready&&!CV.ready.paid){if(!await cvBuy(teacher))return}}
+  if(CV.ready&&!CV.ready.paid){if(!await cvBuy(teacher))return}
+  else if(!CV.ready&&COVER_P>0&&CV.paidT!==teacher){if(!await cvPayCustom(teacher))return}}
  const o=overlay('📕 جاري تجهيز الغلاف بدقة عالية...');
  try{const Z=CSZ[CV.size]||CSZ.a3l;const cv=await cvCanvas(Z.w>1200?2.1:3);const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:'mm',format:Z.f,orientation:Z.o,compress:true});
   const pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight();pdf.addImage(cv.toDataURL('image/jpeg',.93),'JPEG',0,0,pw,ph,undefined,'FAST');
@@ -2781,6 +2821,19 @@ async function cvExport(){if(DEMO){toast('حفظ PDF يعمل بعد تسجيل 
   const blob=pdf.output('blob');o.remove();download(blob,nm);openPdfView(blob,nm,1);
   if(FB&&ME&&!IS_ADMIN&&CV.bid){try{FB.db.collection('transactions').doc().set({uid:ME.id,name:ME.name||'',type:'export',kind:'cover',pages:1,amount:0,title:CV.title||'',teacher,booklet:CV.bid,balanceAfter:ME.balance||0,at:TS()})}catch(e){}}
  }catch(e){try{o.remove()}catch(_){}console.warn(e);popup('⚠️','تعذّر الحفظ',esc(e.message||String(e)))}}
+async function cvPayCustom(teacher){
+ if((ME.balance||0)<COVER_P){popup('💳','رصيدك لا يكفي',`سعر الغلاف <b>${fmt(COVER_P)}</b> دينار — رصيدك <b>${fmt(ME.balance)}</b> دينار.<br><a class="btn wa" style="width:100%;margin-top:12px" target="_blank" href="${waLink('أريد إضافة رصيد لحفظ غلاف')}">💬 اضغط هنا لمراسلتنا وإضافة رصيد</a>`);return false}
+ if(!await ask('حفظ الغلاف PDF',{icon:'🎨',msg:`👨‍🏫 باسم الأستاذ: ${esc(teacher)}\n\n💰 سينخصم ${fmt(COVER_P)} دينار من رصيدك\n✅ تگدر تحمّله مرات بنفس اسم الأستاذ بدون خصم`,yes:'دفع وتحميل',no:'إلغاء'}))return false;
+ const o2=overlay('💰 جاري الدفع...');
+ try{const id=ME.id+'_'+Date.now().toString(36)+uid();const phone=((CV.layers.find(l=>l.role==='phone'&&!l.ph)||{}).text||'').trim();
+  await FB.db.doc('booklets/'+id).set({uid:ME.id,designer:ME.name||'',designerPhone:ME.phone||'',teacher:'',teacherPhone:'',title:CV.title||'غلاف',subject:'غلاف',cover:true,price:COVER_P,charged:0,exported:0,amountPaid:0,freePages:0,exports:0,createdAt:TS(),lastAt:TS()});
+  const dref=FB.db.doc('designers/'+ME.id),bref=FB.db.doc('booklets/'+id);SELF_T=Date.now();
+  await FB.db.runTransaction(async tx=>{const d=(await tx.get(dref)).data();await tx.get(bref);if((d.balance||0)<COVER_P)throw new Error('الرصيد لا يكفي');const nb=(d.balance||0)-COVER_P;
+   tx.update(dref,{balance:nb,totalSpent:(d.totalSpent||0)+COVER_P,totalPages:(d.totalPages||0)+1,lastBooklet:id,updatedAt:TS()});
+   tx.update(bref,{charged:1,exported:1,amountPaid:COVER_P,teacher,teacherPhone:phone,lastAt:TS()});
+   tx.set(txDoc(),{uid:ME.id,name:ME.name||'',type:'page',kind:'cover',pages:1,amount:-COVER_P,title:'غلاف: '+(CV.title||''),teacher,booklet:id,balanceAfter:nb,at:TS()})});
+  CV.bid=id;CV.paidT=teacher;await cvSave();o2.remove();toast('✅ تم — جاري التحميل');return true}
+ catch(e){o2.remove();console.warn(e);popup('⚠️','تعذّر الدفع',esc(e.message&&!e.code?e.message:'تعذّر الاتصال أو الصلاحيات')+'<br><small>ما انخصم أي مبلغ</small>');return false}}
 async function cvBuy(teacher){let r;const o=overlay('💰 جاري التأكد من السعر...');
  try{const x=await FB.db.doc('ready/'+CV.ready.rid).get();if(!x.exists||!x.data().published){o.remove();popup('⚠️','الغلاف غير متوفر','هذا الغلاف انشال من الأغلفة الجاهزة.');return false}r=x.data()}catch(e){o.remove();toast('تعذّر الاتصال');return false}
  o.remove();CV.ready.total=r.total;
@@ -3132,7 +3185,7 @@ function openPdfImport(){
  <div class="pimp" onclick="$('#obM').classList.add('hidden');hwPick()" style="border-color:#f59e0b;background:#fffbeb;cursor:pointer"><b>✍️ ملزمة خط يد (صور أو PDF)</b><span>صوّر صفحات الملزمة المكتوبة باليد أو ارفعها PDF — البرنامج يقراها بالذكاء الاصطناعي (عربي، إنكليزي، رموز ومعادلات) ويصممها بأدوات البرنامج، وأنت تراجع كل صفحة قبل ما تصير ملزمة.<br>💰 عند التنزيل: ${fmt(READY_PP||PRICE)} دينار للصفحة</span></div>
  <label class="pimp"><b>🔎 تحويل بقراءة شكل الصفحة (OCR)</b><span>إذا بعد التحويل طلعت الكتابة مخربطة أو حروف غلط — هذا الخيار يقرا الكلمات من شكلها مثل العين. أبطأ شوية ويحتاج إنترنت.</span><input type="file" accept="application/pdf,.pdf" hidden id="piOcr"></label>
  <label class="pimp"><b>🖼️ صفحات كصور + الكتابة فوقها</b><span>للـ PDF المصوّر (سكانر أو موبايل). كل صفحة تبقى بنفس شكلها بالضبط، وتگدر تضيف كتابة حرة وصور وعلامة مائية فوقها.</span><input type="file" accept="application/pdf,.pdf" hidden id="piImg"></label>
- <div class="warn" style="margin-top:12px">💡 كل صفحة بالملزمة الجديدة تنحسب بسعر الصفحة (${PRICE} دينار) مثل أي ملزمة.</div>`;
+ <div class="warn" style="margin-top:12px">💡 كل صفحة تنحسب بسعر الصفحة (${PRICE} دينار) — الخصم عند حفظ PDF فقط.</div>`;
  $('#piTxt').onchange=e=>{const fl=e.target.files[0];$('#obM').classList.add('hidden');if(fl)importPdf(fl,'txt')};
  $('#piImg').onchange=e=>{const fl=e.target.files[0];$('#obM').classList.add('hidden');if(fl)importPdf(fl,'img')};
  $('#piOcr').onchange=e=>{const fl=e.target.files[0];$('#obM').classList.add('hidden');if(fl)importPdf(fl,'ocr')};
@@ -4236,7 +4289,7 @@ const KTOOLS=[['🅰️','حروف عربية','تتبّع + أشكال الحر
  ['✨','رسمة بالوصف','الذكاء الاصطناعي يرسم للتلوين',"kColorAI()",'#7c3aed'],['🔷','أشكال','دائرة، مربع، مثلث...',"kAdd([{kind:'shapes'}])",'#0891b2'],
  ['〰️','خطوط تمهيدية','تهيئة اليد للكتابة',"kAdd([{kind:'pre'}])",'#ca8a04'],['🔗','توصيل','صِل الصورة بالحرف',"kMatch()",'#db2777'],
  ['📏','سطور كتابة','عربي أو إنكليزي',"kLinesSheet()",'#4f46e5'],['🌈','إطارات الكراسات','قوس قزح، نجوم، بالونات...',"kClose();openFrames()",'#059669']];
-function kidTools(){kSheet({t:'🧒 صفحات الكراسة',b:`<div class="muted" style="margin-bottom:8px">اختار نوع الصفحة — تنضاف بعد الصفحة الحالية. كل صفحة تنحسب بسعر الصفحة.</div>
+function kidTools(){kSheet({t:'🧒 صفحات الكراسة',b:`<div class="muted" style="margin-bottom:8px">اختار نوع الصفحة — تنضاف بعد الصفحة الحالية. الخصم عند حفظ PDF فقط.</div>
  <div class="ktiles">${KTOOLS.map(([i,n,s,f,c])=>`<button class="ktile" style="--c:${c}" onclick="${f}"><i>${i}</i><b>${n}</b><small>${s}</small></button>`).join('')}</div>
  <button class="btn" style="width:100%;margin-top:10px" onclick="kidsHome()">📚 كراسة كاملة بضغطة وحدة</button>`})}
 async function kAdd(list){kClose();const blocks=list.map((o,i)=>Object.assign({id:uid(),type:'kid',lang:'ar',color:o.color||kc((S._kc=(S._kc||0)+1))},o));
@@ -4324,7 +4377,7 @@ function kidsHome(){kSheet({t:'🧒 كراسات الأطفال',b:`<div class="
 async function kidsNew(id){const bk=KBOOKS.find(x=>x[0]===id)||KBOOKS[KBOOKS.length-1];kClose();
  clearTimeout(saveT);saveNow();const o=overlay('🧒 جاري تجهيز الكراسة...');await kFonts();
  S=blankProject();const c=id==='en'||id==='numen'?'#2563eb':'#f97316';
- Object.assign(S,{kids:1,title:bk[2],subject:id==='en'||id==='numen'?'English':'روضة وتمهيدي',grade:'',frame:id==='en'?'k_abc':id==='col'?'k_crayons':id==='num'||id==='numen'?'k_balloons':'k_rainbow',frameColor:'',headFont:'Baloo Bhaijaan 2',bodyFont:'Baloo Bhaijaan 2',coverColor:c,coverTpl:id==='en'?'kabc':id==='col'?'kcloud':'kfun',showToc:false,chapterPage:false,newPage:true,lang:(id==='en'||id==='numen')?'en':S.lang});
+ kgPrefill();Object.assign(S,{kids:1,title:bk[2],subject:id==='en'||id==='numen'?'English':'روضة وتمهيدي',grade:'',frame:id==='en'?'k_abc':id==='col'?'k_crayons':id==='num'||id==='numen'?'k_balloons':'k_rainbow',frameColor:'',headFont:'Baloo Bhaijaan 2',bodyFont:'Baloo Bhaijaan 2',coverColor:c,coverTpl:id==='en'?'kabc':id==='col'?'kcloud':'kfun',showToc:false,chapterPage:false,newPage:true,lang:(id==='en'||id==='numen')?'en':S.lang});
  const blocks=bk[4]().map(b=>Object.assign({id:uid(),type:'kid'},b));
  S.topics=[{id:uid(),unit:'',title:bk[2],color:c,blocks:blocks.length?blocks:[{id:uid(),type:'text',text:''}]}];
  saveNow();bindInfo();renderTopics();if(typeof renderProjects==='function')renderProjects();showTab('vPreview');await renderPages();o.remove();showPage(1);
@@ -4653,14 +4706,14 @@ function kBuild(lv,id){const bk=KLIB.find(x=>x[0]===id);const seed=(lv+id).split
 let K_LV='pre';
 function kidsHome(){const counts=Object.fromEntries(KLIB.map(b=>[b[0],kBuild(K_LV,b[0]).length]));
  kSheet({t:'🧒 مكتبة الكراسات',b:`<div class="seg klvs">${KLV.map(([id,n,i])=>`<button class="btn sm ${id===K_LV?'primary':''}" data-lv="${id}">${i} ${n}</button>`).join('')}</div>
- <div class="muted" style="margin:6px 0 8px">كراسة كاملة جاهزة بضغطة — بعدها تگدر تعدّل أو تحذف أو تضيف أي صفحة. كل صفحة تنحسب بسعر الصفحة.</div>
+ <div class="muted" style="margin:6px 0 8px">كراسة كاملة جاهزة بضغطة — تگدر تتصفحها وتعدّلها ببلاش، والخصم بس عند حفظ PDF.</div>
  <div class="klib">${KLIB.map(([id,ic,n,col])=>`<button class="kbk2" data-k="${id}" style="--c:${col}"><i>${ic}</i><b>${n}</b><small>${counts[id]} صفحة</small></button>`).join('')}</div>
  <div class="pimp kbk" data-k="blank" style="margin-top:10px"><b>⬜ كراسة فارغة</b><span>تبنيها بنفسك من أدوات الكراسة</span></div>`});
  $('#obBody').querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>{K_LV=b.dataset.lv;kidsHome()});
  $('#obBody').querySelectorAll('.kbk2').forEach(b=>b.onclick=()=>kidsNew2(K_LV,b.dataset.k));$('#obBody .kbk').onclick=()=>kidsNew('blank')}
 async function kidsNew2(lv,id){const bk=KLIB.find(x=>x[0]===id),L=KLV.find(x=>x[0]===lv);kClose();clearTimeout(saveT);saveNow();const o=overlay('🧒 جاري تجهيز '+bk[2]+'...');await kFonts();
  const en=['numen','len','men','wen'].includes(id);S=blankProject();
- Object.assign(S,{kids:1,title:bk[2],subject:en?L[3]:'رياض الأطفال',grade:L[1],frame:KFR[id]||'k_rainbow',frameColor:'',headFont:'Baloo Bhaijaan 2',bodyFont:'Baloo Bhaijaan 2',coverColor:bk[3],coverTpl:bk[4],showToc:false,chapterPage:false,newPage:true});
+ kgPrefill();Object.assign(S,{kids:1,title:bk[2],subject:en?L[3]:'رياض الأطفال',grade:L[1],frame:KFR[id]||'k_rainbow',frameColor:'',headFont:'Baloo Bhaijaan 2',bodyFont:'Baloo Bhaijaan 2',coverColor:bk[3],coverTpl:bk[4],showToc:false,chapterPage:false,newPage:true});
  S.topics=[{id:uid(),unit:'',title:bk[2]+' — '+L[1],color:bk[3],blocks:kBuild(lv,id)}];
  saveNow();bindInfo();renderTopics();if(typeof renderProjects==='function')renderProjects();showTab('vPreview');await renderPages();o.remove();showPage(1);
  toast(`🧒 ${bk[2]} (${L[1]}) جاهزة — ${S.topics[0].blocks.length} صفحة`);try{await cvGo('front');openCoverSheet('front')}catch(e){}}
@@ -4717,6 +4770,62 @@ KG.isl=(lv,r)=>{const o=[],S=(t,pic,text,word,x={})=>o.push(Object.assign({kind:
  while(o.length<34){const p=fill[i%fill.length];o.push(lv==='pre'&&i%2?{kind:'tracepic',pic:p}:{kind:'color',pic:p,word:KP.AR[p],lang:'ar'});i++}
  return o.slice(0,34).map(x=>Object.assign({lang:'ar'},x))};
 KLIB.splice(2,0,['isl','🕌','التربية الإسلامية','#0f766e','kcloud',(lv,r)=>KG.isl(lv,r)]);KFR.isl='k_stars';
+
+/* ===== 🏫 اسم الروضة (اختياري) على الغلاف أو كل الأوراق ===== */
+function kgBadge(cls){return `<div class="${cls}">${S.kgLogo?`<img src="${S.kgLogo.src}">`:'<i>🏫</i>'}<span>${esc(S.kgName)}</span></div>`}
+function kgPrefill(){try{const o=JSON.parse(localStorage.getItem('kgInfo')||'null');if(o&&o.n){S.kgName=o.n;S.kgLogo=o.l||null;S.kgCover=true;S.kgPages=!!o.p}}catch(e){}}
+{const _mp=makePage;makePage=function(){const r=_mp.apply(this,arguments);try{if(S.kids&&S.kgName&&S.kgPages){const ph=r.page.querySelector('.ph');if(ph)ph.insertAdjacentHTML('beforeend',kgBadge('kgn'))}}catch(e){}return r}}
+{const _cp=coverPage;coverPage=function(kind){const p=_cp.apply(this,arguments);try{if(S.kids&&S.kgName&&S.kgCover!==false&&kind!=='back'){p.classList.add('haskg');p.insertAdjacentHTML('beforeend',kgBadge('cv-kg'))}}catch(e){}return p}}
+function kKgSheet(back){kSheet({t:'🏫 اسم الروضة',b:`<div class="muted">اختياري — اسم الروضة أو المدرسة يظهر على الغلاف، أو على كل الأوراق، أو الاثنين</div>
+ <label class="f">اسم الروضة / المدرسة</label><input class="in" id="kgN" value="${esc(S.kgName||'')}" placeholder="مثال: روضة الكوثر النموذجية">
+ <label class="f">شعار الروضة (اختياري)</label><div class="seg" style="align-items:center;gap:8px">${S.kgLogo?`<img src="${S.kgLogo.src}" style="height:52px;border-radius:8px">`:''}<button class="btn sm" id="kgL">🖼️ ${S.kgLogo?'تغيير':'إضافة'} الشعار</button>${S.kgLogo?'<button class="btn sm red" id="kgLd">حذف</button>':''}</div>
+ <label class="cvsw"><input type="checkbox" id="kgC" ${S.kgCover!==false?'checked':''}> إظهار الاسم على الغلاف</label>
+ <label class="cvsw"><input type="checkbox" id="kgP" ${S.kgPages?'checked':''}> إظهار الاسم على كل الأوراق (أعلى الصفحة)</label>
+ <div class="row" style="gap:6px;margin-top:12px"><button class="btn green" style="flex:2;padding:12px" id="kgOk">✅ حفظ</button>${S.kgName?'<button class="btn red" style="flex:1" id="kgDel">🗑️ إزالة الاسم</button>':''}</div>`});
+ const col=()=>{S.kgName=$('#kgN').value.trim();S.kgCover=$('#kgC').checked;S.kgPages=$('#kgP').checked};
+ const mem=()=>{try{localStorage.setItem('kgInfo',JSON.stringify({n:S.kgName||'',l:S.kgLogo||null,p:!!S.kgPages}))}catch(e){try{localStorage.setItem('kgInfo',JSON.stringify({n:S.kgName||'',p:!!S.kgPages}))}catch(_){}}};
+ $('#kgL').onclick=()=>{col();pickFile(img=>{S.kgLogo=img;kKgSheet(back)})};
+ if($('#kgLd'))$('#kgLd').onclick=()=>{col();S.kgLogo=null;kKgSheet(back)};
+ const done=async msg=>{save();mem();kClose();await renderPages();toast(msg);if(back)back()};
+ $('#kgOk').onclick=()=>{col();done(S.kgName?'🏫 تم حفظ اسم الروضة':'تم الحفظ')};
+ if($('#kgDel'))$('#kgDel').onclick=()=>{S.kgName='';S.kgLogo=null;done('تمت إزالة اسم الروضة')}}
+KTOOLS.push(['🏫','اسم الروضة','على الغلاف أو كل الأوراق',"kClose();kKgSheet()",'#0f766e']);
+
+/* ================= 📚 مكتبة الملازم الجاهزة حسب الصف والمادة ================= */
+let MLIB=null,ML_ST='s',ML_G='g12s';
+async function libLoad(){let cached=MLIB;if(!cached){try{const r=await DB.get('mlib:data');if(r)cached=JSON.parse(r)}catch(e){}}
+ try{const ctl=new AbortController();const tm=setTimeout(()=>ctl.abort(),9000);const r=await fetch('mlazem-lib.json?t='+Date.now(),{signal:ctl.signal,cache:'no-store'});clearTimeout(tm);
+  if(r.ok){const j=await r.json();if(j&&j.books&&(!cached||(j.v||0)>=(cached.v||0))){cached=j;try{await DB.set('mlib:data',JSON.stringify(j))}catch(e){}}}}catch(e){}
+ MLIB=cached;return MLIB}
+async function libOpen(){const o=overlay('📚 جاري تجهيز مكتبة الملازم...');await libLoad();o.remove();
+ if(!MLIB){popup('📚','المكتبة تحتاج إنترنت أول مرة','افتحها مرة وحدة وانت متصل بالإنترنت حتى تنحفظ بذاكرة جهازك، وبعدها تشتغل بدون إنترنت.');return}libSheet()}
+function libBooks(g,s){return Object.values(MLIB.books).filter(b=>b.grade===g&&b.subject===s)}
+function libSheet(){const ST=[['p','🎒 الابتدائية'],['m','📘 المتوسطة'],['s','🎓 الإعدادية']];const gs=MLIB.grades.filter(g=>g.st===ML_ST);if(!gs.find(g=>g.id===ML_G))ML_G=gs[gs.length-1].id;const g=MLIB.grades.find(x=>x.id===ML_G);
+ const n=Object.keys(MLIB.books).length;
+ $('#obBody').innerHTML=`<div class="sheet-h"><b>📚 مكتبة الملازم الجاهزة</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
+ <div class="muted" style="margin-bottom:8px">حسب منهج ${esc(MLIB.edition||'')} — محفوظة بذاكرة جهازك. تتصفح الملزمة وتعدّل عليها ببلاش، والخصم بس عند حفظ PDF. (${n} ملزمة جاهزة وتزداد باستمرار)</div>
+ <div class="seg mlst">${ST.map(([i,t])=>`<button class="btn sm ${i===ML_ST?'primary':''}" data-st="${i}">${t}</button>`).join('')}</div>
+ <div class="mlg">${gs.map(x=>`<button class="${x.id===ML_G?'on':''}" data-g="${x.id}">${esc(x.n)}</button>`).join('')}</div>
+ <div class="mlh">📖 ملازم ${esc(g.n)}</div>
+ <div class="mls">${g.subs.map(s=>{const b=libBooks(g.id,s)[0];return `<button class="mlb ${b?'':'soon'}" ${b?`data-b="${b.id}" style="--c:${b.color}"`:''}><b>${esc(s)}</b><small>${b?'✅ '+b.chapters.length+' فصول — اضغط للفتح':'⏳ قريباً'}</small></button>`}).join('')}</div>`;
+ const B=$('#obBody');B.querySelectorAll('[data-st]').forEach(x=>x.onclick=()=>{ML_ST=x.dataset.st;libSheet()});
+ B.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>{ML_G=x.dataset.g;libSheet()});
+ B.querySelectorAll('.mlb[data-b]').forEach(x=>x.onclick=()=>libPreview(x.dataset.b));
+ B.querySelectorAll('.mlb.soon').forEach(x=>x.onclick=()=>toast('⏳ هاي الملزمة قيد الإعداد — راح تنضاف قريباً'));
+ $('#obM').classList.remove('hidden')}
+function libPreview(id){const b=MLIB.books[id],g=MLIB.grades.find(x=>x.id===b.grade);
+ $('#obBody').innerHTML=`<div class="sheet-h"><b>📖 ${esc(b.title)} — ${esc(g.n)}</b><button class="btn sm" onclick="libSheet()">‹ رجوع</button></div>
+ <div class="muted">الفصول:</div><ol class="mlch">${b.chapters.map(c=>`<li>${esc(c[0])}</li>`).join('')}</ol>
+ <div class="warn" style="margin-top:8px">💡 تنفتح كملزمة جديدة بـ«ملازمي» — تعدّل عليها وتضيف اسمك، والخصم بسعر الصفحة عند حفظ PDF فقط.</div>
+ <button class="btn green" style="width:100%;margin-top:12px;padding:14px" id="mlGo">📖 فتح الملزمة</button>`;
+ $('#mlGo').onclick=()=>libNew(id)}
+async function libNew(id){const b=MLIB.books[id],g=MLIB.grades.find(x=>x.id===b.grade);$('#obM').classList.add('hidden');
+ clearTimeout(saveT);saveNow();const o=overlay('📖 جاري تجهيز الملزمة...');
+ S=blankProject();Object.assign(S,{title:b.title,subject:b.subject,grade:g.n,coverColor:b.color,coverTpl:'bold',showToc:true,chapterPage:false,newPage:true,lib:{id:b.id,v:MLIB.v||1}});
+ const pal=[b.color].concat(PALETTE.filter(c=>c!==b.color));
+ S.topics=b.chapters.map(([t,txt],i)=>({id:uid(),unit:'',title:t,color:pal[i%pal.length],blocks:[{id:uid(),type:'text',text:txt.trim()}]}));
+ saveNow();bindInfo();renderTopics();if(typeof renderProjects==='function')renderProjects();showTab('vPreview');await renderPages();o.remove();showPage(1);
+ toast('📖 '+b.title+' جاهزة — اكتب اسمك على الغلاف');try{await cvGo('front');openCoverSheet('front')}catch(e){}}
 
 {const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
 {const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}
