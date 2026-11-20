@@ -431,6 +431,7 @@ body.exporting .cv-hint{display:none}
 
 .mybar{display:flex;gap:8px;max-width:820px;margin:10px auto 0}
 .mybar button{flex:1;border:0;border-radius:13px;padding:11px 6px;font:800 14.5px Cairo,sans-serif;cursor:pointer}
+.mybar .mb-kid{background:linear-gradient(135deg,#f97316,#ec4899);color:#fff}
 .mybar .mb-new{background:#ffd54f;color:#0b1f45;box-shadow:0 4px 12px rgba(255,213,79,.35)}
 .mybar .mb-mine{background:rgba(255,255,255,.16);color:#fff;border:1.5px solid rgba(255,255,255,.35)}
 body.editing .mybar{display:none}
@@ -772,6 +773,55 @@ body.cvexp .cvp .ly{outline:0!important}body.cvexp .cvp .ly.lk::after{display:no
 .cvc .pr.fr{background:#dcfce7;color:#166534}
 .cvtabs{display:flex;gap:6px;margin-top:8px}.cvtabs button{flex:1;border:0;border-radius:12px;padding:10px;font:900 13.5px Cairo,sans-serif;background:#eef2f7;color:#0b1f45;cursor:pointer}.cvtabs button.on{background:#0b1f45;color:#fff}
 body:has(#cvEd) #obM,body:has(#cvEd) #popM{z-index:99}body:has(#cvEd) .overlay{z-index:120}body:has(#cvEd) .toast{z-index:121;bottom:calc(150px + env(safe-area-inset-bottom))}
+/* ===== 🧒 كراسات الأطفال ===== */
+body:not(.kids) .konly{display:none!important}
+body.kids .tpanel>:not(.konly){display:none!important}
+body.kids #fsBar>:not(.konly){display:none!important}
+body.kids .top{background:linear-gradient(135deg,#f97316 0%,#ec4899 55%,#8b5cf6 100%)}
+.tban.kd{background:linear-gradient(135deg,#f97316,#ec4899 60%,#8b5cf6)}.tban.kd2{background:linear-gradient(135deg,#0891b2,#16a34a)}
+.tcard .th2.kth{background:linear-gradient(135deg,#f97316,#ec4899)}
+.ktiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ktile{border:0;border-radius:16px;padding:10px 6px;background:#fff;box-shadow:inset 0 0 0 2px var(--c);display:flex;flex-direction:column;align-items:center;gap:2px;font-family:Cairo,sans-serif;cursor:pointer}
+.ktile i{font-style:normal;font-size:26px}.ktile b{font-size:13.5px;color:var(--c)}.ktile small{font-size:11px;color:#6b7488;line-height:1.3}
+.klg{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:6px 0}.klg.num{grid-template-columns:repeat(6,1fr)}
+.klt{height:46px;border-radius:12px;border:2px solid #e3e7ef;background:#fff;font:800 22px 'Baloo Bhaijaan 2',Cairo,sans-serif;color:#0b1f45;cursor:pointer}
+.klt.on{background:#f97316;border-color:#f97316;color:#fff}
+.kpg2{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:48vh;overflow:auto;padding:2px}
+.kpk{border:2px solid #e3e7ef;border-radius:12px;background:#fff;padding:4px;display:flex;flex-direction:column;align-items:center;font:700 11px Cairo,sans-serif;cursor:pointer}
+.kpk img{width:100%;aspect-ratio:1}.kpk.on{border-color:#f97316;box-shadow:0 0 0 2px #f97316;background:#fff7ed}
+.kbk{cursor:pointer}
+/* داخل الصفحة */
+.kpg{position:relative;display:flex;flex-direction:column;font-family:'Baloo Bhaijaan 2',Cairo,sans-serif;color:#1f2937;overflow:hidden}
+.kpg img{display:inline-block}
+.kh{display:flex;align-items:center;justify-content:space-between;gap:10px;height:56px;margin-bottom:8px;flex:none}
+.kt{background:var(--kc);color:#fff;font-weight:800;font-size:25px;line-height:1.2;padding:5px 20px 7px;border-radius:30px;box-shadow:0 4px 0 rgba(0,0,0,.13);white-space:nowrap;display:flex;align-items:center}
+.kt b{font-size:30px;background:#fff;color:var(--kc);border-radius:24px;display:inline-flex;min-width:46px;height:44px;padding:0 8px;align-items:center;justify-content:center;margin-inline-start:10px;line-height:1}
+.ks{margin-inline-end:8px;color:#fde047;font-family:sans-serif}
+.kn{font-size:16px;color:#64748b;font-weight:700;white-space:nowrap}
+.khero{display:flex;align-items:center;justify-content:space-around;height:250px;margin-bottom:8px;border:3px dashed #e5e7eb;border-radius:26px;background:#fffdf8;flex:none}
+.kpic{background:#fff;border:3px solid var(--kc);border-radius:22px;padding:6px 10px 2px;text-align:center}
+.kw{font-size:30px;font-weight:800;color:var(--kc);line-height:1.3}
+.kforms{display:flex;gap:10px;justify-content:center;height:142px;margin-bottom:8px;flex:none}
+.kf{flex:1;max-width:160px;border:2.5px solid #e5e7eb;border-radius:18px;text-align:center;padding-top:6px;background:#fff}
+.kfl{font-size:15px;font-weight:800;color:#fff;background:var(--kc);border-radius:12px;display:inline-block;padding:1px 12px;line-height:1.5}
+.krows{flex:1;overflow:hidden;padding-top:4px}
+.ktip{height:30px;font-size:16px;font-weight:700;color:#475569;text-align:center;margin-top:auto;flex:none;line-height:30px}
+.ktip b{color:var(--kc)}
+.kcount{text-align:center;border:3px solid var(--kc);border-radius:22px;padding:8px 12px;background:#fff;max-width:420px}
+.kcl{font-size:20px;font-weight:800;color:var(--kc);margin-bottom:4px}
+.kcg{display:grid;gap:6px;justify-content:center}
+.kgrid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:none}
+.kcell{border:2.5px dashed #e5e7eb;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff}
+.kcn{font-size:22px;font-weight:800;color:var(--kc);line-height:1.4}.kcn small{color:#94a3b8;font-size:15px}
+.kcolor{text-align:center;border:3px solid #e5e7eb;border-radius:24px;padding:8px;background:#fff;flex:none}
+.kpal{display:flex;justify-content:center;gap:12px;margin-top:8px}.kpal i{width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #e5e7eb}
+.kmatch{display:flex;flex-direction:column;flex:none}
+.kmr{display:flex;align-items:center;gap:14px}
+.kmp{width:150px;text-align:center}.kdot{width:20px;height:20px;border-radius:50%;flex:none;display:block}.kmg{flex:1}
+.kml{width:110px;height:96px;border:3px solid #e5e7eb;border-radius:22px;font:800 60px 'Baloo Bhaijaan 2',sans-serif;display:flex;align-items:center;justify-content:center;background:#fff;line-height:1}
+.page.cvt-kfun{color:#fff}.page.cvt-kfun .cv-title{color:#fff;font-size:78px;text-shadow:0 6px 0 rgba(0,0,0,.18)}.page.cvt-kfun .cv-pill{background:rgba(255,255,255,.25);color:#fff}.page.cvt-kfun .cv-sub{color:#fff}
+.page.cvt-kabc{color:var(--cd)}.page.cvt-kabc .cv-in{padding-top:200px;padding-bottom:110px}.page.cvt-kabc .cv-title{color:var(--c);text-shadow:none;font-size:78px}.page.cvt-kabc .cv-sub{color:var(--cd)}.page.cvt-kabc .cv-pill{background:var(--c);color:#fff}
+.page.cvt-kcloud{color:#0b1f45}.page.cvt-kcloud .cv-in{padding-top:230px}.page.cvt-kcloud .cv-title{color:var(--cd);text-shadow:0 4px 0 #fff;font-size:76px}.page.cvt-kcloud .cv-sub{color:#0b1f45}.page.cvt-kcloud .cv-pill{background:#fff;color:var(--cd)}
 </style>
 </head>
 <body>
@@ -787,7 +837,7 @@ body:has(#cvEd) #obM,body:has(#cvEd) #popM{z-index:99}body:has(#cvEd) .overlay{z
   <button class="hb" onclick="openMine()"><i>📁</i>ملازمي</button>
   <button class="hb" onclick="showTab('vInfo')" title="معلومات الملزمة"><i>📋</i>المعلومات</button>
  </div>
- <div class="mybar"><button class="mb-new" onclick="mineNew()">➕ ملزمة جديدة</button><button class="mb-mine" onclick="openMine()">📁 ملازمي</button></div>
+ <div class="mybar"><button class="mb-new" onclick="mineNew()">➕ ملزمة جديدة</button><button class="mb-mine" onclick="openMine()">📁 ملازمي</button><button class="mb-kid" onclick="kidsHome()">🧒 كراسة أطفال</button></div>
  <div class="tabs">
   <button class="tab" data-t="vPreview">📄 الصفحات</button>
   <button class="tab" data-t="vTopics">📝 المواضيع</button>
@@ -885,6 +935,19 @@ body:has(#cvEd) #obM,body:has(#cvEd) #popM{z-index:99}body:has(#cvEd) .overlay{z
    <div id="pages" class="single"></div>
   </div>
   <div class="tpanel ui">
+   <div class="tcard konly"><div class="th2 kth">🧒 أدوات الكراسة</div>
+    <div class="tgrid">
+     <button class="tg" onclick="kLetters('ar')"><i>🅰️</i>حروف</button><button class="tg" onclick="kLetters('en')"><i>🔤</i>ABC</button>
+     <button class="tg" onclick="kNumbers()"><i>🔢</i>أرقام</button><button class="tg" onclick="kColorLib()"><i>🖍️</i>تلوين</button>
+     <button class="tg" onclick="kAdd([{kind:'shapes'}])"><i>🔷</i>أشكال</button><button class="tg" onclick="kAdd([{kind:'pre'}])"><i>〰️</i>تمهيدي</button>
+     <button class="tg" onclick="kMatch()"><i>🔗</i>توصيل</button><button class="tg" onclick="kLinesSheet()"><i>📏</i>سطور</button>
+     <button class="tg" onclick="openFrames()"><i>🌈</i>إطار</button><button class="tg" onclick="openColors()"><i>🎨</i>ألوان</button>
+     <button class="tg" onclick="toolText()"><i>✍️</i>نص</button><button class="tg" onclick="toolImage()"><i>🖼️</i>صورة</button>
+    </div></div>
+   <button class="tban kd konly" onclick="kColorAI()"><svg viewBox="0 0 120 90" class="tbi"><rect x="18" y="14" width="64" height="66" rx="8" fill="#fff"/><path d="M34 60c4-16 22-16 26-2c-6 8-20 10-26 2z" fill="none" stroke="#111" stroke-width="3"/><circle cx="44" cy="38" r="8" fill="none" stroke="#111" stroke-width="3"/><path d="M78 20l6-12 6 12 12 6-12 6-6 12-6-12-12-6z" fill="#fde047"/></svg><span><b>رسمة تلوين</b><small>بالذكاء الاصطناعي</small></span><em>›</em></button>
+   <button class="tban kd2 konly" onclick="kidsHome()"><svg viewBox="0 0 120 90" class="tbi"><rect x="14" y="16" width="44" height="60" rx="5" fill="#fde047"/><rect x="40" y="10" width="44" height="60" rx="5" fill="#fff"/><text x="62" y="52" font-size="30" font-weight="900" text-anchor="middle" fill="#f97316" font-family="sans-serif">أب</text></svg><span><b>كراسة كاملة</b><small>بضغطة وحدة</small></span><em>›</em></button>
+   <button class="tmore konly" onclick="kidTools()">كل صفحات الكراسة ▾</button>
+   <button class="tmore konly" onclick="openMine()" style="margin-top:6px">📘 رجوع للملازم</button>
    <div class="tcard"><div class="th2">🧰 أدوات التصميم</div>
     <div class="tgrid">
      <button class="tg" onclick="toolText()"><i>✍️</i>نص</button><button class="tg" onclick="toolImage()"><i>🖼️</i>صورة</button>
@@ -894,13 +957,15 @@ body:has(#cvEd) #obM,body:has(#cvEd) #popM{z-index:99}body:has(#cvEd) .overlay{z
     </div></div>
    <button class="tban hw" onclick="hwPick()"><svg viewBox="0 0 120 90" class="tbi"><defs><linearGradient id="pg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e0ecff"/></linearGradient></defs><g transform="rotate(-12 50 55)"><rect x="8" y="30" width="78" height="50" rx="6" fill="url(#pg1)" stroke="#93c5fd" stroke-width="2"/><path d="M18 52c6-10 10 8 16-2s8 6 14-4" fill="none" stroke="#1d4ed8" stroke-width="3" stroke-linecap="round"/><path d="M18 64h40" stroke="#93c5fd" stroke-width="2.5" stroke-linecap="round"/></g><path d="M64 10 L96 46 L88 52 L58 18Z" fill="#2563eb"/><path d="M58 18 L88 52 L84 56 L54 22Z" fill="#1e40af"/><path d="M84 56 L92 50 L95 62Z" fill="#fde68a"/><path d="M93 58l2 4-4-1z" fill="#111"/><path d="M70 42c10-6 22-4 30 4 6 6 6 16 0 22-8 8-22 8-30 2l-14-10c-4-3-3-8 2-9l8 2z" fill="#fcd9b6" stroke="#e8b48a" stroke-width="1.5"/><path d="M76 60c6 2 12 2 16-2" fill="none" stroke="#e8b48a" stroke-width="1.5"/><path d="M98 50l16-10 4 22-14 10z" fill="#1e3a8a"/></svg><span><b>تحويل<br>خط اليد</b><small>إلى PDF</small></span><em>›</em></button>
    <button class="tban cv" onclick="openCovers('store')"><svg viewBox="0 0 120 90" class="tbi"><g transform="rotate(-14 30 60)"><rect x="6" y="20" width="30" height="62" rx="4" fill="#e11d48"/><rect x="9" y="26" width="24" height="14" rx="2" fill="#fff" opacity=".85"/><circle cx="21" cy="58" r="7" fill="#fde047"/></g><g transform="rotate(-6 52 56)"><rect x="30" y="14" width="30" height="66" rx="4" fill="#0ea5e9"/><rect x="33" y="20" width="24" height="12" rx="2" fill="#fff" opacity=".85"/><path d="M36 50h18M36 56h14" stroke="#fff" stroke-width="3"/></g><g transform="rotate(4 74 52)"><rect x="54" y="12" width="30" height="66" rx="4" fill="#22c55e"/><rect x="57" y="18" width="24" height="12" rx="2" fill="#fff" opacity=".85"/><path d="M62 46l7 8 9-14" fill="none" stroke="#fde047" stroke-width="4"/></g><g transform="rotate(10 98 52)"><rect x="80" y="10" width="32" height="68" rx="4" fill="#1e293b"/><rect x="83" y="16" width="26" height="12" rx="2" fill="#fde047"/><path d="M96 34l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" fill="#fde047"/></g></svg><span><b>الأغلفة<br>الجاهزة</b></span><em>›</em></button>
-   <div class="tcard tpl"><div class="tph" onclick="openCoverSheet('front')"><span>⭐ قوالب جاهزة</span><span>‹</span></div><div class="tps" id="tplThumbs"></div></div>
+<button class="tban kd" onclick="kidsHome()"><svg viewBox="0 0 120 90" class="tbi"><rect x="10" y="18" width="46" height="62" rx="6" fill="#fff"/><text x="33" y="60" font-size="32" font-weight="900" text-anchor="middle" fill="#f97316" font-family="sans-serif">أ</text><rect x="52" y="12" width="46" height="62" rx="6" fill="#fde047"/><text x="75" y="54" font-size="30" font-weight="900" text-anchor="middle" fill="#7c3aed" font-family="sans-serif">A</text><circle cx="98" cy="70" r="12" fill="#22c55e"/><text x="98" y="76" font-size="16" font-weight="900" text-anchor="middle" fill="#fff" font-family="sans-serif">1</text></svg><span><b>كراسات<br>الأطفال</b><small>حروف • أرقام • تلوين</small></span><em>›</em></button>
+      <div class="tcard tpl"><div class="tph" onclick="openCoverSheet('front')"><span>⭐ قوالب جاهزة</span><span>‹</span></div><div class="tps" id="tplThumbs"></div></div>
    <button class="tmore" onclick="openAllTools()">المزيد من الأدوات ▾</button>
   </div>
  </div>
  <div id="sbarSlot"></div>
  <div class="abar ui"><button class="ab3 sv" onclick="manualSave()"><i>💾</i>حفظ</button><button class="ab3 pd" onclick="exportPDF()"><i>📕</i>تصدير PDF</button><button class="ab3 pv" onclick="enterFS(true)"><i>👁️</i>معاينة</button></div>
  <div id="fsBar" class="ui">
+  <button class="konly" onclick="undo()"><i>↶</i>رجوع</button><button class="konly" onclick="kidTools()"><i>🧒</i>صفحة</button><button class="konly" onclick="kLetters('ar')"><i>🅰️</i>حروف</button><button class="konly" onclick="kLetters('en')"><i>🔤</i>ABC</button><button class="konly" onclick="kNumbers()"><i>🔢</i>أرقام</button><button class="konly" onclick="kColorLib()"><i>🖍️</i>تلوين</button><button class="konly" onclick="openFrames()"><i>🌈</i>إطار</button><button class="konly" onclick="openColors()"><i>🎨</i>ألوان</button>
   <button onclick="undo()"><i>↶</i>رجوع</button><button onclick="addHere()"><i>✍️</i>سطر</button><button onclick="openElements()"><i>🧩</i>عناصر</button><button onclick="toolImage()"><i>🖼️</i>صورة</button><button onclick="toolPage()"><i>📄</i>صفحة</button>
   <button onclick="newTopicHere()"><i>📘</i>موضوع</button><button onclick="newChapterHere()"><i>📗</i>فصل</button><button onclick="openColors()"><i>🎨</i>ألوان</button><button onclick="openFrames()"><i>🔲</i>إطار</button>
   <button onclick="openCoverSheet('front')"><i>📕</i>الغلاف</button><button onclick="addTextFloat()"><i>🔤</i>كتابة حرة</button><button onclick="openFonts()"><i>🔠</i>الخطوط</button><button onclick="openWM()"><i>💧</i>علامة مائية</button><button onclick="newTableSheet()"><i>▦</i>جدول</button><button onclick="openMath()"><i style="font-family:serif">∑</i>رموز</button><button onclick="openShapes()"><i>📐</i>أشكال</button><button onclick="undo()"><i>↶</i>تراجع</button><button onclick="redo()"><i>↷</i>إعادة</button>
@@ -1281,7 +1346,7 @@ function wrapSel(ta,a,b){const v=ta.value,s=ta.selectionStart,e=ta.selectionEnd;
 function insertAt(ta,t){const v=ta.value,s=ta.selectionStart;ta.value=v.slice(0,s)+t+v.slice(s);ta.focus();ta.setSelectionRange(s+t.length,s+t.length);ta.dispatchEvent(new Event('input'))}
 function blockEditor(t,b,bi){
  const d=document.createElement('div');d.className='blk';
- const bar=`<div class="blk-bar"><span>${b.type==='text'?'📝 نص':b.type==='hwpage'?'📐 صفحة خط يد':'🖼️ صورة'}</span>
+ const bar=`<div class="blk-bar"><span>${b.type==='text'?'📝 نص':b.type==='hwpage'?'📐 صفحة خط يد':b.type==='kid'?'🧒 صفحة كراسة':'🖼️ صورة'}</span>
   <button class="btn sm" ${bi==0?'disabled':''}>▲</button><button class="btn sm" ${bi==t.blocks.length-1?'disabled':''}>▼</button><button class="btn sm red">✕</button></div>`;
  if(b.type==='text'){
   d.innerHTML=bar;const ta=document.createElement('textarea');ta.className='in';ta.placeholder=isEN()?'Write here...':'اكتب المحتوى هنا...';ta.value=b.text;
@@ -1290,6 +1355,7 @@ function blockEditor(t,b,bi){
   d.appendChild(toolbar(ta));attachLists(ta,d);d.appendChild(ta);
   const lb=document.createElement('div');lb.className='paper-lbl';lb.textContent='على الورقة:';d.appendChild(lb);d.appendChild(paper);paintText(paper,t,b.text);
  }else if(b.type==='hwpage'){d.innerHTML=bar+`<div class="muted" style="padding:8px">📐 صفحة بنفس ترتيب ورقة الأستاذ (${(b.items||[]).length} جزء) — عدّلها من المعاينة: اضغط على أي كتابة.</div>`;
+ }else if(b.type==='kid'){d.innerHTML=bar+`<div class="row" style="padding:8px;align-items:center"><span class="muted" style="flex:1">🧒 ${esc(({letter:'حرف '+(b.ch||''),number:'رقم '+(b.n??''),shapes:'أشكال',color:'تلوين',lines:'سطور كتابة',match:'توصيل',pre:'خطوط تمهيدية'})[b.kind]||'صفحة')}</span><button class="btn sm orange kedit">✏️ تعديل</button></div>`;d.querySelector('.kedit').onclick=()=>kidSheet(S.topics.indexOf(t),bi);
  }else{
   const n=(b.ann||[]).length;
   d.innerHTML=bar+`<div class="row" style="align-items:flex-start"><img class="thumb" src="${b.src}" style="flex:0 0 auto">
@@ -1357,7 +1423,7 @@ async function generate(){
  $('#pEn').textContent='⏳ جاري تجهيز الوصف...';
  const en=await translate(desc);if(my!==genId)return;
  $('#pEn').textContent='الوصف المرسل: '+en;
- const prompt=en+', '+STY[$('#pStyle').value];
+ const prompt=en+', '+(pTarget&&pTarget.kind==='kidColor'?'simple black and white coloring page for young kids, thick clean black outlines, no shading, no color, no gray, white background, cute cartoon':STY[$('#pStyle').value]);
  for(let i=0;i<4;i++){
   if(my!==genId)return;const c=cells[i];c.querySelector('.lbl').textContent='جاري الرسم...';let ok=false;
   for(let tr=0;tr<2&&!ok;tr++){
@@ -1528,6 +1594,7 @@ const CTPL=[['bold','متدرّج'],['wave','موجة'],['card','بطاقة'],['
 function cvCfg(kind){if(kind==='back'){if(!S.back)S.back=sample().back;return S.back}return{tpl:S.coverTpl,bg:S.coverBg,text:S.coverText!==false}}
 function cvColor(kind){return (kind==='back'&&S.back&&S.back.color)||S.coverColor}
 function cvDeco(t,c,cd,cm){
+ if(t&&t[0]==='k'&&t.length>3&&CTPL_K.some(x=>x[0]===t))return kCoverDeco(t,c,cd,cm);
  const A='position:absolute;';
  switch(t){
   case 'wave':return `<div style="${A}top:0;left:0;right:0;height:521px;background:linear-gradient(180deg,${cd},${c})"></div>
@@ -1614,7 +1681,7 @@ function openCoverSheet(kind){
  const setCf=(k,val)=>{if(B)S.back[k]=val;else S[{tpl:'coverTpl',bg:'coverBg',text:'coverText'}[k]]=val};
  const redo=async()=>{collect();save();bindInfo();openCoverSheet(kind);await cvGo(kind)};
  const grid=q('cvGrid'),cur=cf.tpl||'bold',ff={'--hf':fontCss(S.headFont),'--bf':fontCss(S.bodyFont)};
- CTPL.forEach(([id,name])=>{const t=document.createElement('div');t.className='frt'+(id===cur?' on':'');t.innerHTML=`<div class="mini"></div><b>${name}</b>`;
+ (S.kids?CTPL_K.concat(CTPL):CTPL).forEach(([id,name])=>{const t=document.createElement('div');t.className='frt'+(id===cur?' on':'');t.innerHTML=`<div class="mini"></div><b>${name}</b>`;
   const pg=coverPage(kind,id,true);pg.dir=isEN()?'ltr':'rtl';for(const k in ff)pg.style.setProperty(k,ff[k]);t.firstChild.appendChild(pg);
   t.onclick=async()=>{collect();setCf('tpl',id);if(B)S.back.on=true;save();grid.querySelectorAll('.frt').forEach(x=>x.classList.toggle('on',x===t));toast('🎨 تم اختيار تصميم: '+name+(cf.bg?' — احذف الصورة الكاملة حتى يظهر':''));await cvGo(kind)};grid.appendChild(t)});
  requestAnimationFrame(()=>grid.querySelectorAll('.mini').forEach(m=>{m.firstChild.style.transform=`scale(${m.clientWidth/794})`}));
@@ -1657,7 +1724,9 @@ let rendering=null;
 let renderAgain=null;
 function renderPages(){if(rendering){if(!renderAgain)renderAgain=rendering.then(()=>{renderAgain=null;return renderPages()});return renderAgain}rendering=_render().finally(()=>{rendering=null});return rendering}
 async function _render(){
+ kidsUI();
  try{await Promise.all([document.fonts.load(`400 16px ${fontCss(S.bodyFont)}`),document.fonts.load(`700 16px ${fontCss(S.bodyFont)}`),document.fonts.load(`700 26px ${fontCss(S.headFont)}`)]);await document.fonts.ready}catch(e){}
+ if(S.kids||S.topics.some(t=>t.blocks.some(b=>b.type==='kid')))await kFonts();
  const figs={};
  for(const t of S.topics)for(const b of t.blocks)if(b.type==='image'){try{figs[b.id]=await figureImage(b,t.color)}catch(e){figs[b.id]={src:b.src,w:b.w||1,h:b.h||1}}}
  const root=$('#pages');root.innerHTML='';
@@ -1690,15 +1759,16 @@ async function _render(){
   curT=t;const pl=plan[ti];
   if(pl.chStart&&S.chapterPage){n++;const cp=makeChapterPage(n,pl.ch,t,plan.filter(x=>x.ch===pl.ch).map(x=>S.topics[x.i]));Object.assign(cp.firstChild.dataset,{ed:'ch',t:ti});root.appendChild(cp);chEls[pl.ch]=n;cur=null}
   if(!cur||S.newPage||pl.chStart)cur=newPageFn();else if(cur.body.clientHeight-cur.body.scrollHeight<170)cur=newPageFn();
-  if(pl.chStart&&!S.chapterPage){const cb=document.createElement('div');cb.className='chb keep';setVars(cb,t.color);Object.assign(cb.dataset,{ed:'ch',t:ti});cb.innerHTML=`<span class="k">${esc(unitLabel(pl.ch))}</span><span>${esc(t.unit||'')}</span>`;add(cb);chEls[pl.ch]=cb}
+  if(pl.chStart&&!S.chapterPage&&!S.kids){const cb=document.createElement('div');cb.className='chb keep';setVars(cb,t.color);Object.assign(cb.dataset,{ed:'ch',t:ti});cb.innerHTML=`<span class="k">${esc(unitLabel(pl.ch))}</span><span>${esc(t.unit||'')}</span>`;add(cb);chEls[pl.ch]=cb}
   let full=false;
-  if(!S.hwExact){const th=document.createElement('div');th.className='th keep';setVars(th,t.color);
+  if(!S.hwExact&&!S.kids){const th=document.createElement('div');th.className='th keep';setVars(th,t.color);
   th.innerHTML=`<span class="tn">${pl.num+1}</span><div><div class="tk">${esc(lessonLabel(pl.num))}</div><div class="tt">${esc(t.title)}</div></div>`;
   Object.assign(th.dataset,{ed:'th',t:ti});heads[t.id]=th;add(th);}else heads[t.id]=cur.body;
   t.blocks.forEach((b,bi)=>{
    if(full){cur=newPageFn();full=false}
    if(b.type==='hwpage'){if(cur.body.children.length)cur=newPageFn();const bh=cur.body.clientHeight,HH=bh>200?bh:(PH-(S.frame&&S.frame!=='none'?194:170));let rows=hwFlowRows(b,ti,bi,HH);if(rows){rows.forEach(add);full=true;return}const el=hwPageEl(b,ti,bi,HH);cur.body.appendChild(el);
     if(cur.body.clientHeight&&hwBad(el)){el.remove();rows=hwFlowRows(b,ti,bi,HH,true);if(rows){rows.forEach(add);full=true;return}cur.body.appendChild(el)}full=true;return}
+   if(b.type==='kid'){if(cur.body.children.length)cur=newPageFn();const bh=cur.body.clientHeight,HH=bh>200?bh:(PH-(S.frame&&S.frame!=='none'?194:170));const el=kidEl(b,HH);Object.assign(el.dataset,{ed:'kid',t:ti,b:bi});cur.body.appendChild(el);full=true;return}
    if(b.type==='text'){parseItemsLn(b.text).forEach(it=>{if(it.k==='pb'){if(cur.body.children.length)cur=newPageFn();return}const el=itemEl(it,t.color);if((it.k==='p'||it.k==='nl'||it.k==='li')&&!/[ء-ي]/.test(it.t||'')&&/[0-9√∛=+×÷]/.test(it.t||'')){el.dir='ltr';el.style.textAlign='left'}setVars(el,t.color);Object.assign(el.dataset,{ed:'line',t:ti,b:bi,ln:it.ln,ln2:it.ln2,ty:itemType(it),n:it.n||'',lab:it.lab||''});add(el)})}
    else{const el=figEl(figs[b.id],b);setVars(el,t.color);Object.assign(el.dataset,{ed:'img',t:ti,b:bi});add(el)}
   });
@@ -1931,6 +2001,7 @@ const FRAMES=[
  ['dashed','متقطع مرح'],['dotted','نقاط مزدوجة'],['bubbles','دوائر حديثة']];
 function frameHTML(id,c){
  if(!id||id==='none')return '';
+ if(id.startsWith('k_'))return kFrame(id,c);
  const cd=mix(c,'k',.35),cl=mix(c,'w',.9),cm=mix(c,'w',.68);
  const B=(i,css)=>`<div style="position:absolute;inset:${i}px;${css}"></div>`;
  const D=css=>`<div style="position:absolute;${css}"></div>`;
@@ -1957,7 +2028,7 @@ function frameHTML(id,c){
  }
  return '';
 }
-function frameName(){const f=FRAMES.find(x=>x[0]===(S.frame||'none'));return f?f[1]:'بدون إطار'}
+function frameName(){const f=FRAMES.concat(FRAMES_K).find(x=>x[0]===(S.frame||'none'));return f?f[1]:'بدون إطار'}
 function openFrames(){
  const col=S.frameColor||'';const sample=(S.topics[0]&&S.topics[0].color)||'#1e88e5';
  $('#obBody').innerHTML=`<div class="sheet-h"><b>🖼️ إطار الصفحات</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
@@ -1967,7 +2038,7 @@ function openFrames(){
   <div class="sw" id="frSw" style="margin-top:6px"></div>
   <div class="frgrid" id="frGrid"></div>`;
  const grid=$('#frGrid'),useC=S.frameColor||sample;
- grid.innerHTML=FRAMES.map(([id,name])=>`<div class="frt ${id===(S.frame||'none')?'on':''}" data-f="${id}"><div class="mini"><div>
+ grid.innerHTML=frList().map(([id,name])=>`<div class="frt ${id===(S.frame||'none')?'on':''}" data-f="${id}"><div class="mini"><div>
    <div style="position:absolute;top:${id==='none'?0:32}px;left:${id==='none'?0:40}px;right:${id==='none'?0:40}px;height:52px;background:linear-gradient(90deg,${mix(useC,'k',.35)},${useC});border-radius:${id==='none'?0:10}px"></div>
    <div style="position:absolute;top:120px;right:70px;left:70px;height:70px;border-radius:16px;background:linear-gradient(135deg,${useC},${mix(useC,'k',.35)})"></div>
    ${[0,1,2,3,4,5,6,7].map(i=>`<div style="position:absolute;top:${230+i*70}px;right:70px;width:${560-(i%3)*90}px;height:18px;border-radius:9px;background:#e3e7ef"></div>`).join('')}
@@ -2005,7 +2076,7 @@ $('#pages').addEventListener('click',e=>{if(document.body.classList.contains('ex
  if(isEd(e.target)||e.target.closest('[contenteditable="true"]'))return;
  const el=e.target.closest('[data-ed]');if(!el)return;const d=el.dataset,ti=+d.t,t=S.topics[ti];if(!t)return;
  if(d.ed==='line'){const tx=el.querySelector('.etx');if(tx&&d.ty!=='tbl'&&el.tagName!=='TABLE'){caret(tx,true);return}openLine(ti,+d.b,+d.ln);return}
- if(d.ed==='th'&&e.target.closest('.tt'))return;else if(d.ed==='th'||d.ed==='ch')openTopicSheet(ti);else if(d.ed==='img')openImgSheet(ti,+d.b)});
+ if(d.ed==='th'&&e.target.closest('.tt'))return;else if(d.ed==='th'||d.ed==='ch')openTopicSheet(ti);else if(d.ed==='img')openImgSheet(ti,+d.b);else if(d.ed==='kid')kidSheet(ti,+d.b)});
 // swipe between pages
 let sx=null,sy=null;
 $('#pages').addEventListener('touchstart',e=>{if(e.target.closest('.flt')||e.touches.length>1){sx=null;return}sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
@@ -2069,7 +2140,7 @@ function pageAnchor(){
   const it=parseItemsLn(t.blocks[bi].text);return{ti,bi,ln:it.length?it[it.length-1].ln2:-1}}
  const d=last.dataset;ti=+d.t;t=S.topics[ti];
  if(d.ed==='line')return{ti,bi:+d.b,ln:+d.ln2};
- if(d.ed==='img'){let bi=+d.b+1;if(!(t.blocks[bi]&&t.blocks[bi].type==='text'))t.blocks.splice(bi,0,{id:uid(),type:'text',text:''});return{ti,bi,ln:-1}}
+ if(d.ed==='img'||d.ed==='kid'){let bi=+d.b+1;if(!(t.blocks[bi]&&t.blocks[bi].type==='text'))t.blocks.splice(bi,0,{id:uid(),type:'text',text:''});return{ti,bi,ln:-1}}
  if(!(t.blocks[0]&&t.blocks[0].type==='text'))t.blocks.unshift({id:uid(),type:'text',text:''});return{ti,bi:0,ln:-1};
 }
 function addHere(){const pg=pagesList()[CURP];const hosts=pg?[...pg.querySelectorAll('[data-ed]')]:[];const last=hosts[hosts.length-1];
@@ -3803,6 +3874,364 @@ function shareApp(){
  // بعد تسجيل الدخول: شريط صغير للي ما نزّل البرنامج
  const au=document.getElementById('auth');if(au)new MutationObserver(()=>{if(au.classList.contains('hidden'))setTimeout(()=>{if(ios||deferred||android)show()},2500)}).observe(au,{attributes:true,attributeFilter:['class']});
 })();
+/* ===== 🧒 مكتبة رسوم الكراسات (خطوط للتلوين) — مربع 200×200 ===== */
+const KP=(()=>{
+ const C=(x,y,r)=>`M${x-r} ${y}a${r} ${r} 0 1 0 ${2*r} 0a${r} ${r} 0 1 0 ${-2*r} 0Z`;
+ const E=(x,y,a,b)=>`M${x-a} ${y}a${a} ${b} 0 1 0 ${2*a} 0a${a} ${b} 0 1 0 ${-2*a} 0Z`;
+ const R=(x,y,w,h,r=0)=>`M${x+r} ${y}H${x+w-r}Q${x+w} ${y} ${x+w} ${y+r}V${y+h-r}Q${x+w} ${y+h} ${x+w-r} ${y+h}H${x+r}Q${x} ${y+h} ${x} ${y+h-r}V${y+r}Q${x} ${y} ${x+r} ${y}Z`;
+ const P=pts=>'M'+pts.map(p=>p.join(' ')).join('L')+'Z';
+ const ST=(cx,cy,Ro,Ri,n=5)=>{const a=[];for(let i=0;i<n*2;i++){const r=i%2?Ri:Ro,t=-Math.PI/2+i*Math.PI/n;a.push([+(cx+r*Math.cos(t)).toFixed(1),+(cy+r*Math.sin(t)).toFixed(1)])}return P(a)};
+ const L=d=>({d,f:'n'}),K=d=>({d,f:'k'}),W=d=>({d});
+ const eyes=(x1,x2,y,r=6)=>[K(C(x1,y,r)),K(C(x2,y,r))];
+ const D={
+  apple:[W('M100 62C70 40 30 55 32 102C34 150 70 182 100 166C130 182 166 150 168 102C170 55 130 40 100 62Z'),L('M100 62C100 46 104 36 112 28'),W('M106 46C120 26 146 26 156 33C140 50 120 53 106 46Z')],
+  duck:[W('M50 128L10 104L22 146Z'),W(E(100,135,66,40)),W(C(128,74,30)),W('M154 70L188 80L154 92Z'),...eyes(134,134,66,5).slice(0,1),W('M68 130C84 112 116 116 122 134C106 152 80 150 68 130Z')],
+  fox:[W('M100 172L36 92L42 30L82 66L118 66L158 30L164 92Z'),W('M54 52L58 80L72 68Z'),W('M146 52L142 80L128 68Z'),...eyes(78,122,104),K(C(100,150,8)),L('M100 158L100 166')],
+  carrot:[W('M100 188C86 150 70 112 66 82C80 70 120 70 134 82C130 112 114 150 100 188Z'),W(E(84,52,12,30)),W(E(116,52,12,30)),W(E(100,44,12,34)),L('M80 104L94 106M106 126L122 124M88 146L100 148')],
+  whale:[W('M20 120C20 72 80 56 120 70C150 80 164 104 170 120C174 100 188 86 196 80C192 106 192 130 196 152C186 140 176 132 168 130C150 160 110 172 70 166C40 162 20 146 20 120Z'),K(C(60,108,6)),L('M40 130C55 142 75 144 92 136'),L('M96 58C92 40 82 34 76 30M100 56C100 38 104 30 110 24M104 58C110 42 120 38 128 36')],
+  sheep:[{blob:[[70,110,28],[100,95,30],[130,110,28],[115,135,28],[85,135,28],[60,128,22],[140,128,22]]},W(R(70,150,12,34,5)),W(R(118,150,12,34,5)),W(E(160,96,22,28)),K(C(166,90,5)),L('M150 70C146 62 140 60 134 62')],
+  bear:[W(C(52,58,24)),W(C(148,58,24)),W(C(52,58,11)),W(C(148,58,11)),W(C(100,112,62)),W(E(100,138,28,22)),K(E(100,128,10,7)),...eyes(76,124,98),L('M100 135V146M90 150C95 154 105 154 110 150')],
+  corn:[W('M100 185C60 165 50 120 58 82C72 120 88 150 100 185Z'),W('M100 185C140 165 150 120 142 82C128 120 112 150 100 185Z'),W(E(100,90,30,68)),L('M80 60H120M74 80H126M72 100H128M76 120H124M84 140H116M100 26V152M86 32V146M114 32V146')],
+  pomegranate:[W(C(100,118,64)),W('M80 60L84 34L94 50L100 28L106 50L116 34L120 60Z'),L('M70 110C76 98 86 94 96 96')],
+  flower:[L('M100 110C100 140 100 160 100 192'),W('M100 160C120 140 145 140 160 146C150 165 125 170 100 160Z'),...[0,1,2,3,4,5].map(i=>{const a=i*Math.PI/3;return W(C(+(100+34*Math.cos(a)).toFixed(1),+(78+34*Math.sin(a)).toFixed(1),24))}),W(C(100,78,20))],
+  fish:[W(P([[150,100],[192,66],[186,100],[192,134]])),W('M24 100C56 48 128 48 160 100C128 152 56 152 24 100Z'),W('M84 64C96 44 116 44 126 60Z'),K(C(54,92,7)),L('M96 76C106 90 106 110 96 124M116 80C124 92 124 108 116 120M70 116C76 120 84 120 90 116')],
+  sun:[...[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>{const a=i*Math.PI/6,c=Math.cos(a),s=Math.sin(a);return L(`M${(100+58*c).toFixed(1)} ${(100+58*s).toFixed(1)}L${(100+86*c).toFixed(1)} ${(100+86*s).toFixed(1)}`)}),W(C(100,100,46)),...eyes(84,116,92,5),L('M80 112C90 124 110 124 120 112')],
+  rocket:[W(P([[70,120],[44,160],[72,150]])),W(P([[130,120],[156,160],[128,150]])),W('M100 12C138 44 142 100 130 152L70 152C58 100 62 44 100 12Z'),W(C(100,80,17)),W('M80 152L100 192L120 152Z'),L('M78 44H122')],
+  frog:[W(C(64,68,24)),W(C(136,68,24)),W(E(100,118,72,52)),W(C(64,66,12)),W(C(136,66,12)),K(C(64,66,6)),K(C(136,66,6)),L('M66 128C84 146 116 146 134 128'),L('M86 104H88M112 104H114')],
+  tomato:[W(E(100,114,72,62)),W(ST(100,56,30,12,6)),L('M100 52V36'),L('M58 110C62 92 72 82 86 78')],
+  envelope:[W(R(24,54,152,100,10)),L('M28 60L100 116L172 60'),L('M28 150L82 104M172 150L118 104')],
+  grapes:[L('M100 50C100 36 106 26 116 20'),W('M104 40C120 22 146 24 156 32C140 50 120 50 104 40Z'),...[[70,68],[100,64],[130,68],[84,94],[116,94],[70,120],[100,122],[130,120],[86,148],[114,148],[100,174]].map(([x,y])=>W(C(x,y,17)))],
+  cloud:[{blob:[[60,118,32],[96,96,40],[136,108,34],[160,128,24],[40,134,22],[100,134,30],[130,138,26]]},...eyes(84,116,118,4),L('M92 132C96 136 104 136 108 132')],
+  butterfly:[W('M100 98C70 50 22 40 26 80C28 104 60 110 100 104Z'),W('M100 98C130 50 178 40 174 80C172 104 140 110 100 104Z'),W('M100 106C70 110 40 130 52 156C66 176 92 150 100 116Z'),W('M100 106C130 110 160 130 148 156C134 176 108 150 100 116Z'),W(E(100,110,9,44)),L('M96 68C90 50 82 42 74 38M104 68C110 50 118 42 126 38'),W(C(60,82,12)),W(C(140,82,12))],
+  moon:[W('M128 22A82 82 0 1 0 128 178A64 64 0 1 1 128 22Z'),K(C(84,96,6)),L('M70 124C78 132 90 132 98 126')],
+  ball:[W(C(100,100,72)),L('M30 88C70 100 130 100 170 88M30 112C70 124 130 124 170 112'),L('M100 28C80 60 80 140 100 172')],
+  lemon:[W('M16 100C28 60 68 44 100 44C132 44 172 60 184 100C172 140 132 156 100 156C68 156 28 140 16 100Z'),L('M60 76C70 68 84 64 96 64'),W('M100 44C110 26 130 22 142 26C134 40 118 46 100 44Z')],
+  banana:[W('M30 58C30 136 96 182 174 152C180 144 176 136 168 136C110 150 66 118 54 58C50 46 32 46 30 58Z'),L('M50 64C58 110 96 140 150 140')],
+  star:[W(ST(100,106,88,38)),...eyes(86,114,106,5),L('M88 124C96 130 104 130 112 124')],
+  gift:[W(E(80,62,22,14)),W(E(120,62,22,14)),W(R(40,92,120,92,6)),W(R(28,70,144,26,6)),L('M100 70V184M88 70V96M112 70V96')],
+  leaf:[W('M100 184C40 144 36 62 100 18C164 62 160 144 100 184Z'),L('M100 40V190M100 80L72 62M100 110L68 90M100 140L74 124M100 80L128 62M100 110L132 90M100 140L126 124')],
+  pumpkin:[W(R(92,24,16,30,4)),W(E(100,118,80,62)),L('M100 56C70 80 70 156 100 180M100 56C130 80 130 156 100 180M60 66C38 100 40 150 62 172M140 66C162 100 160 150 138 172')],
+  rabbit:[W(E(78,52,14,42)),W(E(122,52,14,42)),W(E(78,56,6,28)),W(E(122,56,6,28)),W(C(100,122,50)),...eyes(82,118,112,6),K(E(100,132,8,6)),L('M100 138V148M90 152C95 156 105 156 110 152M60 136H86M60 146L86 140M140 136H114M140 146L114 140')],
+  cat:[W(P([[46,92],[52,30],[92,64]])),W(P([[154,92],[148,30],[108,64]])),W(C(100,118,62)),...eyes(78,122,108,7),K(P([[92,128],[108,128],[100,138]])),L('M100 138V146M88 152C94 156 106 156 112 152M40 128H80M40 142L80 136M160 128H120M160 142L120 136')],
+  egg:[W('M100 22C150 22 172 110 162 140C152 176 48 176 38 140C28 110 50 22 100 22Z'),L('M66 64C74 50 84 44 94 42')],
+  house:[W(R(132,40,18,40,2)),W(P([[26,104],[100,34],[174,104]])),W(R(44,100,112,86,4)),W(R(86,132,28,54,3)),W(R(54,114,24,24,2)),W(R(122,114,24,24,2)),L('M66 114V138M54 126H78M134 114V138M122 126H146')],
+  icecream:[W(P([[64,96],[136,96],[100,190]])),L('M72 112L118 160M90 104L128 140M82 140L116 108M92 168L124 120'),W('M56 96C50 70 70 34 100 34C130 34 150 70 144 96C136 104 128 92 120 100C112 108 104 96 96 102C88 108 80 94 72 102C64 108 60 100 56 96Z'),W(C(100,30,10)),L('M100 20C104 12 110 8 116 8')],
+  juice:[W('M58 46L142 46L130 186L70 186Z'),L('M64 86H136'),L('M116 46L132 12L150 12'),W(C(144,48,18)),L('M144 30V66M126 48H162')],
+  kite:[L('M100 172C80 180 110 190 92 196M100 172C120 184 90 188 108 196'),W(P([[100,14],[160,84],[100,172],[40,84]])),L('M100 14V172M40 84H160')],
+  nest:[W(E(82,96,18,22)),W(E(118,96,18,22)),W('M26 104C36 176 164 176 174 104Z'),L('M40 120C70 128 130 128 160 120M48 140C80 148 120 148 152 140')],
+  orange:[W(C(100,112,66)),W('M100 46C110 28 132 24 144 28C136 42 118 48 100 46Z'),L('M100 46V40'),K(C(80,100,2)),K(C(120,120,2)),K(C(100,140,2)),K(C(130,94,2))],
+  pencil:[W(R(14,82,22,36,6)),W(R(32,82,120,36)),W(P([[152,82],[188,100],[152,118]])),K(P([[178,95],[188,100],[178,105]])),L('M32 94H152M32 106H152M50 82V118')],
+  crown:[W(P([[30,152],[26,62],[66,100],[100,40],[134,100],[174,62],[170,152]])),L('M30 132H170'),W(C(100,112,10)),W(C(64,118,8)),W(C(136,118,8)),W(C(100,40,8)),W(C(26,62,7)),W(C(174,62,7))],
+  tree:[W(R(86,120,28,70,3)),{blob:[[100,60,36],[66,86,32],[134,86,32],[80,118,28],[120,118,28],[100,100,34]]},W(C(80,80,7)),W(C(122,98,7)),W(C(96,120,7))],
+  umbrella:[L('M100 100V168C100 186 76 186 76 170'),W('M18 102C18 38 182 38 182 102C168 90 152 90 141 102C128 90 112 90 100 102C88 90 72 90 59 102C48 90 32 90 18 102Z'),L('M100 48C86 60 78 80 78 98M100 48C114 60 122 80 122 98'),L('M100 36V48')],
+  vase:[W('M74 38H126C126 58 116 64 116 76C152 96 156 150 130 182H70C44 150 48 96 84 76C84 64 74 58 74 38Z'),L('M64 120C80 128 120 128 136 120'),W(C(100,30,12))],
+  xylophone:[W(R(12,68,176,10,4)),W(R(12,124,176,10,4)),...[0,1,2,3,4,5].map(i=>W(R(20+i*28,40+i*8,22,120-i*16,5))),L('M150 30L186 70M140 40L176 80'),W(C(146,26,8)),W(C(136,36,8))],
+  yoyo:[L('M100 58V10M92 10H108'),W(C(100,116,58)),W(C(100,116,24)),L('M58 92C66 80 78 72 90 68')],
+  zebra:[W(P([[70,52],[66,18],[90,44]])),W(P([[130,52],[134,18],[110,44]])),W('M100 34C140 34 150 80 146 120C142 150 132 166 100 186C68 166 58 150 54 120C50 80 60 34 100 34Z'),W(E(100,160,30,24)),K(C(90,158,4)),K(C(110,158,4)),...eyes(80,120,92,6),L('M60 70C70 74 78 82 82 92M140 70C130 74 122 82 118 92M56 108C66 110 74 116 78 124M144 108C134 110 126 116 122 124M100 40V64')],
+  car:[W('M18 134V108C18 98 28 92 44 90L64 60C70 52 78 50 90 50H128C140 50 148 56 152 62L170 90C184 92 186 100 186 110V134Z'),W('M72 66H98V90H58Z'),W('M108 66H134L150 90H108Z'),W(C(56,138,20)),W(C(148,138,20)),W(C(56,138,8)),W(C(148,138,8))],
+  boat:[L('M100 24V122'),W(P([[106,28],[106,112],[164,112]])),W(P([[94,44],[94,112],[44,112]])),W(P([[18,122],[182,122],[156,168],[44,168]])),L('M10 182C30 172 50 192 70 182C90 172 110 192 130 182C150 172 170 192 190 182')],
+  heart:[W('M100 176C40 132 14 96 30 60C46 30 86 30 100 60C114 30 154 30 170 60C186 96 160 132 100 176Z'),L('M54 62C60 54 70 52 78 56')],
+  balloon:[L('M100 142C90 160 112 172 100 196'),W(P([[92,146],[108,146],[100,136]])),W(E(100,80,52,62)),L('M76 52C82 42 92 38 100 38')],
+  bird:[W('M60 120L24 100L30 136Z'),W(E(96,116,48,38)),W(C(140,84,28)),W(P([[162,80],[190,88],[162,96]])),K(C(146,78,5)),W('M80 108C96 86 124 96 120 120C106 134 88 128 80 108Z'),L('M86 152V176M106 152V176')],
+  book:[W('M100 52C76 38 46 38 22 46V162C46 154 76 154 100 168Z'),W('M100 52C124 38 154 38 178 46V162C154 154 124 154 100 168Z'),L('M38 72C54 66 72 66 86 72M38 96C54 90 72 90 86 96M114 72C128 66 146 66 162 72M114 96C128 90 146 90 162 96')],
+  cup:[W('M140 76C176 76 176 132 138 128'),W('M40 60H150L140 166C138 178 52 178 50 166Z'),L('M70 40C64 30 76 24 70 14M100 40C94 30 106 24 100 14')],
+  key:[W(C(60,100,36)),W(C(60,100,14)),W('M94 92H182V108H170V128H156V108H144V122H130V108H94Z')]
+ };
+ const AR={apple:'تفاحة',duck:'بطة',fox:'ثعلب',carrot:'جزرة',whale:'حوت',sheep:'خروف',bear:'دب',corn:'ذرة',pomegranate:'رمانة',flower:'زهرة',fish:'سمكة',sun:'شمس',rocket:'صاروخ',frog:'ضفدع',tomato:'طماطة',envelope:'ظرف',grapes:'عنب',cloud:'غيمة',butterfly:'فراشة',moon:'قمر',ball:'كرة',lemon:'ليمونة',banana:'موزة',star:'نجمة',gift:'هدية',leaf:'ورقة',pumpkin:'يقطينة',rabbit:'أرنب',cat:'قطة',egg:'بيضة',house:'بيت',icecream:'آيس كريم',juice:'عصير',kite:'طائرة ورقية',nest:'عش',orange:'برتقالة',pencil:'قلم',crown:'تاج',tree:'شجرة',umbrella:'مظلة',vase:'مزهرية',xylophone:'إكسيليفون',yoyo:'يويو',zebra:'حمار وحشي',car:'سيارة',boat:'قارب',heart:'قلب',balloon:'بالون',bird:'عصفور',book:'كتاب',cup:'كوب',key:'مفتاح'};
+ return{D,AR,C,E,R,P,ST};
+})();
+// يرسم رسمة بخطوط (للتلوين) داخل مربع
+function kDraw(ctx,name,x,y,size,lw=5,col='#1f2937'){
+ const sh=KP.D[name];if(!sh)return;const s=size/200;ctx.save();ctx.translate(x,y);ctx.scale(s,s);
+ ctx.lineJoin='round';ctx.lineCap='round';ctx.strokeStyle=col;const w=lw/s;
+ for(const o of sh){
+  if(o.blob){ctx.lineWidth=w*2;o.blob.forEach(([cx,cy,r])=>{ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.stroke()});ctx.fillStyle='#fff';o.blob.forEach(([cx,cy,r])=>{ctx.beginPath();ctx.arc(cx,cy,r,0,7);ctx.fill()});continue}
+  const p=new Path2D(o.d);ctx.lineWidth=w;
+  if(o.f!=='n'){ctx.fillStyle=o.f==='k'?col:'#fff';ctx.fill(p)}ctx.stroke(p);
+ }
+ ctx.restore();
+}
+
+/* ================= 🧒 وضع كراسات الأطفال ================= */
+const KF="'Baloo Bhaijaan 2'",KZ='ـ';
+const KAR=[...'ابتثجحخدذرزسشصضطظعغفقكلمنهوي'],KNOJ='ادذرزو';
+const KAR_N={ا:'الألف',ب:'الباء',ت:'التاء',ث:'الثاء',ج:'الجيم',ح:'الحاء',خ:'الخاء',د:'الدال',ذ:'الذال',ر:'الراء',ز:'الزاي',س:'السين',ش:'الشين',ص:'الصاد',ض:'الضاد',ط:'الطاء',ظ:'الظاء',ع:'العين',غ:'الغين',ف:'الفاء',ق:'القاف',ك:'الكاف',ل:'اللام',م:'الميم',ن:'النون',ه:'الهاء',و:'الواو',ي:'الياء'};
+const KAR_P={ا:'rabbit',ب:'duck',ت:'apple',ث:'fox',ج:'carrot',ح:'whale',خ:'sheep',د:'bear',ذ:'corn',ر:'pomegranate',ز:'flower',س:'fish',ش:'sun',ص:'rocket',ض:'frog',ط:'tomato',ظ:'envelope',ع:'grapes',غ:'cloud',ف:'butterfly',ق:'moon',ك:'ball',ل:'lemon',م:'banana',ن:'star',ه:'gift',و:'leaf',ي:'pumpkin'};
+const KEN=[...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
+const KEN_W={A:['Apple','apple'],B:['Ball','ball'],C:['Cat','cat'],D:['Duck','duck'],E:['Egg','egg'],F:['Fish','fish'],G:['Grapes','grapes'],H:['House','house'],I:['Ice cream','icecream'],J:['Juice','juice'],K:['Kite','kite'],L:['Leaf','leaf'],M:['Moon','moon'],N:['Nest','nest'],O:['Orange','orange'],P:['Pencil','pencil'],Q:['Queen','crown'],R:['Rabbit','rabbit'],S:['Sun','sun'],T:['Tree','tree'],U:['Umbrella','umbrella'],V:['Vase','vase'],W:['Whale','whale'],X:['Xylophone','xylophone'],Y:['Yo-yo','yoyo'],Z:['Zebra','zebra']};
+const KNUM_AR=['صفر','واحد','اثنان','ثلاثة','أربعة','خمسة','ستة','سبعة','ثمانية','تسعة','عشرة'],KNUM_EN=['zero','one','two','three','four','five','six','seven','eight','nine','ten'];
+const KCNT=['apple','star','ball','fish','heart','balloon','flower','car','duck','sun','butterfly'];
+const KSHP=[['circle','دائرة','Circle'],['square','مربع','Square'],['triangle','مثلث','Triangle'],['rect','مستطيل','Rectangle'],['star','نجمة','Star'],['heart','قلب','Heart'],['oval','بيضوي','Oval'],['diamond','معين','Diamond']];
+const KCOL=['#f97316','#e11d48','#7c3aed','#2563eb','#0891b2','#16a34a','#ca8a04','#db2777','#4f46e5','#059669'];
+const KPRE=[['line','خط مستقيم'],['zig','خط متعرج'],['wave','أمواج'],['loop','حلقات'],['arc','جسور'],['step','درج'],['vline','خطوط عمودية'],['spiral','دوائر']];
+const kToAr=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+const kc=i=>KCOL[((i%KCOL.length)+KCOL.length)%KCOL.length];
+async function kFonts(){try{await Promise.all([document.fonts.load(`800 60px ${KF}`),document.fonts.load(`400 60px ${KF}`),document.fonts.load(`800 60px ${KF}`,'ابت')])}catch(e){}}
+/* ---------- canvas ---------- */
+const KCACHE=new Map();
+function kImg(key,w,h,fn){if(KCACHE.has(key))return KCACHE.get(key);const s=2.2,c=document.createElement('canvas');c.width=Math.round(w*s);c.height=Math.round(h*s);const x=c.getContext('2d');x.scale(s,s);fn(x);const u=c.toDataURL('image/png');c.width=c.height=0;if(KCACHE.size>500)KCACHE.clear();KCACHE.set(key,u);return u}
+function kTxt(x,t,X,Y,size,o={}){x.save();x.font=`${o.w||800} ${size}px ${KF}`;x.textAlign=o.al||'center';x.textBaseline='alphabetic';x.direction=o.dir||'rtl';
+ if(o.dot){x.lineWidth=o.lw||Math.max(2.4,size*.03);x.lineCap='round';x.lineJoin='round';x.setLineDash([.01,o.gap||Math.max(5,size*.065)]);x.strokeStyle=o.c||'#64748b';
+  if(o.fill!==false){x.fillStyle=o.bg||'rgba(148,163,184,.10)';x.fillText(t,X,Y)}x.strokeText(t,X,Y)}
+ else{x.fillStyle=o.c||'#111';x.fillText(t,X,Y)}x.restore()}
+function kFit(x,t,size,maxW){x.font=`800 ${size}px ${KF}`;const w=x.measureText(t).width;return w>maxW?size*maxW/w:size}
+// سطر تتبع عربي: خط أساس + خط علوي
+function kRowAr(w,h,items,color){return kImg('ra|'+w+'|'+h+'|'+color+'|'+items.map(i=>(i.s?'*':'')+i.t).join(','),w,h,x=>{
+ const base=h*.64;x.lineWidth=1.8;x.strokeStyle='#cbd5e1';x.beginPath();x.moveTo(4,base);x.lineTo(w-4,base);x.stroke();
+ x.setLineDash([5,7]);x.strokeStyle='#e2e8f0';x.lineWidth=1.4;x.beginPath();x.moveTo(4,h*.14);x.lineTo(w-4,h*.14);x.stroke();x.setLineDash([]);
+ const n=items.length;if(!n)return;const cw=w/n;
+ items.forEach((it,i)=>{const X=w-cw*(i+.5);let sz=kFit(x,it.t,h*.5,cw*.92);kTxt(x,it.t,X,base,sz,it.s?{c:color}:{dot:1,c:'#8b98ab'})})})}
+// سطر إنكليزي بأربع خطوط
+function kRowEn(w,h,items,color){return kImg('re|'+w+'|'+h+'|'+color+'|'+items.map(i=>(i.s?'*':'')+i.t).join(','),w,h,x=>{
+ const top=h*.12,mid=h*.41,base=h*.7,desc=h*.92;
+ const ln=(y,c,d,lw)=>{x.setLineDash(d||[]);x.strokeStyle=c;x.lineWidth=lw||1.6;x.beginPath();x.moveTo(4,y);x.lineTo(w-4,y);x.stroke()};
+ ln(top,'#93c5fd');ln(mid,'#cbd5e1',[6,6]);ln(base,'#fca5a5',null,2);ln(desc,'#e2e8f0');x.setLineDash([]);
+ const n=items.length;if(!n)return;const cw=w/n;x.font=`800 100px ${KF}`;const capH=x.measureText('H').actualBoundingBoxAscent||70;const size0=(base-top)/capH*100;
+ items.forEach((it,i)=>{const X=cw*(i+.5);const sz=kFit(x,it.t,size0,cw*.9);kTxt(x,it.t,X,base,sz,Object.assign({dir:'ltr'},it.s?{c:color}:{dot:1,c:'#8b98ab'}))})})}
+const kRow=(lang,w,h,items,color)=>lang==='en'?kRowEn(w,h,items,color):kRowAr(w,h,items,color);
+function kBig(t,lang,w,h,color){return kImg('bg|'+t+'|'+lang+'|'+w+'|'+h+'|'+color,w,h,x=>{
+ x.font=`800 100px ${KF}`;x.direction=lang==='en'?'ltr':'rtl';const m=x.measureText(t);const asc=m.actualBoundingBoxAscent||80,des=m.actualBoundingBoxDescent||20,tw=m.width||80;
+ let sz=Math.min(h*.86/((asc+des)/100),w*.9/(tw/100));const Y=h/2+(asc-des)/2*sz/100;
+ kTxt(x,t,w/2,Y,sz,{dot:1,c:color,lw:Math.max(4,sz*.022),gap:Math.max(9,sz*.05),bg:'rgba(148,163,184,.08)',dir:lang==='en'?'ltr':'rtl'});
+ // نقطة البداية
+ })}
+function kPicU(name,size){return kImg('p|'+name+'|'+size,size,size,x=>kDraw(x,name,0,0,size,Math.max(2.6,size/42)))}
+function kShapePath(id){const S=KP;switch(id){case'circle':return S.C(100,100,80);case'square':return S.R(25,25,150,150,6);case'triangle':return S.P([[100,18],[184,172],[16,172]]);case'rect':return S.R(8,50,184,100,6);
+ case'star':return S.ST(100,108,92,40);case'heart':return 'M100 178C40 134 12 96 28 58C44 26 86 26 100 58C114 26 156 26 172 58C188 96 160 134 100 178Z';case'oval':return S.E(100,100,90,62);case'diamond':return S.P([[100,8],[176,100],[100,192],[24,100]])}}
+function kShapeU(id,size,color){return kImg('sh|'+id+'|'+size+'|'+color,size,size,x=>{const s=size/200;x.scale(s,s);x.lineCap='round';x.lineJoin='round';const p=new Path2D(kShapePath(id));
+ x.fillStyle='rgba(148,163,184,.08)';x.fill(p);x.setLineDash([.01,10]);x.lineWidth=6;x.strokeStyle=color;x.stroke(p)})}
+function kPreU(id,w,h,color){return kImg('pr|'+id+'|'+w+'|'+h+'|'+color,w,h,x=>{
+ const m=h/2,a0=70,a1=w-70,amp=h*.3;x.lineCap='round';x.lineJoin='round';
+ // نقطة البداية (يمين) والنهاية (يسار)
+ x.fillStyle='#22c55e';x.beginPath();x.arc(w-40,m,13,0,7);x.fill();x.fillStyle='#fff';x.font=`800 15px ${KF}`;x.textAlign='center';x.fillText('▶',w-41,m+5);
+ kDraw(x,'star',12,m-22,44,2.4,color);
+ const P=new Path2D();const L=a1-a0;
+ switch(id){
+  case'line':P.moveTo(a1,m);P.lineTo(a0,m);break;
+  case'zig':{const n=8;P.moveTo(a1,m+amp);for(let i=1;i<=n;i++)P.lineTo(a1-L*i/n,i%2?m-amp:m+amp);break}
+  case'wave':{const n=4;P.moveTo(a1,m);for(let i=0;i<n;i++){const xs=a1-L*i/n,xe=a1-L*(i+1)/n;P.bezierCurveTo(xs-(xs-xe)*.25,m-amp*1.3,xs-(xs-xe)*.25,m-amp*1.3,(xs+xe)/2,m);P.bezierCurveTo((xs+xe)/2-(xs-xe)*.25,m+amp*1.3,xe+(xs-xe)*.25,m+amp*1.3,xe,m)}break}
+  case'loop':{const n=6,r=amp*.8;P.moveTo(a1,m+r*.6);for(let i=0;i<n;i++){const cx=a1-L*(i+.5)/n;P.bezierCurveTo(cx+r*1.2,m+r*.6,cx+r,m-r*1.4,cx,m-r*1.2);P.bezierCurveTo(cx-r,m-r*1.4,cx-r*1.2,m+r*.6,cx-L/n/2,m+r*.6)}break}
+  case'arc':{const n=5;P.moveTo(a1,m+amp);for(let i=0;i<n;i++){const xs=a1-L*i/n,xe=a1-L*(i+1)/n;P.bezierCurveTo(xs,m-amp*1.4,xe,m-amp*1.4,xe,m+amp)}break}
+  case'step':{const n=6,st=L/n;P.moveTo(a1,m+amp);for(let i=0;i<n;i++){const xs=a1-st*i;P.lineTo(xs-st/2,i%2?m+amp:m+amp);P.lineTo(xs-st/2,i%2?m+amp:m-amp);P.lineTo(xs-st,i%2?m+amp:m-amp);P.lineTo(xs-st,m+amp)}break}
+  case'vline':{const n=12;for(let i=0;i<n;i++){const X=a1-L*i/(n-1);P.moveTo(X,m-amp);P.lineTo(X,m+amp)}break}
+  case'spiral':{const n=6;for(let i=0;i<n;i++){const cx=a1-L*(i+.5)/n;P.moveTo(cx+amp*.8,m);P.arc(cx,m,amp*.8,0,Math.PI*2)}break}
+ }
+ x.setLineDash([.01,11]);x.lineWidth=6;x.strokeStyle=color;x.stroke(P)})}
+/* ---------- بناء صفحة الكراسة ---------- */
+function kW(){return S.frame&&S.frame!=='none'?666:678}
+const kEsc=s=>esc(String(s==null?'':s));
+function kHead(title,big,color,lang){const en=lang==='en';return `<div class="kh" style="--kc:${color}" dir="${en?'ltr':'rtl'}"><div class="kt"><span class="ks">★</span>${kEsc(title)}${big?` <b>${kEsc(big)}</b>`:''}</div><div class="kn">${en?'Name':'الاسم'}: ................................</div></div>`}
+function kTip(t,lang){return `<div class="ktip" dir="${lang==='en'?'ltr':'rtl'}">${t}</div>`}
+function kidEl(b,H){
+ const W=kW(),c=b.color||'#f97316',lang=b.lang||'ar',en=lang==='en';
+ const d=document.createElement('div');d.className='kpg';d.style.height=Math.max(600,H-4)+'px';d.style.setProperty('--kc',c);
+ let h='';const img=(u,w,hh,css='')=>`<img src="${u}" style="width:${w}px;height:${hh}px;${css}">`;
+ const rowsFill=(avail,rowH,mk)=>{let n=Math.max(1,Math.floor(avail/rowH)),s='';for(let i=0;i<n;i++)s+=img(mk(i,n),W,rowH-6,'display:block;margin:0 auto 6px');return s};
+ switch(b.kind){
+ case 'letter':{
+  const ch=b.ch||(en?'A':'ب');
+  if(!en){const pic=KAR_P[ch],word=KP.AR[pic]||'',forms=!KNOJ.includes(ch)?[[ch,'منفصل'],[ch+KZ,'أول الكلمة'],[KZ+ch+KZ,'وسط الكلمة'],[KZ+ch,'آخر الكلمة']]:[[ch,'منفصل'],[KZ+ch,'آخر الكلمة']];
+   h+=kHead('حرف '+(KAR_N[ch]||''),ch,c,lang);
+   h+=`<div class="khero"><div class="kbig">${img(kBig(ch,'ar',260,230,c),260,230)}</div><div class="kpic">${img(kPicU(pic,150),150,150)}<div class="kw">${kEsc(word)}</div></div></div>`;
+   if(b.forms!==false){h+=`<div class="kforms">${forms.map(([f,l])=>`<div class="kf"><div class="kfl">${l}</div>${img(kImg('fm|'+f+'|'+c,120,92,x=>{kTxt(x,f,60,64,kFit(x,f,58,110),{c})}),120,92)}</div>`).join('')}</div>`}
+   const used=262+(b.forms!==false?150:0)+64+34;const avail=H-used;
+   const seq=b.forms!==false&&!KNOJ.includes(ch)?[ch,ch+KZ,KZ+ch+KZ,KZ+ch]:[ch,KZ+ch];
+   h+=`<div class="krows">`+rowsFill(avail,100,(i,n)=>{if(i===n-1&&n>2)return kRowAr(W,94,[{t:word,s:1},{t:word},{t:word}],c);if(i===n-2&&n>3&&b.forms!==false)return kRowAr(W,94,[0,1,2,3,4,5,6,7].map(k=>({t:seq[k%seq.length]})),c);return kRowAr(W,94,[0,1,2,3,4,5,6,7].map(k=>({t:ch,s:k===0})),c)})+`</div>`;
+   h+=kTip('✏️ تتبّع الحرف بالقلم من اليمين لليسار — ثم لوّن صورة <b>'+kEsc(word)+'</b>','ar');
+  }else{const [word,pic]=KEN_W[ch]||['',''],lo=ch.toLowerCase();
+   h+=kHead('Letter',ch+' '+lo,c,lang);
+   h+=`<div class="khero" dir="ltr"><div class="kbig">${img(kBig(ch+lo,'en',300,230,c),300,230)}</div><div class="kpic">${img(kPicU(pic,150),150,150)}<div class="kw" dir="ltr">${kEsc(word)}</div></div></div>`;
+   const avail=H-262-64-34;
+   h+=`<div class="krows">`+rowsFill(avail,104,(i,n)=>{const half=Math.ceil((n-1)/2);if(i===n-1&&n>2)return kRowEn(W,98,[{t:word.toLowerCase(),s:1},{t:word.toLowerCase()},{t:word.toLowerCase()}],c);const L=i<half?ch:lo;return kRowEn(W,98,[0,1,2,3,4,5,6,7].map(k=>({t:L,s:k===0})),c)})+`</div>`;
+   h+=kTip('✏️ Trace the letters from left to right — then color the <b>'+kEsc(word.toLowerCase())+'</b>','en');}
+  break}
+ case 'number':{
+  const n=b.n==null?1:b.n,ar=b.digits!=='en',dg=ar?kToAr(n):String(n),wd=ar?KNUM_AR[n]:KNUM_EN[n],pic=b.pic||KCNT[n%KCNT.length];
+  h+=kHead(ar?'الرقم':'Number',dg+' — '+wd,c,ar?'ar':'en');
+  const cnt=Math.max(n,0),cols=cnt<=5?cnt:Math.ceil(cnt/2),ps=cnt<=5?78:66;
+  h+=`<div class="khero"><div class="kbig">${img(kBig(dg,ar?'ar':'en',230,230,c),230,230)}</div><div class="kcount"><div class="kcl">${ar?'عُدّ ولوّن':'Count & color'}</div><div class="kcg" style="grid-template-columns:repeat(${Math.max(1,cols)},${ps}px)">${Array.from({length:cnt},()=>img(kPicU(pic,ps),ps,ps)).join('')||'<div class="kw">0</div>'}</div></div></div>`;
+  const avail=H-262-64-34;
+  h+=`<div class="krows">`+rowsFill(avail,100,(i,k)=>{if(i===k-1&&k>2)return kRow(ar?'ar':'en',W,94,[{t:wd,s:1},{t:wd},{t:wd}],c);return kRow(ar?'ar':'en',W,94,[0,1,2,3,4,5,6,7,8].map(j=>({t:dg,s:j===0})),c)})+`</div>`;
+  h+=kTip(ar?'✏️ تتبّع الرقم واكتب اسمه — ثم لوّن الصور':'✏️ Trace the number and its name — then color the pictures',ar?'ar':'en');break}
+ case 'shapes':{
+  const items=(b.items&&b.items.length?b.items:KSHP.map(s=>s[0])).slice(0,8);const rows=Math.ceil(items.length/2),ch_=Math.floor((H-64-34)/rows)-10,sz=Math.min(ch_-40,230);
+  h+=kHead(en?'Trace & color the shapes':'تتبّع الأشكال ثم لوّنها','',c,lang);
+  h+=`<div class="kgrid2">${items.map((id,i)=>{const s=KSHP.find(x=>x[0]===id)||KSHP[0];return `<div class="kcell" style="height:${ch_}px">${img(kShapeU(id,sz,kc(i)),sz,sz)}<div class="kcn">${kEsc(en?s[2]:s[1])} <small>${kEsc(en?s[1]:s[2])}</small></div></div>`}).join('')}</div>`;
+  h+=kTip(en?'✏️ Trace the dotted lines, then color each shape':'✏️ مرّر القلم على النقاط ثم لوّن كل شكل بلون مختلف',lang);break}
+ case 'color':{
+  const word=b.word||(b.pic?(en?b.pic:KP.AR[b.pic]):''),sz=Math.min(W-40,H-64-34-150);
+  h+=kHead(en?'Color the picture':'لوّن الرسمة','🖍️',c,lang);
+  h+=`<div class="kcolor">${b.src?img(b.src,sz,sz,'object-fit:contain'):img(kPicU(b.pic||'apple',sz),sz,sz)}</div>`;
+  if(word)h+=img(kRow(lang,W,110,[{t:word,s:1},{t:word}],c),W,104,'display:block;margin:6px auto 0');
+  h+=`<div class="kpal">${['#ef4444','#f97316','#facc15','#22c55e','#3b82f6','#8b5cf6','#ec4899','#92400e'].map(x=>`<i style="background:${x}"></i>`).join('')}</div>`;break}
+ case 'lines':{
+  h+=kHead(b.title||(en?'Handwriting practice':'تمرين الكتابة'),'',c,lang);
+  h+=`<div class="krows">`+rowsFill(H-64-20,en?96:86,()=>kRow(lang,W,en?90:80,[],c))+`</div>`;break}
+ case 'match':{
+  const pool=en?KEN:KAR,items=(b.items&&b.items.length?b.items:pool.slice(0,5));const sh=b.order||items.map((_,i)=>i).reverse();
+  const rh=Math.floor((H-64-34-20)/items.length);const ps=Math.min(rh-16,120);
+  h+=kHead(en?'Match the picture to its first letter':'صِل الصورة بحرفها الأول','🔗',c,lang);
+  h+=`<div class="kmatch" dir="${en?'ltr':'rtl'}">`+items.map((ch,i)=>{const pic=en?(KEN_W[ch]||[])[1]:KAR_P[ch],L=items[sh[i]%items.length];
+   return `<div class="kmr" style="height:${rh}px"><div class="kmp">${img(kPicU(pic,ps),ps,ps)}</div><i class="kdot" style="background:${kc(i)}"></i><div class="kmg"></div><i class="kdot" style="background:${kc(sh[i])}"></i><div class="kml" style="color:${kc(sh[i])}">${kEsc(L)}</div></div>`}).join('')+`</div>`;
+  h+=kTip(en?'✏️ Draw a line from each picture to its letter':'✏️ ارسم خط من كل صورة للحرف اللي تبدي بيه',lang);break}
+ case 'pre':{
+  const items=(b.items&&b.items.length?b.items:['line','zig','wave','arc','loop','step']);const rh=Math.floor((H-64-34)/items.length);
+  h+=kHead(en?'Pre-writing: trace the lines':'خطوط تمهيدية — تتبّع الخط','〰️',c,lang);
+  h+=`<div class="krows">`+items.map((id,i)=>img(kPreU(id,W,rh-12,kc(i+3)),W,rh-12,'display:block;margin:0 auto 12px')).join('')+`</div>`;
+  h+=kTip(en?'✏️ Start at the green dot and follow the dots to the star ⭐':'✏️ ابدأ من النقطة الخضراء وامشِ على النقاط لحد النجمة ⭐',lang);break}
+ }
+ d.innerHTML=h;return d;
+}
+/* ---------- إطارات الكراسات ---------- */
+const FRAMES_K=[['k_rainbow','قوس قزح 🌈'],['k_stars','نجوم ⭐'],['k_dots','نقاط ملونة'],['k_crayons','أقلام تلوين 🖍️'],['k_clouds','غيوم وعشب ☁️'],['k_balloons','بالونات 🎈'],['k_abc','حروف ABC']];
+function frList(){return S.kids?FRAMES_K.concat(FRAMES.filter(f=>['none','dashed','dotted','card','bubbles'].includes(f[0]))):FRAMES}
+function kFrame(id,c){
+ const D=css=>`<div style="position:absolute;${css}"></div>`,B=(i,css)=>`<div style="position:absolute;inset:${i}px;${css}"></div>`;
+ const RB=['#ef4444','#f97316','#facc15','#22c55e','#3b82f6','#8b5cf6'];
+ const around=(step,fn,noTop)=>{let s='',k=0;for(let x=40;x<=754;x+=step){s+=(noTop?'':fn(x,8,k++))+fn(x,1093,k++)}for(let y=40+step;y<=1083-step+1;y+=step){s+=fn(8,y,k++)+fn(764,y,k++)}return s};
+ switch(id){
+  case'k_rainbow':return RB.map((col,i)=>B(8+i*5,`border:5px solid ${col};border-radius:${40-i*4}px`)).join('');
+  case'k_stars':return B(20,`border:3.5px dashed ${c};border-radius:30px`)+around(46,(x,y,k)=>D(`left:${x-10}px;top:${y-6}px;font-size:24px;line-height:1;color:${RB[k%6]};font-family:sans-serif`).replace('></div>','>★</div>'),1);
+  case'k_dots':return around(30,(x,y,k)=>D(`left:${x}px;top:${y+2}px;width:16px;height:16px;border-radius:50%;background:${RB[k%6]}`))+B(32,`border:2px solid ${mix(c,'w',.6)};border-radius:24px`);
+  case'k_crayons':{let s='';for(let i=0;i<15;i++){const x=22+i*50,col=RB[i%6];if(i===0||i===14)continue;s+=D(`left:${x}px;bottom:4px;width:22px;height:26px;background:${RB[(i+3)%6]};border-radius:0 0 4px 4px`)+D(`left:${x}px;bottom:30px;width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-bottom:13px solid ${RB[(i+3)%6]}`)+D(`left:${x}px;bottom:10px;width:22px;height:4px;background:rgba(255,255,255,.55)`)}
+   return s+D(`top:14px;bottom:70px;left:14px;width:6px;border-radius:3px;background:${c}`)+D(`top:14px;bottom:70px;right:14px;width:6px;border-radius:3px;background:${c}`)+D(`top:14px;left:14px;right:14px;height:6px;border-radius:3px;background:${c}`)}
+  case'k_clouds':{const cl=[[60,30],[250,18],[450,32],[640,20]];let sh='',wh='';cl.forEach(([x,y])=>{[[0,18,30],[28,0,40],[64,14,32],[34,24,30]].forEach(([dx,dy,r])=>{sh+=D(`left:${x+dx}px;top:${y+dy}px;width:${r*2}px;height:${r*2}px;border-radius:50%;background:#7dd3fc`);wh+=D(`left:${x+dx+4}px;top:${y+dy+4}px;width:${r*2-8}px;height:${r*2-8}px;border-radius:50%;background:#fff`)})});
+   let fl='';for(let i=0;i<9;i++)fl+=D(`left:${40+i*86}px;bottom:${44+(i%2)*10}px;font-size:30px;line-height:1;color:${RB[i%6]};font-family:sans-serif`).replace('></div>','>✿</div>');
+   return B(14,`border:3px solid #7dd3fc;border-radius:30px`)+sh+wh+D(`left:-60px;right:-60px;bottom:-70px;height:130px;border-radius:50%;background:#86efac`)+D(`left:200px;right:-120px;bottom:-90px;height:140px;border-radius:50%;background:#4ade80`)+fl}
+  case'k_balloons':{const bl=(x,y,col,r)=>D(`left:${x+28}px;top:${y+74}px;width:2px;height:70px;background:#94a3b8;transform:rotate(${r}deg);transform-origin:top`)+D(`left:${x}px;top:${y}px;width:58px;height:74px;border-radius:50%;background:${col}`)+D(`left:${x+12}px;top:${y+12}px;width:14px;height:20px;border-radius:50%;background:rgba(255,255,255,.55)`);
+   return B(22,`border:3px dashed ${c};border-radius:28px`)+bl(2,100,'#ef4444',-6)+bl(2,420,'#facc15',4)+bl(734,100,'#3b82f6',6)+bl(734,420,'#22c55e',-4)+bl(2,880,'#8b5cf6',0)+bl(734,880,'#f97316',0)}
+  case'k_abc':{const L=[...'ABCابت123أبجد'];return B(20,`border:3px solid ${c};border-radius:26px`)+around(52,(x,y,k)=>D(`left:${x-12}px;top:${y-10}px;font:800 26px ${KF};line-height:1;color:${RB[k%6]}`).replace('></div>',`>${L[k%L.length]}</div>`),1)}
+ }
+ return '';
+}
+/* ---------- واجهة الوضع ---------- */
+let K_SUB=null;
+function kidsUI(){const on=!!S.kids;document.body.classList.toggle('kids',on);const sm=document.querySelector('.bt small');if(sm){if(K_SUB==null)K_SUB=sm.textContent;sm.textContent=on?'🧒 وضع كراسات الأطفال':K_SUB}}
+function kSheet(html){$('#obBody').innerHTML=`<div class="sheet-h"><b>${html.t}</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>`+html.b;$('#obM').classList.remove('hidden')}
+const kClose=()=>$('#obM').classList.add('hidden');
+const KTOOLS=[['🅰️','حروف عربية','تتبّع + أشكال الحرف + صورة',"kLetters('ar')",'#f97316'],['🔤','English letters','Trace A–Z + picture',"kLetters('en')",'#2563eb'],
+ ['🔢','أرقام وعدّ','١–١٠ أو 1–10 مع صور للعد',"kNumbers()",'#16a34a'],['🖍️','رسوم تلوين','+50 رسمة جاهزة',"kColorLib()",'#e11d48'],
+ ['✨','رسمة بالوصف','الذكاء الاصطناعي يرسم للتلوين',"kColorAI()",'#7c3aed'],['🔷','أشكال','دائرة، مربع، مثلث...',"kAdd([{kind:'shapes'}])",'#0891b2'],
+ ['〰️','خطوط تمهيدية','تهيئة اليد للكتابة',"kAdd([{kind:'pre'}])",'#ca8a04'],['🔗','توصيل','صِل الصورة بالحرف',"kMatch()",'#db2777'],
+ ['📏','سطور كتابة','عربي أو إنكليزي',"kLinesSheet()",'#4f46e5'],['🌈','إطارات الكراسات','قوس قزح، نجوم، بالونات...',"kClose();openFrames()",'#059669']];
+function kidTools(){kSheet({t:'🧒 صفحات الكراسة',b:`<div class="muted" style="margin-bottom:8px">اختار نوع الصفحة — تنضاف بعد الصفحة الحالية. كل صفحة تنحسب بسعر الصفحة.</div>
+ <div class="ktiles">${KTOOLS.map(([i,n,s,f,c])=>`<button class="ktile" style="--c:${c}" onclick="${f}"><i>${i}</i><b>${n}</b><small>${s}</small></button>`).join('')}</div>
+ <button class="btn" style="width:100%;margin-top:10px" onclick="kidsHome()">📚 كراسة كاملة بضغطة وحدة</button>`})}
+async function kAdd(list){kClose();const blocks=list.map((o,i)=>Object.assign({id:uid(),type:'kid',lang:'ar',color:o.color||kc((S._kc=(S._kc||0)+1))},o));
+ if(!S.kids){S.kids=1;kidsUI()}
+ if(!document.body.classList.contains('fs'))showTab('vPreview');await kFonts();const a=pageAnchor();await insertPagesAt(a,blocks,false);toast(`🧒 انضافت ${blocks.length} صفحة`)}
+function kPickGrid(pool,sel,cls=''){return `<div class="klg ${cls}">${pool.map(ch=>`<button class="klt ${sel.includes(ch)?'on':''}" data-ch="${ch}">${ch}</button>`).join('')}</div>`}
+function kBindGrid(multi){const g=$('#obBody .klg');g.onclick=e=>{const b=e.target.closest('.klt');if(!b)return;if(!multi)g.querySelectorAll('.klt').forEach(x=>x!==b&&x.classList.remove('on'));b.classList.toggle('on');kCount&&kCount()};return()=>[...g.querySelectorAll('.klt.on')].map(x=>x.dataset.ch)}
+let kCount=null;
+function kLetters(lang){const en=lang==='en',pool=en?KEN:KAR;
+ kSheet({t:en?'🔤 English letters':'🅰️ الحروف العربية',b:`<div class="muted">اختار حرف أو أكثر — كل حرف صفحة</div>
+  <div class="row" style="gap:6px;margin:8px 0"><button class="btn sm" id="kAll">تحديد الكل</button><button class="btn sm" id="kNone">إلغاء التحديد</button></div>
+  ${kPickGrid(pool,[pool[0]],en?'en':'')}
+  ${en?'':`<label class="cvsw"><input type="checkbox" id="kForms" checked> أشكال الحرف (أول، وسط، آخر الكلمة)</label>`}
+  <label class="cvsw"><input type="checkbox" id="kCol"> صفحة تلوين لصورة كل حرف</label>
+  <button class="btn green" style="width:100%;margin-top:10px;padding:13px" id="kGo">➕ إضافة</button>`});
+ const get=kBindGrid(true);const g=$('#obBody .klg');
+ kCount=()=>{const n=get().length*($('#kCol').checked?2:1);$('#kGo').textContent=n?`➕ إضافة ${n} صفحة`:'اختار حرف';$('#kGo').disabled=!n};kCount();$('#kCol').onchange=kCount;
+ $('#kAll').onclick=()=>{g.querySelectorAll('.klt').forEach(x=>x.classList.add('on'));kCount()};$('#kNone').onclick=()=>{g.querySelectorAll('.klt').forEach(x=>x.classList.remove('on'));kCount()};
+ $('#kGo').onclick=()=>{const L=get(),fo=en?true:$('#kForms').checked,col=$('#kCol').checked,out=[];
+  L.forEach((ch,i)=>{const c=kc(pool.indexOf(ch));out.push({kind:'letter',lang,ch,forms:fo,color:c});if(col)out.push({kind:'color',lang,pic:en?KEN_W[ch][1]:KAR_P[ch],word:en?KEN_W[ch][0]:KP.AR[KAR_P[ch]],color:c})});kAdd(out)}}
+function kNumbers(){const pool=['0','1','2','3','4','5','6','7','8','9','10'];
+ kSheet({t:'🔢 الأرقام والعدّ',b:`<div class="seg" style="margin-bottom:8px"><button class="btn sm primary" id="kDa">١٢٣ عربي</button><button class="btn sm" id="kDe">123 English</button></div>
+  <div class="row" style="gap:6px;margin:8px 0"><button class="btn sm" id="kAll">تحديد ١–١٠</button><button class="btn sm" id="kNone">إلغاء التحديد</button></div>
+  ${kPickGrid(pool,['1'],'num')}<button class="btn green" style="width:100%;margin-top:10px;padding:13px" id="kGo">➕ إضافة</button>`});
+ let dg='ar';const g=$('#obBody .klg');const lab=()=>g.querySelectorAll('.klt').forEach(b=>b.textContent=dg==='ar'?kToAr(b.dataset.ch):b.dataset.ch);lab();
+ $('#kDa').onclick=()=>{dg='ar';$('#kDa').classList.add('primary');$('#kDe').classList.remove('primary');lab()};$('#kDe').onclick=()=>{dg='en';$('#kDe').classList.add('primary');$('#kDa').classList.remove('primary');lab()};
+ const get=kBindGrid(true);kCount=()=>{const n=get().length;$('#kGo').textContent=n?`➕ إضافة ${n} صفحة`:'اختار رقم';$('#kGo').disabled=!n};kCount();
+ $('#kAll').onclick=()=>{g.querySelectorAll('.klt').forEach(x=>x.classList.toggle('on',x.dataset.ch!=='0'));kCount()};$('#kNone').onclick=()=>{g.querySelectorAll('.klt').forEach(x=>x.classList.remove('on'));kCount()};
+ $('#kGo').onclick=()=>kAdd(get().map(v=>({kind:'number',n:+v,digits:dg,lang:dg,color:kc(+v)})))}
+function kColorLib(){const names=Object.keys(KP.D);
+ kSheet({t:'🖍️ رسوم للتلوين',b:`<div class="muted">اختار رسمة أو أكثر — كل رسمة صفحة تلوين كاملة</div>
+  <div class="seg" style="margin:8px 0"><button class="btn sm primary" id="kLa">الاسم عربي</button><button class="btn sm" id="kLe">English</button></div>
+  <div class="kpg2">${names.map(n=>`<button class="kpk" data-n="${n}"><img src="${kPicU(n,90)}"><span>${KP.AR[n]}</span></button>`).join('')}</div>
+  <button class="btn green" style="width:100%;margin-top:10px;padding:13px" id="kGo" disabled>اختار رسمة</button>`});
+ let lg='ar';$('#kLa').onclick=()=>{lg='ar';$('#kLa').classList.add('primary');$('#kLe').classList.remove('primary')};$('#kLe').onclick=()=>{lg='en';$('#kLe').classList.add('primary');$('#kLa').classList.remove('primary')};
+ const g=$('#obBody .kpg2');const get=()=>[...g.querySelectorAll('.kpk.on')].map(x=>x.dataset.n);
+ g.onclick=e=>{const b=e.target.closest('.kpk');if(!b)return;b.classList.toggle('on');const n=get().length;$('#kGo').disabled=!n;$('#kGo').textContent=n?`➕ إضافة ${n} صفحة تلوين`:'اختار رسمة'};
+ $('#kGo').onclick=()=>kAdd(get().map((n,i)=>({kind:'color',pic:n,lang:lg,word:lg==='en'?n.replace('icecream','ice cream').replace('yoyo','yo-yo'):KP.AR[n],color:kc(i)})))}
+function kLinesSheet(){kSheet({t:'📏 سطور كتابة',b:`<div class="pimp" id="kLa"><b>سطور عربية</b><span>خط أساس وخط علوي للكتابة</span></div><div class="pimp" id="kLe"><b>English 4-line</b><span>Handwriting guide lines</span></div>`});
+ $('#kLa').onclick=()=>kAdd([{kind:'lines',lang:'ar'}]);$('#kLe').onclick=()=>kAdd([{kind:'lines',lang:'en'}])}
+function kShuffle(n){const a=[...Array(n).keys()];for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}if(a.every((v,i)=>v===i))a.reverse();return a}
+function kMatch(){kSheet({t:'🔗 صفحة توصيل',b:`<div class="muted">اختار ٤ أو ٥ حروف — الصور تنرسم والحروف تنخلط تلقائياً</div>
+  <div class="seg" style="margin:8px 0"><button class="btn sm primary" id="kLa">عربي</button><button class="btn sm" id="kLe">English</button></div><div id="kmg"></div>
+  <button class="btn green" style="width:100%;margin-top:10px;padding:13px" id="kGo">➕ إضافة صفحة</button>`});
+ let lg='ar';const draw=()=>{$('#kmg').innerHTML=kPickGrid(lg==='en'?KEN:KAR,(lg==='en'?KEN:KAR).slice(0,5),lg==='en'?'en':'');kBindGrid(true)};kCount=null;draw();
+ $('#kLa').onclick=()=>{lg='ar';$('#kLa').classList.add('primary');$('#kLe').classList.remove('primary');draw()};$('#kLe').onclick=()=>{lg='en';$('#kLe').classList.add('primary');$('#kLa').classList.remove('primary');draw()};
+ $('#kGo').onclick=()=>{const it=[...$('#obBody .klg').querySelectorAll('.klt.on')].map(x=>x.dataset.ch).slice(0,6);if(it.length<2){toast('اختار حرفين على الأقل');return}kAdd([{kind:'match',lang:lg,items:it,order:kShuffle(it.length)}])}}
+/* رسمة تلوين بالذكاء الاصطناعي — تتحول لخطوط سودة */
+let K_AI=false;
+function kColorAI(){kClose();K_AI=true;openPicker({kind:'kidColor'});$('#pDesc').value='';$('#pDesc').placeholder='مثال: قطة تلعب بالكرة، فيل صغير، سيارة إطفاء...';toast('🖍️ اكتب شنو تريد يرسم — تطلع رسمة خطوط للتلوين')}
+async function kLineArt(src){const im=await loadImg(src,30000);const w=Math.min(1200,im.naturalWidth),h=Math.round(im.naturalHeight*w/im.naturalWidth);
+ const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.drawImage(im,0,0,w,h);const d=x.getImageData(0,0,w,h),p=d.data;
+ for(let i=0;i<p.length;i+=4){const l=.3*p[i]+.59*p[i+1]+.11*p[i+2];const v=l<150?25:255;p[i]=p[i+1]=p[i+2]=v;p[i+3]=255}x.putImageData(d,0,0);return{src:c.toDataURL('image/png'),w,h}}
+/* تعديل صفحة كراسة */
+function kidSheet(ti,bi){const t=S.topics[ti],b=t&&t.blocks[bi];if(!b)return;const en=b.lang==='en';
+ const NM={letter:'صفحة حرف',number:'صفحة رقم',shapes:'صفحة أشكال',color:'صفحة تلوين',lines:'سطور كتابة',match:'صفحة توصيل',pre:'خطوط تمهيدية'};
+ let extra='';
+ if(b.kind==='letter')extra=`<label class="f">الحرف</label>${kPickGrid(en?KEN:KAR,[b.ch],en?'en':'')}`;
+ if(b.kind==='number')extra=`<label class="f">الرقم</label>${kPickGrid(['0','1','2','3','4','5','6','7','8','9','10'],[String(b.n)],'num')}`;
+ if(b.kind==='lines')extra=`<label class="f">العنوان</label><input class="in" id="kTt" value="${kEsc(b.title||'')}" placeholder="${en?'Handwriting practice':'تمرين الكتابة'}">`;
+ if(b.kind==='color'&&!b.src)extra=`<label class="f">الرسمة</label><div class="kpg2">${Object.keys(KP.D).map(n=>`<button class="kpk ${n===b.pic?'on':''}" data-n="${n}"><img src="${kPicU(n,90)}"><span>${KP.AR[n]}</span></button>`).join('')}</div>`;
+ kSheet({t:'🧒 '+(NM[b.kind]||'صفحة كراسة'),b:`${extra}<label class="f">اللون</label><div class="sw" id="kSw"></div>
+  <div class="row" style="gap:6px;margin-top:12px"><button class="btn" id="kDup">📄 تكرار الصفحة</button><button class="btn red" id="kDel">🗑️ حذف</button></div>
+  <button class="btn green" style="width:100%;margin-top:10px;padding:12px" id="kOk">✅ تم</button>`});
+ const re=async()=>{save();await renderPages()};
+ const g=$('#obBody .klg');if(g){if(b.kind==='number')g.querySelectorAll('.klt').forEach(x=>x.textContent=b.digits==='en'?x.dataset.ch:kToAr(x.dataset.ch));
+  g.onclick=async e=>{const k=e.target.closest('.klt');if(!k)return;g.querySelectorAll('.klt').forEach(x=>x.classList.toggle('on',x===k));if(b.kind==='letter')b.ch=k.dataset.ch;else b.n=+k.dataset.ch;await re()}}
+ const pg=$('#obBody .kpg2');if(pg)pg.onclick=async e=>{const k=e.target.closest('.kpk');if(!k)return;pg.querySelectorAll('.kpk').forEach(x=>x.classList.toggle('on',x===k));b.pic=k.dataset.n;b.word=en?k.dataset.n:KP.AR[k.dataset.n];await re()};
+ const tt=$('#kTt');if(tt)tt.onchange=async()=>{b.title=tt.value;await re()};
+ swatches($('#kSw'),b.color,async c=>{b.color=c;await re()});
+ $('#kDup').onclick=async()=>{const nb=JSON.parse(JSON.stringify(b));nb.id=uid();t.blocks.splice(bi+1,0,nb);kClose();await re();toast('📄 تم تكرار الصفحة')};
+ $('#kDel').onclick=async()=>{if(!await ask('حذف هذي الصفحة؟',{danger:true}))return;t.blocks.splice(bi,1);kClose();await re();renderTopics()};
+ $('#kOk').onclick=kClose}
+/* كراسات كاملة + الدخول للوضع */
+const KBOOKS=[['ar','🅰️','كراسة الحروف العربية','28 صفحة — حرف بكل صفحة مع صورته',()=>KAR.map((ch,i)=>({kind:'letter',lang:'ar',ch,forms:true,color:kc(i)}))],
+ ['en','🔤','English Alphabet','26 pages — A to Z with pictures',()=>KEN.map((ch,i)=>({kind:'letter',lang:'en',ch,color:kc(i)}))],
+ ['num','🔢','كراسة الأرقام','10 صفحات — ١ إلى ١٠ مع العد',()=>[1,2,3,4,5,6,7,8,9,10].map(n=>({kind:'number',n,digits:'ar',lang:'ar',color:kc(n)}))],
+ ['numen','🔢','Numbers 1–10','10 pages — count & trace',()=>[1,2,3,4,5,6,7,8,9,10].map(n=>({kind:'number',n,digits:'en',lang:'en',color:kc(n)}))],
+ ['col','🖍️','كراسة تلوين','20 رسمة للتلوين',()=>['apple','sun','fish','duck','house','car','butterfly','flower','cat','rabbit','tree','star','balloon','boat','umbrella','bear','frog','whale','rocket','icecream'].map((p,i)=>({kind:'color',lang:'ar',pic:p,word:KP.AR[p],color:kc(i)}))],
+ ['pre','〰️','الخطوط التمهيدية والأشكال','4 صفحات لتهيئة اليد',()=>[{kind:'pre',items:['line','vline','zig','wave']},{kind:'pre',items:['arc','loop','step','spiral']},{kind:'shapes',items:['circle','square','triangle','rect']},{kind:'shapes',items:['star','heart','oval','diamond']}].map((o,i)=>Object.assign({lang:'ar',color:kc(i)},o))],
+ ['blank','⬜','كراسة فارغة','تبنيها بنفسك من أدوات الكراسة',()=>[]]];
+function kidsHome(){kSheet({t:'🧒 كراسات الأطفال',b:`<div class="muted" style="margin-bottom:8px">كراسة جديدة جاهزة بضغطة — بعدها تگدر تضيف وتحذف وتغيّر أي صفحة. ملازمك الحالية تبقى محفوظة بـ«ملازمي».</div>
+ ${KBOOKS.map(([id,i,n,s])=>`<div class="pimp kbk" data-k="${id}"><b>${i} ${n}</b><span>${s}</span></div>`).join('')}`});
+ $('#obBody').querySelectorAll('.kbk').forEach(el=>el.onclick=()=>kidsNew(el.dataset.k))}
+async function kidsNew(id){const bk=KBOOKS.find(x=>x[0]===id)||KBOOKS[KBOOKS.length-1];kClose();
+ clearTimeout(saveT);saveNow();const o=overlay('🧒 جاري تجهيز الكراسة...');await kFonts();
+ S=blankProject();const c=id==='en'||id==='numen'?'#2563eb':'#f97316';
+ Object.assign(S,{kids:1,title:bk[2],subject:id==='en'||id==='numen'?'English':'روضة وتمهيدي',grade:'',frame:id==='en'?'k_abc':id==='col'?'k_crayons':id==='num'||id==='numen'?'k_balloons':'k_rainbow',frameColor:'',headFont:'Baloo Bhaijaan 2',bodyFont:'Baloo Bhaijaan 2',coverColor:c,coverTpl:id==='en'?'kabc':id==='col'?'kcloud':'kfun',showToc:false,chapterPage:false,newPage:true,lang:(id==='en'||id==='numen')?'en':S.lang});
+ const blocks=bk[4]().map(b=>Object.assign({id:uid(),type:'kid'},b));
+ S.topics=[{id:uid(),unit:'',title:bk[2],color:c,blocks:blocks.length?blocks:[{id:uid(),type:'text',text:''}]}];
+ saveNow();bindInfo();renderTopics();if(typeof renderProjects==='function')renderProjects();showTab('vPreview');await renderPages();o.remove();showPage(1);
+ toast('🧒 الكراسة جاهزة — اكتب اسمك على الغلاف');try{await cvGo('front');openCoverSheet('front')}catch(e){}}
+/* أغلفة الكراسات */
+const CTPL_K=[['kfun','🎈 أطفال مرح'],['kabc','🔤 حروف ملونة'],['kcloud','☁️ سماء وغيوم']];
+function kCoverDeco(t,c,cd,cm){const A='position:absolute;',RB=['#ef4444','#f97316','#facc15','#22c55e','#3b82f6','#8b5cf6'];const D=css=>`<div style="${A}${css}"></div>`;
+ const balloon=(x,y,col,s=1)=>D(`left:${x+29*s}px;top:${y+74*s}px;width:2px;height:${90*s}px;background:rgba(255,255,255,.7)`)+D(`left:${x}px;top:${y}px;width:${58*s}px;height:${74*s}px;border-radius:50%;background:${col};box-shadow:0 6px 14px rgba(0,0,0,.15)`)+D(`left:${x+12*s}px;top:${y+12*s}px;width:${14*s}px;height:${20*s}px;border-radius:50%;background:rgba(255,255,255,.55)`);
+ const star=(x,y,sz,col)=>`<div style="${A}left:${x}px;top:${y}px;font-size:${sz}px;line-height:1;color:${col};font-family:sans-serif">★</div>`;
+ switch(t){
+  case'kfun':{let s=D(`inset:0;background:linear-gradient(160deg,${c},${cd})`);RB.forEach((col,i)=>{s+=D(`left:${-120+i*22}px;right:${-120+i*22}px;bottom:${-560+i*22}px;height:${1000-i*44}px;border-radius:50%;border:22px solid ${col};opacity:.95`)});
+   s+=D(`left:-100px;right:-100px;bottom:-120px;height:330px;border-radius:50%;background:#86efac`)+D(`left:-60px;right:-160px;bottom:-170px;height:330px;border-radius:50%;background:#4ade80`);
+   s+=balloon(30,330,'#facc15',1.3)+balloon(100,400,'#ef4444',1)+balloon(660,330,'#3b82f6',1.3)+balloon(610,410,'#22c55e',1);
+   [[200,60,40,'#fde047'],[560,40,30,'#fff'],[330,120,22,'#fde047'],[700,330,34,'#fff'],[40,380,30,'#fde047']].forEach(a=>s+=star(...a));return s}
+  case'kabc':{let s=D(`inset:0;background:#fff`)+D(`left:0;right:0;top:0;height:120px;background:${c}`)+D(`left:-40px;right:-40px;top:70px;height:110px;border-radius:50%;background:#fff`);
+   const L=[...'أبتABC123ثجحDEF'];const P=[[40,190],[690,200],[60,420],[700,450],[40,660],[690,690],[110,840],[620,850]];
+   P.forEach(([x,y],i)=>s+=`<div style="${A}left:${x}px;top:${y}px;font:900 ${70+(i%3)*14}px 'Baloo Bhaijaan 2',sans-serif;color:${RB[i%6]};opacity:.85;transform:rotate(${(i%2?1:-1)*(8+i*3)}deg)">${L[i%L.length]}</div>`);
+   for(let i=0;i<13;i++){const x=20+i*58,col=RB[i%6];s+=D(`left:${x}px;bottom:0;width:30px;height:${34+(i%3)*10}px;background:${col};border-radius:0`)+D(`left:${x}px;bottom:${34+(i%3)*10}px;width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;border-bottom:22px solid ${col}`)}
+   return s}
+  case'kcloud':{let s=D(`inset:0;background:linear-gradient(180deg,#7dd3fc,#e0f2fe 70%)`)+D(`right:50px;top:50px;width:150px;height:150px;border-radius:50%;background:#fde047;box-shadow:0 0 0 22px rgba(253,224,71,.35)`);
+   [[60,90,1.2],[430,220,1],[80,420,.9],[540,520,.8]].forEach(([x,y,k])=>{[[0,30,44],[46,0,58],[104,26,44]].forEach(([dx,dy,r])=>s+=D(`left:${x+dx*k}px;top:${y+dy*k}px;width:${r*2*k}px;height:${r*2*k}px;border-radius:50%;background:#fff`))});
+   s+=D(`left:-120px;right:200px;bottom:-140px;height:380px;border-radius:50%;background:#4ade80`)+D(`left:240px;right:-160px;bottom:-170px;height:400px;border-radius:50%;background:#22c55e`);
+   for(let i=0;i<8;i++)s+=`<div style="${A}left:${40+i*95}px;bottom:${90+(i%2)*30}px;font-size:38px;line-height:1;color:${RB[i%6]};font-family:sans-serif">✿</div>`;
+   return s}
+ }return ''}
+
+{const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
+{const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}
+{const _ap=applyPick;applyPick=function(img){const T=pTarget;if(T&&T.kind==='kidColor'){closePicker();const o=overlay('🖍️ جاري تحويلها لرسمة تلوين...');kLineArt(img.src).then(r=>{o.remove();kAdd([{kind:'color',src:r.src,word:'',lang:'ar'}])}).catch(()=>{o.remove();kAdd([{kind:'color',src:img.src,word:'',lang:'ar'}])});return}return _ap.apply(this,arguments)}}
 </script>
 </body>
 </html>
