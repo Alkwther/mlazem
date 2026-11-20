@@ -925,8 +925,6 @@ body.exporting #pages .pw{content-visibility:visible}
 body.pscr:not(.fs) #pages .pw>*{pointer-events:none!important;user-select:none;-webkit-user-select:none}
 body.pscr:not(.fs) #pages .pw{cursor:pointer;-webkit-tap-highlight-color:rgba(37,99,235,.12)}
 body.pscr:not(.fs) #pages .pw:active{outline:3px solid rgba(37,99,235,.45);outline-offset:2px}
-/* إصلاح تقطّع الحروف العربية بالصور والـ PDF (html2canvas يكسر الكلمة حرف حرف مع break-word) */
-body.cvexp .cvp .ly.tx,body.cvexp .cvp *,body.exporting #pages *{word-break:normal!important;overflow-wrap:normal!important;word-wrap:normal!important}
 </style>
 </head>
 <body>
@@ -5159,6 +5157,27 @@ let FS_HIST=0;
 {const _po=pgOpen;pgOpen=function(i){_po.apply(this,arguments);if(document.body.classList.contains('fs')){try{history.pushState({mfs:1},'');FS_HIST=1}catch(e){}}}}
 window.addEventListener('popstate',()=>{if(FS_HIST){FS_HIST=0;if(document.body.classList.contains('fs'))exitFS()}});
 {const _xf2=exitFS;exitFS=function(){const r=_xf2.apply(this,arguments);if(FS_HIST){FS_HIST=0;try{history.back()}catch(e){}}return r}}
+
+/* ---------- 5) كتابة الأغلفة بالصورة والـ PDF: نرسمها بالمتصفح نفسه حتى ما تتقطع الحروف العربية ---------- */
+function cvShParse(css){if(!css)return [];return css.split(/,(?![^(]*\))/).map(s=>{const m=s.trim().match(/^(-?[\d.]+)(?:px)?\s+(-?[\d.]+)(?:px)?\s+(-?[\d.]+)(?:px)?\s+(.+)$/);return m?{x:+m[1],y:+m[2],b:+m[3],c:m[4].trim()}:null}).filter(Boolean)}
+function cvTxtCanvas(l,cw,ch,k,M){const c=document.createElement('canvas');c.width=Math.max(1,Math.ceil((cw+2*M)*k));c.height=Math.max(1,Math.ceil((ch+2*M)*k));const g=c.getContext('2d');g.scale(k,k);g.translate(M,M);
+ const fam=`'${l.font||'Cairo'}',Cairo,sans-serif`;g.font=`${l.bold?900:400} ${l.size}px ${fam}`;const txt=String(l.text||'');const rtl=/[֐-ࣿ]/.test(txt);try{g.direction=rtl?'rtl':'ltr'}catch(e){}
+ const lines=[];txt.split('\n').forEach(par=>{const ws=par.split(' ');let cur='';ws.forEach(w=>{const t=cur?cur+' '+w:w;if(cur&&g.measureText(t).width>cw+.5){lines.push(cur);cur=w}else cur=t});lines.push(cur)});
+ const LH=l.size*(l.lh||1.35);const mm=g.measureText('Hgجـ');const asc=mm.fontBoundingBoxAscent||l.size*.95,des=mm.fontBoundingBoxDescent||l.size*.35;
+ const al=l.align==='left'||l.align==='right'?l.align:l.align==='center'?'center':(rtl?'right':'left');g.textAlign=al;const x=al==='center'?cw/2:al==='left'?0:cw;
+ const sh=cvShParse(cvTS(l));const ys=lines.map((t,i)=>i*LH+(LH-(asc+des))/2+asc);
+ sh.forEach(s=>{g.save();g.shadowColor=s.c;g.shadowOffsetX=s.x*k;g.shadowOffsetY=s.y*k;g.shadowBlur=s.b*k;g.fillStyle=s.c;lines.forEach((t,i)=>g.fillText(t,x,ys[i]));g.restore()});
+ g.fillStyle=l.color||'#000';lines.forEach((t,i)=>g.fillText(t,x,ys[i]));return c}
+function cvFixText(doc,k){if(!CV)return;doc.querySelectorAll('#ceP .ly.tx').forEach(el=>{const l=CV.layers.find(x=>x.id===el.dataset.id);if(!l||!(l.text||'').trim())return;
+ const cs=(doc.defaultView||window).getComputedStyle(el);const pl=parseFloat(cs.paddingLeft)||0,pr=parseFloat(cs.paddingRight)||0,pt=parseFloat(cs.paddingTop)||0,pb=parseFloat(cs.paddingBottom)||0;
+ const cw=el.clientWidth-pl-pr,ch=el.clientHeight-pt-pb;if(cw<=0||ch<=0)return;const M=Math.round(l.size*.6+(l.ol||0)*2+(l.sh?l.size*.4:0));
+ const c=cvTxtCanvas(l,cw,ch,Math.max(.5,k*1.25),M);const im=doc.createElement('img');im.src=c.toDataURL('image/png');im.className='cvtxim';
+ im.style.cssText=`position:absolute;left:${pl-M}px;top:${pt-M}px;width:${cw+2*M}px;height:${ch+2*M}px;max-width:none;pointer-events:none`;
+ el.style.color='transparent';el.style.textShadow='none';el.style.webkitTextStroke='0';el.appendChild(im)})}
+{const _cc=cvCanvas;cvCanvas=async function(scale){const H=window.html2canvas;if(!H||!CV)return _cc.apply(this,arguments);
+ try{await Promise.all(CV.layers.filter(l=>l.t==='text').map(l=>document.fonts.load(`${l.bold?900:400} ${l.size}px '${l.font||'Cairo'}'`,l.text||'ا').catch(()=>0)));await document.fonts.ready}catch(e){}
+ window.html2canvas=function(el,o){o=o||{};const oc=o.onclone;return H(el,Object.assign({},o,{onclone:doc=>{try{cvFixText(doc,scale)}catch(e){console.warn(e)}return oc?oc(doc):undefined}}))};
+ try{return await _cc.apply(this,arguments)}finally{window.html2canvas=H}}}
 
 {const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
 {const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}
