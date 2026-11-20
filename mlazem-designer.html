@@ -1681,7 +1681,7 @@ async function _render(){
  });
  if(S.back&&S.back.on){n++;root.appendChild(makeCover('back',n))}
  tocNums.forEach(x=>{let pg='-';if(x.t){const p=heads[x.t]&&heads[x.t].closest('.page');if(p)pg=p.dataset.n}else{const c=chEls[x.ch];pg=typeof c==='number'?c:(c&&c.closest('.page')?c.closest('.page').dataset.n:'-')}x.el.querySelector('.n').textContent=pg});
- $('#pgInfo').textContent=`عدد الصفحات: ${n}${DEMO?' — 👁️ وضع المعاينة':IS_ADMIN?' — الحفظ مجاني للمدير':' — سعر الصفحة '+PRICE+' دينار'}${S.lock?' — 🔒 '+serialOf(S.lock.id):''}`;
+ $('#pgInfo').textContent=`عدد الصفحات: ${n}${DEMO?' — 👁️ وضع المعاينة':IS_ADMIN?' — الحفظ مجاني للمدير':' — سعر الصفحة '+(S.hw?HWPRICE():PRICE)+' دينار'}${S.lock?' — 🔒 '+serialOf(S.lock.id):''}`;
  scalePages();
  if(typeof uiAfterRender==='function')uiAfterRender();
  if(typeof enableInline==='function')enableInline();
@@ -2209,7 +2209,7 @@ async function liveSync(){
   if(ME.active===false){LIVE.unpaid=n;return}
   if(S.bid&&!S.bid.startsWith(ME.id+'_')){delete S.bid;delete S.lock;saveNow();bindInfo()}
   if(!S.bid){const id=ME.id+'_'+Date.now().toString(36)+uid();
-   await FB.db.doc('booklets/'+id).set({uid:ME.id,designer:ME.name||'',designerPhone:ME.phone||'',teacher:'',teacherPhone:'',title:S.title||'',subject:S.subject||'',price:PRICE,charged:0,exported:0,amountPaid:0,freePages:0,exports:0,createdAt:TS(),lastAt:TS()});
+   await FB.db.doc('booklets/'+id).set({uid:ME.id,designer:ME.name||'',designerPhone:ME.phone||'',teacher:'',teacherPhone:'',title:S.title||'',subject:S.subject||'',price:S.hw?HWPRICE():PRICE,hw:!!S.hw,charged:0,exported:0,amountPaid:0,freePages:0,exports:0,createdAt:TS(),lastAt:TS()});
    S.bid=id;saveNow()}
   const r=await setPages(S.bid,n);Object.assign(LIVE,{charged:r.charged,exported:r.exported,unpaid:r.unpaid});
   if(r.add)toast(r.pay?`➕ ${r.add} صفحة — تم خصم ${fmt(r.pay)} دينار${r.useFree?' (🎁 '+r.useFree+' مجانية)':''}`:`🎁 ${r.add} صفحة مجانية`);
@@ -2249,7 +2249,7 @@ function statusBar(){setTimeout(()=>{if(typeof demoNote==='function')demoNote()}
   ${freeLeft()?`<div class="it ok"><small>مجانية</small><b>🎁${freeLeft()}</b></div>`:''}
   ${LIVE.err?'<div class="it bad"><small>الاتصال</small><b>⚠️</b></div>':''}
   ${un?`<a target="_blank" href="${waLink('أحتاج رصيد لـ '+un+' صفحة')}">💬 اشحن</a>`:''}`;
- if(note)note.innerHTML=un?`⚠️ <b style="color:#c0182f">${un} صفحة غير مدفوعة</b> — اشحن رصيدك لحفظ الملزمة`:(LIVE.exported?`الصفحات المحفوظة PDF مثبتة (${LIVE.exported}) — الصفحات الجديدة بعدها تُحسب وتُرجع عند حذفها`:`كل صفحة تُخصم ${PRICE} دينار وترجع لرصيدك إذا حذفتها قبل الحفظ`);
+ if(note)note.innerHTML=un?`⚠️ <b style="color:#c0182f">${un} صفحة غير مدفوعة</b> — اشحن رصيدك لحفظ الملزمة`:(LIVE.exported?`الصفحات المحفوظة PDF مثبتة (${LIVE.exported}) — الصفحات الجديدة بعدها تُحسب وتُرجع عند حذفها`:`كل صفحة تُخصم ${S.hw?HWPRICE():PRICE} دينار وترجع لرصيدك إذا حذفتها قبل الحفظ`);
 }
 const APP_URL='https://alkwther.github.io/mlazem/mlazem-designer.html';let DEMO=false;
 function fileChoice(){
@@ -2970,6 +2970,7 @@ function openPdfImport(){
  $('#obBody').innerHTML=`<div class="sheet-h"><b>📥 رفع ملزمة PDF</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
  <div class="muted">تنفتح كملزمة جديدة بـ «ملازمي» — والملزمة الحالية تبقى مثل ما هي</div>
  <label class="pimp"><b>✍️ تحويل لملزمة قابلة للتعديل</b><span>نفس الكتابة (عربي يبقى عربي وإنكليزي يبقى إنكليزي) ونفس الخط تقريباً، والجداول والإطارات والصور تتصمم بأدوات البرنامج حتى تعدّل كلشي.</span><input type="file" accept="application/pdf,.pdf" hidden id="piTxt"></label>
+ <div class="pimp" onclick="$('#obM').classList.add('hidden');hwPick()" style="border-color:#f59e0b;background:#fffbeb;cursor:pointer"><b>✍️ ملزمة خط يد (صور أو PDF)</b><span>صوّر صفحات الملزمة المكتوبة باليد أو ارفعها PDF — البرنامج يقراها بالذكاء الاصطناعي (عربي، إنكليزي، رموز ومعادلات) ويصممها بأدوات البرنامج، وأنت تراجع كل صفحة قبل ما تصير ملزمة.<br>💰 عند التنزيل: ${fmt(READY_PP||PRICE)} دينار للصفحة</span></div>
  <label class="pimp"><b>🔎 تحويل بقراءة شكل الصفحة (OCR)</b><span>إذا بعد التحويل طلعت الكتابة مخربطة أو حروف غلط — هذا الخيار يقرا الكلمات من شكلها مثل العين. أبطأ شوية ويحتاج إنترنت.</span><input type="file" accept="application/pdf,.pdf" hidden id="piOcr"></label>
  <label class="pimp"><b>🖼️ صفحات كصور + الكتابة فوقها</b><span>للـ PDF المصوّر (سكانر أو موبايل). كل صفحة تبقى بنفس شكلها بالضبط، وتگدر تضيف كتابة حرة وصور وعلامة مائية فوقها.</span><input type="file" accept="application/pdf,.pdf" hidden id="piImg"></label>
  <div class="warn" style="margin-top:12px">💡 كل صفحة بالملزمة الجديدة تنحسب بسعر الصفحة (${PRICE} دينار) مثل أي ملزمة.</div>`;
@@ -3296,6 +3297,79 @@ async function importPdf(file,mode){
   showTab('vPreview');await renderPages();showPage(mode==='img'?0:1);liveSoon(300);
   popup('✅','تم رفع الملزمة',mode!=='img'?`صارت ملزمة جديدة باسم <b>${esc(name)}</b> (${N} صفحة PDF).<br>الكتابة والجداول والإطارات والصور صارت بأدوات البرنامج — اضغط على أي شي وعدّله.${S.pdfOcr?'<br><span style="color:#b45309;font-size:13px">الكتابة انقرت من شكل الصفحة — راجعها، ممكن كلمة أو كلمتين تحتاج تصحيح.</span>':''}`:`صارت ملزمة جديدة باسم <b>${esc(name)}</b> — ${N} صفحة بنفس شكلها.<br>أضف <b>🔤 كتابة حرة</b> أو صور أو علامة مائية فوق أي صفحة.`)
  }catch(e){console.warn(e);try{o.remove()}catch(_){}popup('⚠️','تعذّر فتح الملف','تأكد من الإنترنت (أول مرة يحتاج يحمّل قارئ PDF) وإن الملف PDF سليم.<br>إذا انقطع بالنص، ارفع <b>نفس الملف</b> مرة ثانية ويكمّل من مكان ما وقف.<br><small style="color:#94a3b8">'+esc(String(e&&e.message||e).slice(0,120))+'</small>')}}
+/* ================= ملزمة خط يد ← ملزمة قابلة للتعديل (Gemini عبر الـ Worker) ================= */
+const HWPRICE=()=>READY_PP||PRICE;let HW=null;
+async function hwPick(){if(!R2URL){popup('☁️','الخدمة غير مفعّلة','تحويل خط اليد يحتاج ربط الـ Worker من برنامج الإدارة ← الإعدادات.');return}
+ const sv=await DB.get('hw:cur');if(sv&&sv.pages&&sv.pages.length){if(await ask('ملزمة خط يد بالمراجعة',{icon:'✍️',msg:`عندك ملزمة خط يد ما كمّلتها (${sv.pages.length} صفحة).\nتريد تفتحها وتكمّل؟`,yes:'▶️ أفتحها',no:'🆕 ملزمة جديدة'})){HW=sv;HW.pages.forEach(p=>p.busy=0);hwReview();hwRun();return}DB.del('hw:cur')}
+ const i=document.createElement('input');i.type='file';i.multiple=true;i.accept='image/*,application/pdf,.pdf';i.onchange=()=>{const f=[...i.files];if(f.length)hwStart(f)};i.click()}
+async function hwOpenSaved(){const s=await DB.get('hw:cur');if(s&&s.pages&&s.pages.length){HW=s;hwReview();hwRun();return true}return false}
+async function hwImg(src,max){return new Promise((ok,no)=>{const im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);const r={src:c.toDataURL('image/jpeg',.86),w:c.width,h:c.height};c.width=c.height=0;ok(r)};im.onerror=no;im.src=src})}
+async function hwStart(files){
+ let o=overlay('📷 جاري تجهيز الصفحات...');const pages=[];
+ try{for(const f of files){
+   if(/pdf$/i.test(f.type)||/\.pdf$/i.test(f.name)){const lib=await pdfLib();const pdf=await lib.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise;
+    for(let i=1;i<=pdf.numPages;i++){o=overlay(`📄 جاري تجهيز الصفحة ${pages.length+1}...`);const pg=await pdf.getPage(i);const v1=pg.getViewport({scale:1});const vp=pg.getViewport({scale:1700/Math.max(v1.width,v1.height)});
+     const c=document.createElement('canvas');c.width=Math.round(vp.width);c.height=Math.round(vp.height);const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);await pg.render({canvasContext:g,viewport:vp}).promise;
+     pages.push({src:c.toDataURL('image/jpeg',.86),w:c.width,h:c.height,md:'',ok:0});c.width=c.height=0;pg.cleanup()}}
+   else{o=overlay(`🖼️ جاري تجهيز الصورة ${pages.length+1}...`);const u=URL.createObjectURL(f);const r=await hwImg(u,1700);URL.revokeObjectURL(u);pages.push(Object.assign(r,{md:'',ok:0}))}}
+ }catch(e){o.remove();popup('⚠️','تعذّر فتح الملف','تأكد إن الملف صورة أو PDF سليم.');return}
+ o.remove();if(!pages.length)return;
+ const nm=(files[0].name||'').replace(/\.(pdf|jpe?g|png|webp|heic)$/i,'').trim();
+ HW={name:/^(IMG|image|\d|Screenshot)/i.test(nm)?'ملزمة خط يد':nm,pages,at:Date.now()};await DB.set('hw:cur',HW);hwReview();hwRun()}
+async function hwAsk(p){const tok=await FB.auth.currentUser.getIdToken();
+ const r=await fetch(R2URL.replace(/\/+$/,'')+'/ai/hw',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({image:p.src.split(',')[1],mime:'image/jpeg',subject:S.subject||''})});
+ const j=await r.json().catch(()=>({error:'رد غير مفهوم'}));if(!r.ok||!j.ok)throw new Error(j.error||('خطأ '+r.status));return j}
+function hwFigs(p){const F=[];p.md=p.md.replace(/\[\[\s*شكل\s+([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)\s*\]\]/g,(m,a,b,c,d)=>{F.push([+a,+b,+c,+d]);return `[[شكل ${F.length}]]`});return F}
+async function hwCrop(p,F){const out=[];await new Promise(ok=>{const im=new Image();im.onload=()=>{F.forEach(([y0,x0,y1,x1])=>{const X=Math.max(0,x0/1000*im.width-8),Y=Math.max(0,y0/1000*im.height-8),W=Math.min(im.width-X,(x1-x0)/1000*im.width+16),H=Math.min(im.height-Y,(y1-y0)/1000*im.height+16);
+  const c=document.createElement('canvas');c.width=Math.max(1,Math.round(W));c.height=Math.max(1,Math.round(H));const g=c.getContext('2d');g.drawImage(im,X,Y,W,H,0,0,c.width,c.height);out.push({src:c.toDataURL('image/jpeg',.9),w:c.width,h:c.height,pw:W/im.width});c.width=c.height=0});ok()};im.onerror=ok;im.src=p.src});return out}
+let HWBUSY=0;
+async function hwRun(){if(HWBUSY||!HW)return;HWBUSY=1;let WL=null;try{if(navigator.wakeLock)WL=await navigator.wakeLock.request('screen')}catch(_){}
+ const todo=HW.pages.map((p,i)=>i).filter(i=>!HW.pages[i].md&&!HW.pages[i].busy);let k=0;
+ await Promise.all([0,1].map(async()=>{while(k<todo.length){const i=todo[k++],p=HW.pages[i];if(!HW||p.md)continue;p.busy=1;p.err='';hwCard(i);
+  try{const j=await hwAsk(p);p.md=(j.md||'').replace(/\r/g,'').trim()||' ';const F=hwFigs(p);p.figs=await hwCrop(p,F);if(j.title&&!HW.title)HW.title=j.title}catch(e){p.err=e.message||'تعذّرت القراءة'}
+  p.busy=0;if(HW){DB.set('hw:cur',HW);hwCard(i);hwFoot()}}}));
+ HWBUSY=0;try{WL&&WL.release()}catch(_){}}
+const hwUns=t=>(String(t).match(/⟦[^⟧]*⟧/g)||[]).length;
+function hwPrev(t){return esc(t).replace(/⟦([^⟧]*)⟧/g,'<mark class="hwu">$1</mark>').replace(/\[\[شكل (\d+)\]\]/g,'<span class="hwf">🖼️ شكل $1</span>').replace(/\n/g,'<br>')}
+function hwReview(){const p=ptOpen('✍️','ملزمة خط اليد',`راجع كل صفحة — الكلمات <mark class="hwu">الصفراء</mark> البرنامج مو متأكد منها`);
+ if(!document.getElementById('hwCss')){const st=document.createElement('style');st.id='hwCss';st.textContent=`.hwc{background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:10px;margin-bottom:14px}.hwc.ok{border-color:#16a34a;background:#f0fdf4}.hwc img{width:100%;max-height:52vh;object-fit:contain;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0}
+ .hwc textarea{width:100%;min-height:180px;border:1.5px solid #cbd5e1;border-radius:12px;padding:10px;font:16px/1.9 inherit;font-family:inherit;direction:rtl;unicode-bidi:plaintext}.hwpv{font-size:14px;line-height:1.9;background:#f8fafc;border-radius:10px;padding:8px;margin-top:6px;max-height:160px;overflow:auto;unicode-bidi:plaintext}
+ mark.hwu{background:#fde047;border-radius:4px;padding:0 3px}.hwf{background:#e0f2fe;border-radius:6px;padding:1px 6px;font-size:12px}.hwr{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.hwr .btn{flex:1;min-width:90px}.hwchips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.hwchips button{background:#fef9c3;border:1.5px solid #facc15;border-radius:10px;padding:4px 10px;font:inherit;font-size:14px}`;document.head.appendChild(st)}
+ $('#ptB').innerHTML=`<div class="warn" style="margin-bottom:12px">💡 البرنامج يقرا الكلمات بالذكاء الاصطناعي. <b>لازم تراجع</b> — قارن الكتابة بالصورة وصحح أي كلمة. اضغط الكلمة الصفراء حتى تروح عليها بالكتابة.</div>`+HW.pages.map((_,i)=>`<div class="hwc" id="hwc${i}"></div>`).join('');
+ HW.pages.forEach((_,i)=>hwCard(i));hwFoot()}
+function hwCard(i){const el=document.getElementById('hwc'+i);if(!el||!HW)return;const p=HW.pages[i];
+ if(!p.md){el.className='hwc';el.innerHTML=`<b>صفحة ${i+1}</b><img src="${p.src}" loading="lazy"><div style="text-align:center;padding:12px;color:${p.err?'#c0182f':'#64748b'}">${p.err?'⚠️ '+esc(p.err):p.busy?'⏳ جاري القراءة...':'🕐 بالانتظار...'}</div>${p.err?`<button class="btn primary" style="width:100%" onclick="hwRetry(${i})">🔁 إعادة المحاولة</button>`:''}`;return}
+ const u=hwUns(p.md);el.className='hwc'+(p.ok?' ok':'');
+ el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><b>صفحة ${i+1}</b><span style="font-size:13px;color:${u?'#b45309':'#16a34a'}">${p.ok?'✅ تمت المراجعة':u?`⚠️ ${u} كلمة للمراجعة`:'👍 جاهزة للمراجعة'}</span></div>
+ <img src="${p.src}" onclick="hwZoom(${i})"><div class="muted" style="font-size:12px;text-align:center">اضغط الصورة لتكبيرها</div>
+ ${u?`<div class="hwchips">${(p.md.match(/⟦[^⟧]*⟧/g)||[]).slice(0,30).map((w,k)=>`<button onclick="hwGo(${i},${k})">${esc(w.slice(1,-1))||'؟'}</button>`).join('')}</div>`:''}
+ <textarea id="hwt${i}" oninput="hwEd(${i})">${esc(p.md)}</textarea><div class="hwpv" id="hwp${i}">${hwPrev(p.md)}</div>
+ ${(p.figs||[]).length?`<div class="muted" style="font-size:12px;margin-top:4px">🖼️ ${p.figs.length} شكل/رسم ينحط بالملزمة صورة بنفس شكله</div>`:''}
+ <div class="hwr"><button class="btn ${p.ok?'':'primary'}" onclick="hwOk(${i})">${p.ok?'↩️ رجوع للتعديل':'✅ الصفحة صحيحة'}</button><button class="btn" onclick="hwRetry(${i})">🔁 قراءة من جديد</button></div>`}
+function hwEd(i){const p=HW.pages[i];p.md=$('#hwt'+i).value;p.ok=0;$('#hwp'+i).innerHTML=hwPrev(p.md);clearTimeout(hwEd.t);hwEd.t=setTimeout(()=>{DB.set('hw:cur',HW);hwFoot()},600)}
+function hwGo(i,k){const t=$('#hwt'+i);const m=[...t.value.matchAll(/⟦[^⟧]*⟧/g)][k];if(!m)return;t.focus();t.setSelectionRange(m.index,m.index+m[0].length)}
+function hwOk(i){const p=HW.pages[i];const t=$('#hwt'+i);if(t)p.md=t.value;if(!p.ok&&hwUns(p.md)){p.md=p.md.replace(/⟦([^⟧]*)⟧/g,'$1')}p.ok=p.ok?0:1;DB.set('hw:cur',HW);hwCard(i);hwFoot()}
+function hwRetry(i){const p=HW.pages[i];p.md='';p.ok=0;p.err='';p.figs=[];hwCard(i);DB.set('hw:cur',HW);hwRun()}
+function hwZoom(i){const d=document.createElement('div');d.style.cssText='position:fixed;inset:0;z-index:99999;background:#000;overflow:auto';d.innerHTML=`<button style="position:fixed;top:12px;left:12px;z-index:2;width:46px;height:46px;border-radius:14px;border:0;background:#e11d48;color:#fff;font-size:22px">✕</button><img src="${HW.pages[i].src}" style="width:200%;display:block">`;d.querySelector('button').onclick=()=>d.remove();document.body.appendChild(d)}
+function hwFoot(){const f=$('#ptF');if(!f||!HW)return;const P=HW.pages,rd=P.filter(p=>p.md).length,ok=P.filter(p=>p.ok).length,un=P.reduce((a,p)=>a+hwUns(p.md||''),0);
+ f.innerHTML=`<div style="font-size:13px;color:#475569;margin-bottom:6px;text-align:center">انقرت ${rd} من ${P.length} — تمت مراجعة ${ok}${un?` — باقي <b style="color:#b45309">${un}</b> كلمة صفراء`:''}<br>💰 سعر الصفحة عند التنزيل PDF: <b>${fmt(HWPRICE())}</b> دينار</div>
+ <div style="display:flex;gap:8px"><button class="btn primary" style="flex:2" ${rd<P.length?'disabled':''} onclick="hwBuild()">📘 تكوين الملزمة (${P.length} صفحة)</button><button class="btn" style="flex:1" onclick="hwCancel()">🗑 إلغاء</button></div>`}
+async function hwCancel(){if(!await ask('إلغاء ملزمة خط اليد',{icon:'🗑',msg:'تريد تلغي هاي الملزمة؟ الكتابة اللي انقرت تنحذف.',yes:'نعم ألغيها',no:'لا'}))return;HW=null;DB.del('hw:cur');const p=$('#ptool');if(p)p.remove()}
+async function hwBuild(){const P=HW.pages;const nok=P.filter(p=>!p.ok).length,un=P.reduce((a,p)=>a+hwUns(p.md||''),0);
+ if(nok&&!await ask('مراجعة الصفحات',{icon:'⚠️',msg:`${nok} صفحة ما أكدت مراجعتها${un?` وبيها ${un} كلمة صفراء`:''}.\nتگدر تعدّل بعدين بالملزمة، بس الأفضل تراجعها هسه.\nتريد تكوّن الملزمة؟`,yes:'كوّنها',no:'أراجع أول'}))return;
+ const o=overlay('📘 جاري تكوين الملزمة...');clearTimeout(saveT);saveNow();
+ const NS=blankProject();NS.title=HW.title||HW.name||'ملزمة خط يد';NS.showToc=false;NS.chapterPage=false;NS.hw=1;
+ const blocks=[];let cur=[];const flush=()=>{if(cur.length){blocks.push({id:uid(),type:'text',text:cur.join('\n')});cur=[]}};
+ P.forEach((p,pi)=>{if(pi)cur.push('---');String(p.md||'').replace(/⟦([^⟧]*)⟧/g,'$1').split('\n').forEach(l=>{const m=l.trim().match(/^\[\[شكل (\d+)\]\]$/);
+  if(m){const I=(p.figs||[])[+m[1]-1];if(I){flush();blocks.push({id:uid(),type:'image',src:I.src,w:I.w,h:I.h,width:Math.max(20,Math.min(100,Math.round(I.pw*794/BODYW*100))),caption:'',ann:[],annStyle:'box',annSize:'m'})}return}
+  if(l.trim())cur.push(l.replace(/\[\[شكل \d+\]\]/g,''))})});flush();
+ if(!blocks.length)blocks.push({id:uid(),type:'text',text:''});if(blocks[0].type==='text')blocks[0].text=blocks[0].text.replace(/^(---\n)+/,'');
+ let title='';if(blocks[0].type==='text'){const L=blocks[0].text.split('\n');if(/^#\s/.test(L[0])&&L.length>1){title=L[0].replace(/^#+\s*/,'');blocks[0].text=L.slice(1).join('\n')}}
+ NS.topics=[{id:uid(),unit:'',title:title||NS.title,color:NS.topics[0].color,blocks}];
+ S=NS;saveNow();bindInfo();renderTopics();renderProjects();HW=null;DB.del('hw:cur');const pt=$('#ptool');if(pt)pt.remove();o.remove();
+ showTab('vPreview');await renderPages();showPage(1);liveSoon(300);
+ popup('✅','صارت ملزمة',`ملزمة خط اليد صارت ملزمة قابلة للتعديل (${P.length} صفحة).<br>عدّل أي شي بأدوات البرنامج.<br>💰 عند التنزيل PDF: <b>${fmt(HWPRICE())}</b> دينار للصفحة.`)}
+
 /* ================= العلامة المائية ================= */
 function bwmHTML(){const w=S.wm;if(!w||!(w.t||'').trim())return '';const st=`font-size:${w.s||90}px;color:${w.c||'#64748b'};opacity:${w.o!=null?w.o:.1};transform:rotate(${w.r!=null?w.r:-30}deg)`;
  return w.tile?`<div class="bwm tile">${Array(8).fill(`<span style="${st};font-size:${Math.round((w.s||90)*.55)}px">${esc(w.t)}</span>`).join('')}</div>`:`<div class="bwm"><span style="${st}">${esc(w.t)}</span></div>`}

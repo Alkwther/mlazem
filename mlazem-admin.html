@@ -295,7 +295,8 @@ service cloud.firestore {
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.charged == 0 && request.resource.data.exported == 0
         && request.resource.data.amountPaid == 0 && request.resource.data.freePages == 0
-        && request.resource.data.teacher == '' && request.resource.data.price == cfg().pricePerPage;
+        && request.resource.data.teacher == '' && (request.resource.data.price == cfg().pricePerPage
+          || (request.resource.data.get('hw', false) == true && request.resource.data.price == cfg().get('readyPagePrice', -1)));
       allow delete: if isAdmin();
       allow update: if isAdmin() || (signed() && resource.data.uid == request.auth.uid
         && request.resource.data.uid == resource.data.uid
