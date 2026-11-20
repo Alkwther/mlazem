@@ -3315,7 +3315,7 @@ async function hwStart(files){
  }catch(e){o.remove();popup('⚠️','تعذّر فتح الملف','تأكد إن الملف صورة أو PDF سليم.');return}
  o.remove();if(!pages.length)return;
  const nm=(files[0].name||'').replace(/\.(pdf|jpe?g|png|webp|heic)$/i,'').trim();
- HW={name:/^(IMG|image|\d|Screenshot)/i.test(nm)?'ملزمة خط يد':nm,pages,at:Date.now()};await DB.set('hw:cur',HW);hwReview();hwRun()}
+ HW={name:(!nm||/IMG|image|Screenshot|WhatsApp|scan|^\d|^[\w-]*\d{6,}/i.test(nm))?'ملزمة خط يد':nm,pages,at:Date.now()};await DB.set('hw:cur',HW);hwReview();hwRun()}
 async function hwAsk(p){const tok=await FB.auth.currentUser.getIdToken();
  const r=await fetch(R2URL.replace(/\/+$/,'')+'/ai/hw',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({image:p.src.split(',')[1],mime:'image/jpeg',subject:S.subject||''})});
  const j=await r.json().catch(()=>({error:'رد غير مفهوم'}));if(!r.ok||!j.ok)throw new Error(j.error||('خطأ '+r.status));return j}
@@ -3362,7 +3362,8 @@ async function hwBuild(){const P=HW.pages;const nok=P.filter(p=>!p.ok).length,un
  const blocks=[];let cur=[];const flush=()=>{if(cur.length){blocks.push({id:uid(),type:'text',text:cur.join('\n')});cur=[]}};
  P.forEach((p,pi)=>{if(pi)cur.push('---');String(p.md||'').replace(/⟦([^⟧]*)⟧/g,'$1').split('\n').forEach(l=>{const m=l.trim().match(/^\[\[شكل (\d+)\]\]$/);
   if(m){const I=(p.figs||[])[+m[1]-1];if(I){flush();blocks.push({id:uid(),type:'image',src:I.src,w:I.w,h:I.h,width:Math.max(20,Math.min(100,Math.round(I.pw*794/BODYW*100))),caption:'',ann:[],annStyle:'box',annSize:'m'})}return}
-  if(l.trim())cur.push(l.replace(/\[\[شكل \d+\]\]/g,''))})});flush();
+  let t=l.replace(/\[\[شكل \d+\]\]/g,'');if(!t.trim())return;const tt=t.trim();
+  if((/^=/.test(tt)&&!/^==/.test(tt))||/^[!?؟]/.test(tt)||/^-{3,}$/.test(tt)||/^-\s*\d/.test(tt))t='\u200b'+tt;cur.push(t)})});flush();
  if(!blocks.length)blocks.push({id:uid(),type:'text',text:''});if(blocks[0].type==='text')blocks[0].text=blocks[0].text.replace(/^(---\n)+/,'');
  let title='';if(blocks[0].type==='text'){const L=blocks[0].text.split('\n');if(/^#\s/.test(L[0])&&L.length>1){title=L[0].replace(/^#+\s*/,'');blocks[0].text=L.slice(1).join('\n')}}
  NS.topics=[{id:uid(),unit:'',title:title||NS.title,color:NS.topics[0].color,blocks}];
