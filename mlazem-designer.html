@@ -921,6 +921,12 @@ body.exporting #pages .pw{content-visibility:visible}
 #ceB button.on{background:#f59e0b!important;color:#111!important}
 /* إصلاح: كلاس .tx العام كان يخرّب محاذاة كتابة الأغلفة */
 .cvp .ly.tx{display:block;justify-content:normal;gap:0;border-bottom:0;padding:0}
+/* التصفح: محتوى الصفحة ما يتحرك باللمس — الضغط يفتح الصفحة */
+body.pscr:not(.fs) #pages .pw>*{pointer-events:none!important;user-select:none;-webkit-user-select:none}
+body.pscr:not(.fs) #pages .pw{cursor:pointer;-webkit-tap-highlight-color:rgba(37,99,235,.12)}
+body.pscr:not(.fs) #pages .pw:active{outline:3px solid rgba(37,99,235,.45);outline-offset:2px}
+/* إصلاح تقطّع الحروف العربية بالصور والـ PDF (html2canvas يكسر الكلمة حرف حرف مع break-word) */
+body.cvexp .cvp .ly.tx,body.cvexp .cvp *,body.exporting #pages *{word-break:normal!important;overflow-wrap:normal!important;word-wrap:normal!important}
 </style>
 </head>
 <body>
@@ -5083,10 +5089,12 @@ function cvxLayers(r,Z){const kx=Z.w/r.W,ky=Z.h/r.H;return Promise.all(r.lines.m
 function cvxEnsure(layers,sz){const D=cvDefLayers(sz);['teacher','phone'].forEach(role=>{if(!layers.some(l=>l.role===role)){const d=D.find(x=>x.role===role);if(d)layers.push(Object.assign(d,{id:uid(),ph:true}))}});return layers}
 function cvxReport(r){const n=r.lines.length;if(r.how==='none'||!n)return '⚠️ ما گدرت أقرا الكتابة على هذا الغلاف — الخلفية انحطت كما هي وتگدر تضيف كتابة جديدة فوقها';return `✅ صارت ${n} كتابة قابلة للتعديل — اضغط على أي كتابة حتى تغيّرها أو تحذفها`}
 /* أ) مصمم الأغلفة: رفع غلاف (للكل) */
+/* قياسات الأغلفة المعتمدة: A4 وجه واحد — A3 وجه وظهر */
+const CSZ_UP=['a4p','a3l'];Object.assign(CSZ.a4p,{n:'A4 — وجه واحد',d:'غلاف أمامي فقط'});Object.assign(CSZ.a3l,{n:'A3 — وجه وظهر',d:'أمامي + خلفي'});
 function cvUpNew(){let SZ='a4p';
  $('#obBody').innerHTML=`<div class="sheet-h"><b>📥 رفع غلاف قابل للتعديل</b><button class="btn sm" onclick="$('#obM').classList.add('hidden')">✕</button></div>
  <div class="muted">ارفع أي غلاف (صورة أو PDF) — البرنامج يقرا كل الكتابة اللي عليه ويمسحها من الخلفية ويرجعها كتابة تگدر تعدّلها، تحذفها، تحرّكها، وتضيف غيرها.</div>
- <div class="optg"><b>📐 الحجم</b><div class="ch3" id="nzS">${Object.entries(CSZ).map(([k,z])=>`<button data-z="${k}" class="${k===SZ?'on':''}">${z.n}<br><small>${z.d}</small></button>`).join('')}</div></div>
+ <div class="optg"><b>📐 الحجم</b><div class="ch3" id="nzS">${CSZ_UP.map(k=>[k,CSZ[k]]).map(([k,z])=>`<button data-z="${k}" class="${k===SZ?'on':''}" style="flex:1">${z.n}<br><small>${z.d}</small></button>`).join('')}</div></div>
  <div class="seg" style="margin-top:10px"><label class="btn orange" style="flex:1">📷 صورة<input type="file" accept="image/*" hidden id="nzI"></label><label class="btn primary" style="flex:1">📄 PDF<input type="file" accept="application/pdf,.pdf" hidden id="nzP"></label></div>
  ${IS_ADMIN?`<button class="btn" style="width:100%;margin-top:8px" id="nzC">⬜ غلاف فارغ (لون بدون صورة)</button>`:''}`;
  $('#nzS').querySelectorAll('[data-z]').forEach(b=>b.onclick=()=>{SZ=b.dataset.z;$('#nzS').querySelectorAll('[data-z]').forEach(x=>x.classList.toggle('on',x===b))});
@@ -5134,6 +5142,23 @@ async function cbUpEditable(kind,fl){const B=kind==='back';const o=overlay('📥
 {const _oc=openCoverSheet;openCoverSheet=function(kind){const r=_oc.apply(this,arguments);try{const sec=document.querySelector('#obBody .cvsec');if(sec&&!sec.querySelector('.cbupx')){const lb=document.createElement('label');lb.className='btn cbupx';
   lb.style.cssText='width:100%;margin-top:8px;padding:12px;border:0;font-weight:900;color:#fff;background:linear-gradient(135deg,#f59e0b,#ea580c);border-radius:14px;display:flex;justify-content:center;gap:6px';
   lb.innerHTML='📥 رفع غلاف جاهز (صورة أو PDF) — كل كتابته تصير قابلة للتعديل<input type="file" accept="image/*,application/pdf,.pdf" hidden>';lb.querySelector('input').onchange=e=>{const f=e.target.files[0];if(!f)return;$('#obM').classList.add('hidden');cbUpEditable(kind,f)};sec.appendChild(lb)}}catch(e){}return r}}
+
+/* ---------- 4) التصفح: الصفحات ما تتأثر باللمس — الضغط على صفحة يفتحها كاملة مع الأدوات ---------- */
+let FS_ONE=0;
+{const _ef=enterFS;enterFS=function(pv){if(!pv&&!SINGLE&&!document.body.classList.contains('editing')){FS_ONE=1;SINGLE=true;$('#pages').classList.add('single')}return _ef.apply(this,arguments)}}
+{const _xf=exitFS;exitFS=function(silent){const r=_xf.apply(this,arguments);try{if(typeof hwSelect==='function')hwSelect(null)}catch(e){}
+ if(SINGLE){FS_ONE=0;SINGLE=false;$('#pages').classList.remove('single');const a=$('#allBtn');if(a)a.textContent='📄 صفحة واحدة';const fa=$('#fsAll');if(fa)fa.textContent='📄 صفحة واحدة';const sa=$('#stAll');if(sa)sa.textContent='📄'}
+ setTimeout(()=>{pgFit();const pw=pagesList()[CURP],P=$('#pages');if(pw&&P&&document.body.classList.contains('pscr'))P.scrollTop+=pw.getBoundingClientRect().top-P.getBoundingClientRect().top-6},80);return r}}
+function pgOpen(i){if(i<0)return;try{if(typeof hwSelect==='function')hwSelect(null)}catch(e){}PSCR_LOCK=1;try{showPage(i)}finally{PSCR_LOCK=0}enterFS();
+ try{if(!localStorage.getItem('pgOpenTip')){localStorage.setItem('pgOpenTip','1');toast('✏️ هسه تگدر تعدّل على الصفحة — اضغط ✕ أو رجوع حتى ترجع لتصفح الصفحات',4500)}}catch(e){}}
+document.getElementById('pages').addEventListener('click',e=>{const b=document.body;if(!b.classList.contains('pscr')||b.classList.contains('fs')||b.classList.contains('editing'))return;const pw=e.target.closest&&e.target.closest('.pw');if(!pw)return;
+ e.preventDefault();e.stopPropagation();pgOpen(pagesList().indexOf(pw))},true);
+setTimeout(()=>{try{if(document.body.classList.contains('pscr')&&!localStorage.getItem('pgBrowseTip')){localStorage.setItem('pgBrowseTip','1');toast('👆 اسحب حتى تتصفح الصفحات — واضغط على أي صفحة حتى تفتحها وتعدّل عليها',5000)}}catch(e){}},4000);
+/* زر الرجوع بالتلفون يرجع لتصفح الصفحات بدل ما يطلع من البرنامج */
+let FS_HIST=0;
+{const _po=pgOpen;pgOpen=function(i){_po.apply(this,arguments);if(document.body.classList.contains('fs')){try{history.pushState({mfs:1},'');FS_HIST=1}catch(e){}}}}
+window.addEventListener('popstate',()=>{if(FS_HIST){FS_HIST=0;if(document.body.classList.contains('fs'))exitFS()}});
+{const _xf2=exitFS;exitFS=function(){const r=_xf2.apply(this,arguments);if(FS_HIST){FS_HIST=0;try{history.back()}catch(e){}}return r}}
 
 {const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
 {const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}
