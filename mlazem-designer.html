@@ -5992,6 +5992,13 @@ hwFoot=function(){const f=$('#ptF');if(!f||!HW)return;const P=HW.pages,rd=P.filt
 {const _r6=hwRun;hwRun=function(){if(HW&&HW.pages){const now=Date.now();HW.pages.forEach(p=>{if(p.busy&&!p.md&&now-p.busy>200000)p.busy=0})}return _r6()}}
 {const _os=hwOpenSaved;hwOpenSaved=async function(){const s=await DB.get('hw:cur');if(s&&s.pages)s.pages.forEach(p=>p.busy=0),DB.set('hw:cur',s);return _os()}}
 
+/* ===== منع تعليق "بالانتظار": إذا قراءة قديمة بعدها شغالة على ملزمة ثانية، نبدي فوراً ===== */
+let HW_RUN_OBJ=null;
+{const _r7=hwRun;hwRun=async function(){if(HWBUSY&&HW&&HW_RUN_OBJ!==HW)HWBUSY=0;HW_RUN_OBJ=HW;return _r7()}}
+setInterval(()=>{try{if(!HW||!document.getElementById('ptool'))return;const P=HW.pages||[];const pend=P.some(p=>!p.md&&!p.busy&&!p.err);const busy=P.some(p=>p.busy&&!p.md);
+ if(pend&&HWBUSY&&!busy){HWBUSY=0}
+ if(pend&&!HWBUSY)hwRun()}catch(e){}},4000);
+
 {const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
 {const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}
 {const _ap=applyPick;applyPick=function(img){const T=pTarget;if(T&&T.kind==='kidColor'){closePicker();const o=overlay('🖍️ جاري تحويلها لرسمة تلوين...');kLineArt(img.src).then(r=>{o.remove();kAdd([{kind:'color',src:r.src,word:'',lang:'ar'}])}).catch(()=>{o.remove();kAdd([{kind:'color',src:img.src,word:'',lang:'ar'}])});return}return _ap.apply(this,arguments)}}
