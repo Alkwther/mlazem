@@ -974,6 +974,9 @@ body.fs:not(.kids) #pages{padding-bottom:190px!important}
 .box[data-lab="سؤال وزاري"]>.tag{background:linear-gradient(135deg,#b91c1c,#e11d48)!important;box-shadow:0 2px 6px rgba(185,28,28,.35)}
 .box[data-lab="سؤال وزاري"]>.tag::before{content:"⭐ "}
 .box[data-lab="الحل"]>.tag{background:linear-gradient(135deg,#15803d,#22c55e)!important}
+/* أزرار حفظ/تصدير/معاينة ما تطلع فوق النوافذ (حسابي وغيرها) */
+body.pscr #vPreview .abar{z-index:45!important}
+body:has(.modal:not(.hidden)) #vPreview .abar,body:has(#ptool) #vPreview .abar,body:has(.ask:not(.hidden)) #vPreview .abar{display:none!important}
 /* ===== واجهة الدخول ===== */
 #auth.lux{background:radial-gradient(circle at 80% 8%,#2f6bff 0,transparent 42%),radial-gradient(circle at 15% 35%,#1d4ed8 0,transparent 45%),radial-gradient(circle at 50% 100%,#0b3bb5 0,transparent 55%),linear-gradient(165deg,#0a1f7a,#0b2a8f 40%,#0a2fb0 75%,#0b1f6e);overflow-x:hidden;overflow-y:auto}
 #auth.lux .wrap{position:relative;z-index:2;max-width:460px;padding:14px 16px 20px}
@@ -5883,12 +5886,12 @@ async function hwPay(sign,bid){const dref=FB.db.doc('designers/'+ME.id),bref=FB.
  SELF_T=Date.now();return out}
 async function hwAskRaw(p){const tok=await FB.auth.currentUser.getIdToken();
  const r=await fetch(R2URL.replace(/\/+$/,'')+'/ai/hw',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({image:p.src.split(',')[1],mime:'image/jpeg',subject:S.subject||'',bid:HW&&HW.ledger||''}),signal:AbortSignal.timeout?AbortSignal.timeout(170000):undefined}).catch(e=>{throw new Error('net')});
- const j=await r.json().catch(()=>({error:'bad'}));if(!r.ok||!j.ok)throw new Error(String(j.error||('e'+r.status)));return j}
+ const j=await r.json().catch(()=>({error:'bad'}));if(!r.ok||!j.ok)throw new Error(String(j.error||('e'+r.status))+(j.detail?' | '+String(j.detail).slice(0,200):'')+' ['+r.status+']');return j}
 const hwPh=(p,t)=>{p.phase=t;const i=HW?HW.pages.indexOf(p):-1;if(i>=0){hwCard(i);hwFoot()}};
 hwAsk=async function(p){
  if(!hwFree()&&!p.paid){if((ME.balance||0)<HWPRICE())throw new Error('low');hwPh(p,'pay');
   try{const bid=await hwLedger();await hwPay(1,bid);p.paid=1;p.paidBid=bid;HW.paidN=(HW.paidN||0)+1;DB.set('hw:cur',HW)}
-  catch(e){if(/LOW/.test(e.message))throw new Error('low');console.warn('hw pay',e);throw new Error('retry')}}
+  catch(e){if(/LOW/.test(e.message))throw new Error('low');console.warn('hw pay',e);p.dbg='pay: '+(e.code||'')+' '+(e.message||'');throw new Error('retry')}}
  let last='';
  for(let a=0;a<2;a++){hwPh(p,a?'retry':'read');try{const j=await hwAskRaw(p);if(HW&&j&&j.left!=null){HW.left=j.left;HW.limit=j.limit}return j}
   catch(e){last=String(e&&e.message||'');console.warn('HW try',a+1,last);
@@ -5897,7 +5900,7 @@ hwAsk=async function(p){
    await new Promise(z=>setTimeout(z,[3000,0][a]))}}
  // القراءة فشلت: نرجع فلوس الصفحة للأستاذ
  hwPh(p,'refund');if(p.paid&&!hwFree()){try{await hwPay(-1,p.paidBid||HW.ledger);p.paid=0;HW.paidN=Math.max(0,(HW.paidN||0)-1);DB.set('hw:cur',HW)}catch(e){console.warn('hw refund',e)}}
- p.phase='';throw new Error(/^limit/.test(last)?'limit':!navigator.onLine?'net':'retry')};
+ p.phase='';p.dbg=last;throw new Error(/^limit/.test(last)?'limit':!navigator.onLine?'net':'retry')};
 // رسالة الرصيد بكارت الصفحة
 {const _c3=hwCard;hwCard=function(i){_c3(i);const p=HW&&HW.pages[i],el=document.getElementById('hwc'+i);if(!p||!el||p.md||p.err!=='low')return;
  let d=el.querySelector('img+div');if(!d){d=document.createElement('div');const bt=el.querySelector('button');bt?el.insertBefore(d,bt):el.appendChild(d)}d.style.cssText='text-align:center;padding:12px;color:#b45309;line-height:1.9';
@@ -5981,6 +5984,10 @@ hwFoot=function(){const f=$('#ptF');if(!f||!HW)return;const P=HW.pages,rd=P.filt
 #ptF.hwft .hfb .hfx{display:flex!important;flex-direction:row;align-items:center;gap:4px;background:#fef2f2!important;color:#b91c1c!important;font-size:13px!important}
 #ptF.hwft .hfb .hfx small{font-size:13px}
 #ptool .ptb{padding-bottom:150px}`;document.head.appendChild(st)}
+
+/* للمدير بس: سبب الفشل التقني تحت زر إعادة المحاولة (حتى نعرف المشكلة) */
+{const _c5=hwCard;hwCard=function(i){_c5(i);const p=HW&&HW.pages[i],el=document.getElementById('hwc'+i);if(!IS_ADMIN||!p||!el||p.md||!p.err||!p.dbg)return;
+ const d=document.createElement('div');d.style.cssText='direction:ltr;font-size:11px;color:#94a3b8;margin-top:6px;word-break:break-all;text-align:left';d.textContent='🛠 '+String(p.dbg).slice(0,300);el.appendChild(d)}}
 
 {const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
 {const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}
