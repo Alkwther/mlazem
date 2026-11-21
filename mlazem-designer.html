@@ -969,6 +969,11 @@ body.fs:not(.kids) #pages{padding-bottom:190px!important}
 #fbar .fbbtns button{min-width:0;padding:8px 2px;font-size:13px}
 #fbar .fbbtns button.edcp{background:#e0f2fe;color:#075985}
 #fbar .fbbtns button.ok{grid-column:span 2}
+.etx .sbl,.box .sbl{display:block}
+.box .sbl[dir=ltr]{text-align:left;font-family:inherit}
+.box[data-lab="سؤال وزاري"]>.tag{background:linear-gradient(135deg,#b91c1c,#e11d48)!important;box-shadow:0 2px 6px rgba(185,28,28,.35)}
+.box[data-lab="سؤال وزاري"]>.tag::before{content:"⭐ "}
+.box[data-lab="الحل"]>.tag{background:linear-gradient(135deg,#15803d,#22c55e)!important}
 /* ===== واجهة الدخول ===== */
 #auth.lux{background:radial-gradient(circle at 80% 8%,#2f6bff 0,transparent 42%),radial-gradient(circle at 15% 35%,#1d4ed8 0,transparent 45%),radial-gradient(circle at 50% 100%,#0b3bb5 0,transparent 55%),linear-gradient(165deg,#0a1f7a,#0b2a8f 40%,#0a2fb0 75%,#0b1f6e);overflow-x:hidden;overflow-y:auto}
 #auth.lux .wrap{position:relative;z-index:2;max-width:460px;padding:14px 16px 20px}
@@ -5820,6 +5825,35 @@ function hwWz(l){const t=String(l).replace(/\*\*$/,'');const m=t.match(WZ_A)||t.
 {const _isq=hwIsQ;hwIsQ=function(l){return !!hwWz(l)||/^\[سؤال وزاري\]/.test(String(l).trim())||_isq(l)}}
 {const _st=hwIsStop;hwIsStop=function(l){return !!hwWz(l)||_st(l)}}
 if(typeof W_BOX==='object'&&W_BOX['سؤال'])W_BOX['سؤال وزاري']=W_BOX['سؤال'];
+
+/* ===== v3: الحل بصندوق + وزاري/ بدون س + وصل السطر المكسور ===== */
+BOXK['الحل']='a';BOXK['الحل:']='a';if(typeof W_BOX==='object'&&W_BOX['الجواب'])W_BOX['الحل']=W_BOX['الجواب'];
+// كل سطر داخل الصندوق بسطر مستقل واتجاهه حسب لغته (عربي يمين / معادلة يسار)
+{const _in2=inline;inline=function(s){s=String(s==null?'':s);if(!s.includes(SBR))return _in2(s);
+ return s.split(SBR).map(x=>{const ar=/[ء-ي]/.test(x);return `<span class="sbl" dir="${ar?'rtl':'ltr'}">${_in2(x)||'&nbsp;'}</span>`}).join('')}}
+{const _tm2=toMarkup;toMarkup=function(node){if(!node.querySelector||!node.querySelector('.sbl'))return _tm2(node);const c=node.cloneNode(true);
+ [...c.querySelectorAll('.sbl')].forEach((e,i)=>{if(i)e.before(document.createTextNode(SBR))});return _tm2(c)}}
+const WZ_C=/^\s*\**\s*(?:س\s*[0-9٠-٩]*\s*)?وزار(?:ي|ية)\s*(\(?[0-9٠-٩\/\-\s]*\)?)\s*[\/:：\-–]\s*(.*)$/;
+{const _wz=hwWz;hwWz=function(l){const r=_wz(l);if(r)return r;const m=String(l).replace(/\*\*$/,'').match(WZ_C);if(!m||!m[2].trim())return null;const yr=(m[1]||'').replace(/[()\s]+/g,' ').trim();return '[سؤال وزاري] '+(yr?'('+yr+') ':'')+m[2].trim()}}
+const SOL_RE=/^\s*\**\s*(الحل|الجواب|الجواب)\s*\**\s*[\/:：\-–]?\s*(.*)$/;
+function hwSol(l){const t=String(l).trim();const m=t.match(SOL_RE);if(m)return{lab:m[1]==='الحل'?'الحل':'الجواب',t:m[2].trim()};const q=hwQA(t);if(q&&q.k==='a')return{lab:'الجواب',t:q.t};return null}
+const ARN=t=>(String(t).match(/[ء-ي]/g)||[]).length,LTN=t=>(String(t).match(/[A-Za-z0-9=+×÷·\/()]/g)||[]).length;
+function hwProse(l){const t=String(l).trim();if(!t||/^(#|[-•]\s|\||\[|=|!|---|─|[0-9٠-٩]+\s*[-.)]|[أابجده]\s*[-)])/.test(t))return false;return ARN(t)>=5&&ARN(t)>LTN(t)}
+const NEWPART=/^\s*(احسب|جد|اوجد|أوجد|فما|ما\s|ماذا|اذكر|عرف|عرّف|علل|وضح|بين|بيّن|قارن|اشرح|[0-9٠-٩]+\s*[-.)]|[أابجده]\s*[-)]|[-•])/;
+const ENDS=/[.:؟?!؛]\s*$/;
+function hwJoin(prev,next){return hwProse(prev.split(SBR).pop().replace(/^\s*\[[^\]]*\]\s*/,''))&&hwProse(next)&&!ENDS.test(prev)&&!NEWPART.test(next)?' ':SBR}
+function hwHardStop(l){const t=String(l).trim();return !t||/^(#|\||\[|---|─)/.test(t)||/^\[\[شكل/.test(t)}
+hwMergeQ=function(md){const L=String(md||'').split('\n'),out=[];
+ for(let i=0;i<L.length;i++){let l=L[i];const t=l.trim();
+  const w=hwWz(t),sol=!w&&hwSol(t);
+  if(w||hwIsQ(t)){l=w||t;let n=0;while(i+1<L.length&&n<10&&!hwIsStop(L[i+1])&&!hwWz(L[i+1])&&!hwSol(L[i+1])){const nx=L[i+1].trim();l+=hwJoin(l,nx)+nx;i++;n++}out.push(l);continue}
+  if(sol){l='['+sol.lab+'] '+sol.t;let first=!sol.t,n=0;
+   while(i+1<L.length&&n<40){const nx=L[i+1].trim();if(hwHardStop(nx)||hwIsQ(nx)||hwWz(nx)||hwSol(nx))break;if(n>0&&ARN(nx)>=12&&ARN(nx)>LTN(nx)*2&&!/^(بما|نعوض|اذن|إذن|لذلك|وعليه|حيث|نستخدم|بالتعويض)/.test(nx)&&!hwProse(l.split(SBR).pop()))break;l+=(first?'':hwJoin(l,nx))+nx;first=false;i++;n++}
+   out.push(l);continue}
+  // فقرة عادية: إذا السطر انقطع لأن الورقة خلصت، نكمله بنفس السطر
+  if(hwProse(t)&&out.length&&hwProse(out[out.length-1])&&!/\[/.test(out[out.length-1].slice(0,1))&&!ENDS.test(out[out.length-1])&&!NEWPART.test(t)&&!hwQA(t)){out[out.length-1]+=' '+t;continue}
+  out.push(l)}
+ return out.join('\n')};
 
 {const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
 {const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}
