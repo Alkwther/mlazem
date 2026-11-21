@@ -945,6 +945,51 @@ body.pscr:not(.fs) #pages .pw:active{outline:3px solid rgba(37,99,235,.45);outli
 .frt2{position:relative;border:2px solid #e2e8f0;border-radius:14px;padding:5px;background:#fff;cursor:pointer;text-align:center}.frt2.on{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.18);background:#eff6ff}
 .frt2 .frm2{position:relative;width:100%;aspect-ratio:794/1123;border-radius:7px;overflow:hidden;background:#fff;border:1px solid #eef2f7}
 .frt2 b{display:block;font-size:12px;margin-top:4px;color:#0b1f45}.frt2 i{position:absolute;top:8px;right:8px;font-style:normal;font-size:10px;font-weight:900;background:#16a34a;color:#fff;border-radius:8px;padding:1px 6px}
+/* ===== شريط الحفظ/التصدير/المعاينة: صغير وثابت — وبدون بطاقة الرصيد ===== */
+#vPreview #sbarSlot{display:none!important}
+body.pscr #vPreview .abar{position:fixed;left:10px;right:10px;bottom:calc(var(--bnH,70px) + 6px);z-index:60;margin:0!important;grid-template-columns:1fr 1.3fr 1fr!important;gap:6px;max-width:760px;margin-inline:auto!important}
+body.pscr #vPreview .ab3{padding:6px 4px!important;font-size:12px!important;border-radius:11px!important;min-height:0;box-shadow:0 4px 12px rgba(16,32,72,.18)!important}
+body.pscr #vPreview .ab3 i{font-size:14px!important}
+body.pscr #vPreview .abar{background:rgba(238,242,250,.97);padding:5px;border-radius:14px;box-shadow:0 -2px 12px rgba(16,32,72,.08)}
+body.pscr #vPreview{padding-bottom:70px}
+/* ===== واجهة الدخول ===== */
+#auth.lux{background:radial-gradient(circle at 80% 8%,#2f6bff 0,transparent 42%),radial-gradient(circle at 15% 35%,#1d4ed8 0,transparent 45%),radial-gradient(circle at 50% 100%,#0b3bb5 0,transparent 55%),linear-gradient(165deg,#0a1f7a,#0b2a8f 40%,#0a2fb0 75%,#0b1f6e);overflow-x:hidden;overflow-y:auto}
+#auth.lux .wrap{position:relative;z-index:2;max-width:460px;padding:14px 16px 20px}
+.axdeco{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.axpen{position:absolute;top:-10px;right:-14px;width:120px;color:#3b6ef5;opacity:.55;transform:rotate(28deg)}
+.axbook{position:absolute;top:70px;left:-18px;width:170px;color:#4d7cff;opacity:.35;transform:rotate(-12deg)}
+.axarc{position:absolute;border-radius:50%;border:4px solid transparent}
+.axarc.a1{width:620px;height:620px;top:-430px;left:-260px;border-bottom-color:#f5c542;border-right-color:#f5c54288;opacity:.9}
+.axarc.a2{width:700px;height:700px;bottom:-560px;right:-300px;border-top-color:#f5c542;border-left-color:#f5c54266}
+.axgrid{position:absolute;top:290px;right:-30px;width:130px;height:160px;background-image:linear-gradient(#ffffff22 1px,transparent 1px),linear-gradient(90deg,#ffffff22 1px,transparent 1px);background-size:16px 16px;border-radius:30px 0 0 30px;opacity:.6}
+.axfoot{display:flex;justify-content:space-between;align-items:flex-end;margin:18px -8px 0;font-size:84px;line-height:1;filter:drop-shadow(0 8px 14px rgba(0,0,0,.35))}
+#auth.lux #dlCard{margin-top:16px}
+#auth.lux .hero{padding:4px 0 10px}
+.axlogo{width:104px;height:104px;margin:4px auto 8px;border-radius:28px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#ffe082,#f5b400 55%,#d18f00);box-shadow:0 10px 26px rgba(0,0,0,.35),inset 0 2px 0 #fff6,0 0 0 3px #ffe9a8}
+.axt{font-size:44px!important;font-weight:900;color:#fff;line-height:1.15!important;margin:0;text-shadow:0 3px 0 #c9d6ff,0 8px 20px rgba(0,0,0,.45)}
+.axrib{display:flex;justify-content:center;margin:6px 0 8px}.axrib span{display:inline-block;padding:6px 30px;font-size:22px;font-weight:900;color:#0b1f45;background:linear-gradient(180deg,#ffe58a,#f6b800);clip-path:polygon(0 0,100% 0,95% 100%,5% 100%);box-shadow:0 6px 14px rgba(0,0,0,.3)}
+.axsub{display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;color:#fff!important;font-weight:800;font-size:12.5px!important;margin:4px 0 12px!important}.axsub i{flex:0 1 26px;height:2px;background:linear-gradient(90deg,transparent,#f5c542)}.axsub i:last-child{background:linear-gradient(90deg,#f5c542,transparent)}
+.axfeats{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:0 -4px}
+.axf{display:flex;flex-direction:column;align-items:center;gap:0}.axfi{width:100%;aspect-ratio:1;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:27px;background:linear-gradient(160deg,#1e4fd6,#0b2a8f);border:2px solid #f5c542;box-shadow:0 6px 12px rgba(0,0,0,.3)}
+.axf span{margin-top:-8px;position:relative;font-size:9.5px;font-weight:900;color:#0b1f45;background:linear-gradient(180deg,#ffe58a,#f6b800);border-radius:9px;padding:2px 4px;line-height:1.3;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.25);min-height:24px;display:flex;align-items:center}
+#auth.lux .box2{background:transparent;box-shadow:none;padding:6px 2px;color:#fff}
+.axwel{border:2px solid #f5c542;border-radius:20px;padding:12px 10px;text-align:center;background:linear-gradient(180deg,#0e2f9e,#0b2380);box-shadow:0 8px 22px rgba(0,0,0,.3);margin-bottom:14px}
+.axwel b{display:block;font-size:19px;color:#fff}.axwel em{font-style:normal;color:#ffd54f}.axwel small{display:block;color:#e2e8ff;font-weight:700;font-size:13px;margin-top:3px}
+.axin{position:relative;margin:10px 0}.axin input,.axin .in{width:100%;box-sizing:border-box;height:56px;border-radius:30px!important;border:2px solid #9fb6ff!important;background:#e8eeff!important;color:#0b1f45;font:800 16px Cairo,sans-serif;padding:0 52px 0 52px!important;box-shadow:inset 0 2px 6px rgba(11,42,143,.15)}
+.axin input::placeholder{color:#6b7fae;font-weight:700}
+.axic{position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex}
+.axeye{position:absolute;left:12px;top:50%;transform:translateY(-50%);border:0;background:none;padding:6px;cursor:pointer;display:flex}
+#auth.lux .axplain{border-radius:16px!important;background:#e8eeff!important;border:2px solid #9fb6ff!important;height:48px;font-weight:800}
+#auth.lux label.f{color:#ffe58a}#auth.lux .rolepick label{background:#e8eeff;color:#0b1f45}#auth.lux .rolepick label.on{background:#ffd54f}
+.axgo{width:100%;margin-top:14px;height:58px;border:0;border-radius:30px;display:flex;align-items:center;justify-content:center;gap:14px;font:900 20px Cairo,sans-serif;color:#0b1f45;background:linear-gradient(180deg,#ffe27a,#f6b400);box-shadow:0 8px 20px rgba(0,0,0,.35),inset 0 2px 0 #fff8;cursor:pointer;position:relative}
+.axgo i{position:absolute;left:12px;width:38px;height:38px;border-radius:50%;background:#0b1f45;color:#fff;font-style:normal;font-size:20px;display:flex;align-items:center;justify-content:center}
+.axgo:disabled{opacity:.7}
+.axor{display:flex;align-items:center;gap:12px;margin:14px 10px;color:#fff;font-weight:900}.axor i{flex:1;height:1.5px;background:#ffffff66}
+.axalt{width:100%;height:52px;border-radius:28px;border:2px solid #f5c542;background:#0b2380cc;color:#fff;font:900 17px Cairo,sans-serif;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.axfg{display:block;margin:12px auto 0;border:0;background:none;color:#ffe58a;font:800 14px Cairo,sans-serif;text-decoration:underline;cursor:pointer}
+.axnote{color:#c7d4ff!important;text-align:center;font-size:12.5px;margin-top:4px}
+#auth.lux #aErr{color:#ffb4b4!important}
+@media(max-width:380px){.axt{font-size:38px!important}.axf span{font-size:8.5px}}
 </style>
 </head>
 <body>
@@ -5005,7 +5050,8 @@ function pgFit(){const W=$('#vPreview .work'),P=$('#pages');if(!W||!P)return;
  const on=document.body.classList.contains('nui')&&!document.body.classList.contains('fs')&&!$('#vPreview').classList.contains('off');
  document.body.classList.toggle('pscr',on);if(!on)return;
  const bn=$('#bnav');const bh=bn&&getComputedStyle(bn).display!=='none'?bn.getBoundingClientRect().height:0;
- const top=W.getBoundingClientRect().top+window.scrollY;const h=Math.max(320,Math.round(window.innerHeight-top-bh-8));
+ const ab=document.querySelector('#vPreview .abar');const abH=ab&&getComputedStyle(ab).display!=='none'?ab.getBoundingClientRect().height+8:0;document.body.style.setProperty('--bnH',Math.round(bh)+'px');
+ const top=W.getBoundingClientRect().top+window.scrollY;const h=Math.max(300,Math.round(window.innerHeight-top-bh-abH-10));
  if(W.style.getPropertyValue('--wkH')!==h+'px'){W.style.setProperty('--wkH',h+'px');try{scalePages()}catch(e){}}}
 function pgVisible(pw){const P=$('#pages');if(!P)return false;const a=P.getBoundingClientRect(),b=pw.getBoundingClientRect();return b.bottom>a.top+40&&b.top<a.bottom-40}
 {const _sp=showPage;showPage=function(i){const r=_sp.apply(this,arguments);
@@ -5422,6 +5468,10 @@ function cvOpaPanel(X,l){X.innerHTML=`<label>◐ شفافية الكتابة: <b
  if(a==='gorig'&&l&&l.gi){cvPush();Object.assign(l,{text:l.gt,color:l.gc,font:l.gf,bold:l.gb,ol:0,sh:0});delete l.ge;cvRender();cvSave();toast('↩️ رجعت الكتابة الأصلية');return}
  if(a==='del'&&l&&l.er&&!l.ers){await cvErasePend()}
  return _ca3.apply(this,arguments)}}
+/* زر النشر يظهر للمدير حتى لو انفتح المحرر قبل ما يكمل تسجيل الدخول */
+function cvPubBtn(){const H=document.querySelector('#cvEd .ceh');if(!H)return;const b=H.querySelector('.pub');if(IS_ADMIN&&!b){const n=document.createElement('button');n.className='pub';n.textContent='📤 نشر';n.onclick=()=>cvPublish();const pdf=H.querySelector('.pdf');H.insertBefore(n,pdf||null)}else if(!IS_ADMIN&&b)b.remove()}
+{const _cb3=cvBar;cvBar=function(){const r=_cb3.apply(this,arguments);try{cvPubBtn()}catch(e){}return r}}
+setInterval(()=>{try{cvPubBtn()}catch(e){}},1500);
 
 /* ================= 🖼️ إطارات احترافية + معاينة حقيقية قبل التطبيق ================= */
 const FRAMES_PRO=[['p_quran','زخرفة المصحف','فاخر'],['p_islamic','إسلامي هندسي','فاخر'],['p_lux','ذهبي ملكي','فاخر'],['p_arab','أرابيسك','فاخر'],['p_deco','آرت ديكو','فاخر'],
@@ -5522,6 +5572,40 @@ window.addEventListener('popstate',()=>{if(HM.ign>0){HM.ign--;return}const k=HM.
   ['obM','popM'].forEach(id=>{const e=document.getElementById(id);if(e)mo.observe(e,{attributes:true,attributeFilter:['class']})});
   const fb=document.getElementById('flBar');if(fb)mo.observe(fb,{attributes:true,attributeFilter:['class']})};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go()})();
+
+/* ================= 🔐 واجهة الدخول الجديدة ================= */
+function axInit(){const A=document.getElementById('auth');if(!A||A.classList.contains('lux'))return;A.classList.add('lux');
+ const deco=document.createElement('div');deco.className='axdeco';deco.innerHTML=`
+  <svg class="axpen" viewBox="0 0 120 200"><path d="M60 0 L100 70 L80 150 L60 175 L40 150 L20 70Z" fill="currentColor"/><circle cx="60" cy="95" r="11" fill="#0b2a8f"/><path d="M60 106 V172" stroke="#0b2a8f" stroke-width="4"/><rect x="38" y="150" width="44" height="50" rx="6" fill="currentColor"/></svg>
+  <svg class="axbook" viewBox="0 0 200 140"><path d="M100 30 Q60 8 10 20 V120 Q60 108 100 130 Q140 108 190 120 V20 Q140 8 100 30Z" fill="none" stroke="currentColor" stroke-width="5"/><path d="M100 30 V130" stroke="currentColor" stroke-width="4"/>${[40,58,76,94].map(y=>`<path d="M25 ${y} Q60 ${y-8} 88 ${y+6}" fill="none" stroke="currentColor" stroke-width="3"/><path d="M175 ${y} Q140 ${y-8} 112 ${y+6}" fill="none" stroke="currentColor" stroke-width="3"/>`).join('')}</svg>
+  <div class="axarc a1"></div><div class="axarc a2"></div><div class="axgrid"></div>`;
+ A.insertBefore(deco,A.firstChild);const W=A.querySelector('.wrap');if(W){const dl=$('#dlCard');const bx=A.querySelector('.box2');if(dl&&bx)bx.parentNode.insertBefore(dl,bx.nextSibling);const ft=document.createElement('div');ft.className='axfoot';ft.innerHTML='<span>🖨️</span><span>📚</span>';W.appendChild(ft)}
+ const H=A.querySelector('.hero');if(H)H.innerHTML=`
+  <div class="axlogo"><svg viewBox="0 0 100 100" width="74" height="74"><path d="M50 30 Q30 18 10 24 V78 Q30 72 50 82 Q70 72 90 78 V24 Q70 18 50 30Z" fill="#0b2a8f"/><path d="M50 30 V82" stroke="#ffd54f" stroke-width="3"/><path d="M18 70 Q34 64 46 72 M82 70 Q66 64 54 72" stroke="#ffd54f" stroke-width="3" fill="none"/><path d="M50 4 L60 22 L56 46 L50 54 L44 46 L40 22Z" fill="#0b2a8f"/><circle cx="50" cy="28" r="3.5" fill="#ffd54f"/><path d="M14 86 Q50 60 92 62" stroke="#ffd54f" stroke-width="5" fill="none" stroke-linecap="round"/></svg></div>
+  <h1 class="axt">مصمم ملازمك</h1><div class="axrib"><span>باحترافية ويانه</span></div>
+  <p class="axsub"><i></i>منصة تصميم الملازم الدراسية — عربي و English<i></i></p>
+  <div class="axfeats">${[['✍️','تحويل خط اليد إلى تصميم'],['🔀','دمج ملفات'],['🔢','ترقيم ملفات'],['📒','كراسات روضة'],['📚','ملازم جاهزة'],['📘','أغلفة جاهزة']].map(([i,t])=>`<div class="axf"><div class="axfi">${i}</div><span>${t}</span></div>`).join('')}</div>
+  <span id="trialTxt" hidden>3</span>`;
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{axInit();try{if(!$('#auth').classList.contains('hidden'))authView()}catch(e){}});else axInit();
+{const _av=authView;authView=function(mode){_av.apply(this,arguments);axInit();const b=$('#authBody');if(!b||!document.getElementById('auth').classList.contains('lux'))return;
+ if(!mode)mode=firstVisit()?'reg':'login';const reg=mode==='reg';const ph=$('#aPhone'),pw=$('#aPass'),go=$('#aGo'),err=$('#aErr');
+ const seg=b.querySelector('.seg');if(seg)seg.remove();b.querySelectorAll('label.f').forEach(l=>{if(/رقم الهاتف|الرقم السري/.test(l.textContent))l.remove()});
+ const welcome=document.createElement('div');welcome.className='axwel';welcome.innerHTML=reg?`<b>✨ اشتراك جديد في <em>مصمم ملازمك</em></b><small>سجّل مرة وحدة وابدأ تصمم ملازمك — أول صفحات مجاناً</small>`:`<b>✨ مرحباً بك في <em>مصمم ملازمك</em></b><small>ابدأ رحلتك في تصميم ملازم احترافية بكل سهولة</small>`;
+ b.insertBefore(welcome,b.firstChild);
+ const wrapF=(inp,icon,cls)=>{if(!inp)return;const w=document.createElement('div');w.className='axin '+(cls||'');inp.parentNode.insertBefore(w,inp);w.appendChild(inp);const ic=document.createElement('span');ic.className='axic';ic.innerHTML=icon;w.appendChild(ic);return w};
+ if(ph){ph.placeholder='أدخل رقم الهاتف';ph.dir='rtl';ph.style.textAlign='right';wrapF(ph,'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0b2a8f" stroke-width="2"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>')}
+ if(pw){const pwr=pw.closest('.pw-wrap');pw.placeholder=reg?'اختار كلمة مرور (6 على الأقل)':'أدخل كلمة المرور';pw.dir='rtl';pw.style.textAlign='right';const eye=pwr&&pwr.querySelector('button');
+  const w=wrapF(pw,'<svg viewBox="0 0 24 24" width="22" height="22" fill="#0b2a8f"><path d="M7 10V7a5 5 0 0 1 10 0v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1Zm2 0h6V7a3 3 0 0 0-6 0v3Z"/></svg>');
+  if(eye){eye.className='axeye';eye.textContent='';const set=()=>{eye.innerHTML=pw.type==='password'?'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0b2a8f" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg>':'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0b2a8f" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>'};set();eye.onclick=()=>{pw.type=pw.type==='password'?'text':'password';set()};w.appendChild(eye)}
+  if(pwr&&!pwr.children.length)pwr.remove();else if(pwr){pwr.parentNode.insertBefore(w,pwr);pwr.remove()}}
+ b.querySelectorAll('#aName,#aGov').forEach(i=>i.classList.add('axplain'));
+ if(go){go.className='axgo';go.innerHTML=`<span>${reg?'إنشاء الحساب':'تسجيل الدخول'}</span><i>➜</i>`;go.removeAttribute('style');
+  const or=document.createElement('div');or.className='axor';or.innerHTML='<i></i><span>أو</span><i></i>';const alt=document.createElement('button');alt.type='button';alt.className='axalt';
+  alt.innerHTML=reg?'🔐 عندي حساب — تسجيل الدخول':'✨ تسجيل مشترك جديد';alt.onclick=()=>authView(reg?'login':'reg');
+  const after=err||go;after.parentNode.insertBefore(or,after.nextSibling);or.parentNode.insertBefore(alt,or.nextSibling)}
+ const fg=[...b.querySelectorAll('button')].find(x=>/نسيت/.test(x.textContent));if(fg){fg.className='axfg';fg.removeAttribute('style');b.appendChild(fg)}
+ b.querySelectorAll('.muted').forEach(m=>{if(/تسجّل مرة وحدة/.test(m.textContent)){m.className='axnote';b.appendChild(m)}})}}
 
 {const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
 {const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}
