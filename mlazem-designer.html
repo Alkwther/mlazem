@@ -964,6 +964,11 @@ body.fs:not(.kids) #fsBar button{flex:none!important;width:auto!important;paddin
 body.fs:not(.kids) #fsBar button i{font-size:16px!important}
 #fsBar .dupu{display:none!important}
 body.fs:not(.kids) #pages{padding-bottom:190px!important}
+/* شريط التعديل: صفين مرتبين + نسخ ولصق */
+#fbar .fbbtns{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+#fbar .fbbtns button{min-width:0;padding:8px 2px;font-size:13px}
+#fbar .fbbtns button.edcp{background:#e0f2fe;color:#075985}
+#fbar .fbbtns button.ok{grid-column:span 2}
 /* ===== واجهة الدخول ===== */
 #auth.lux{background:radial-gradient(circle at 80% 8%,#2f6bff 0,transparent 42%),radial-gradient(circle at 15% 35%,#1d4ed8 0,transparent 45%),radial-gradient(circle at 50% 100%,#0b3bb5 0,transparent 55%),linear-gradient(165deg,#0a1f7a,#0b2a8f 40%,#0a2fb0 75%,#0b1f6e);overflow-x:hidden;overflow-y:auto}
 #auth.lux .wrap{position:relative;z-index:2;max-width:460px;padding:14px 16px 20px}
@@ -5746,6 +5751,75 @@ async function buildDocxExact(say){const pages=[...document.querySelectorAll('#p
  return wdDocx(body.join(''),imgs)}
 async function wdMakeExact(o){const say=m=>{o.innerHTML='<div class="spin"></div><div>'+m+'</div><div style="font-size:13px;opacity:.8">لا تغلق الصفحة</div>'};document.body.classList.add('exporting');window.scrollTo(0,0);
  try{await renderPages();return await buildDocxExact(say)}finally{document.body.classList.remove('exporting');renderPages()}}
+
+/* ===== edit.js: سطر جديد داخل الصندوق + نسخ/لصق سهل + السؤال كامل داخل صندوقه ===== */
+const SBR=String.fromCharCode(8232),SBR_G=new RegExp(SBR,'g'),SBR_NL=new RegExp('\\n|'+SBR);
+// SBR = نزول سطر داخل نفس الصندوق (السؤال وغيره)
+{const _in=inline;inline=function(s){return _in(String(s==null?'':s)).replace(SBR_G,'<br>')}}
+{const _cm=cleanMd;cleanMd=function(md){return String(md).split(SBR).map(x=>_cm(x)).filter(Boolean).join(SBR)}}
+{const _tm=toMarkup;toMarkup=function(node){if(!node.querySelector||!node.querySelector('br'))return _tm(node);const c=node.cloneNode(true);c.querySelectorAll('br').forEach(b=>b.replaceWith(document.createTextNode(SBR)));return _tm(c)}}
+if(typeof wRun==='function'){const _w=wRun;wRun=function(t,o){return _w(t,o).replace(SBR_G,'</w:t><w:br/><w:t xml:space="preserve">')}}
+
+/* ---- لصق: يحافظ على نزول الأسطر داخل نفس السطر/الصندوق ---- */
+function edInsertText(t){t=String(t||'').replace(/\r/g,'').replace(/\u200b/g,'');const L=t.split(SBR_NL).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);if(!L.length)return false;
+ try{const sel=getSelection(),r=sel.getRangeAt(0),host=(r.startContainer.nodeType===1?r.startContainer:r.startContainer.parentElement).closest('.etx');if(r.collapsed&&host){const b=document.createRange();b.selectNodeContents(host);b.setEnd(r.startContainer,r.startOffset);const pv=b.toString().replace(/[\u200b]/g,'');if(pv&&!/\s$/.test(pv))L[0]=' '+L[0]}}catch(e){}
+ if(L.length===1)document.execCommand('insertText',false,L[0]);else document.execCommand('insertHTML',false,L.map(x=>esc(x)).join('<br>'));return true}
+document.getElementById('pages').addEventListener('paste',e=>{const el=e.target.closest&&e.target.closest('[contenteditable="true"]');if(!el||!isEd(el)||!el.classList.contains('etx'))return;
+ e.preventDefault();e.stopImmediatePropagation();const t=(e.clipboardData||window.clipboardData).getData('text');if(edInsertText(t)){clearTimeout(inT);inT=setTimeout(()=>commitEl(el),300)}},true);
+
+/* ---- أزرار نسخ ولصق بشريط التعديل (بدون ما تدوّر على قائمة الهاتف) ---- */
+let EDCLIP='';
+async function edCopy(){if(!ACT)return;const s=getSelection();let t='';
+ if(s.rangeCount&&!s.isCollapsed&&ACT.contains(s.anchorNode))t=s.toString();else t=ACT.innerText||ACT.textContent||'';
+ t=t.replace(/\u200b/g,'').trim();if(!t){toast('ما اكو كتابة للنسخ');return}EDCLIP=t;
+ try{await navigator.clipboard.writeText(t)}catch(e){}
+ toast(s.rangeCount&&!s.isCollapsed?'📋 انسخ المحدد':'📋 انسخ السطر كامل — روح للمكان اللي تريده واضغط 📥 لصق',2600)}
+async function edPaste(){if(!ACT)return;const el=ACT;let t='';
+ try{t=await navigator.clipboard.readText()}catch(e){}
+ if(!t)t=EDCLIP;if(!t){toast('انسخ شي أول');return}
+ el.focus();const s=getSelection();if(!s.rangeCount||!el.contains(s.anchorNode)){const r=document.createRange();r.selectNodeContents(el);r.collapse(false);s.removeAllRanges();s.addRange(r)}
+ if(edInsertText(t)){el.classList.remove('emp');commitEl(el);toast('📥 انلصق',1500)}}
+(function(){const B=document.querySelector('#fbar .fbbtns');if(!B)return;const del=B.querySelector('[data-c="del"]');
+ [['cp','📋 نسخ',edCopy],['ps','📥 لصق',edPaste]].forEach(([c,l,f])=>{const b=document.createElement('button');b.dataset.c=c;b.className='edcp';b.textContent=l;
+  b.onpointerdown=e=>e.preventDefault();b.onclick=f;B.insertBefore(b,del)});})();
+// إذا كان السطر مو بوضع التعديل وانضغط مطولاً، خلّيه يتعدل حتى يطلع لصق الهاتف
+document.getElementById('pages').addEventListener('contextmenu',e=>{const tx=e.target.closest&&e.target.closest('.etx');if(tx&&tx.isContentEditable)e.stopPropagation()},true);
+
+/* ---- خط اليد: تكملة السؤال تدخل بنفس صندوق السؤال ---- */
+function hwIsQ(l){const t=String(l).trim();const q=hwQA(t);if(q)return q.k==='q';return /^\[(سؤال|question)\]/i.test(t)||/^[؟?]\s*\S/.test(t)}
+function hwIsStop(l){const t=String(l).trim().replace(/^\*\*|\*\*$/g,'').trim();if(!t)return true;
+ if(/^(#|[-•]\s|\||\[|=|!|---|─)/.test(t))return true;
+ if(/^\[\[شكل/.test(t))return true;
+ if(hwQA(t))return true;
+ if(/^(ال)?(حل|جواب|الجواب|الحل)\s*[:：]?\s*$/.test(t)||/^(الحل|الجواب|الجواب\s*\/|ج\s*[\/:：])/.test(t))return true;
+ const ar=(t.match(/[ء-ي]/g)||[]).length,lat=(t.match(/[A-Za-z0-9=+×÷·\/()]/g)||[]).length;
+ if(ar<3&&lat>3)return true; // معادلة مو كلام
+ return false}
+function hwMergeQ(md){const L=String(md||'').split('\n'),out=[];
+ for(let i=0;i<L.length;i++){let l=L[i];
+  if(hwIsQ(l)){let n=0;while(i+1<L.length&&n<8&&!hwIsStop(L[i+1])){l+=SBR+L[i+1].trim();i++;n++}}
+  out.push(l)}
+ return out.join('\n')}
+if(typeof hwBuild==='function'){const _hb=hwBuild;hwBuild=async function(){const H=HW;if(!H||!H.pages)return _hb.apply(this,arguments);
+ const saved=H.pages.map(p=>p.md);H.pages.forEach(p=>{if(p.md)p.md=hwMergeQ(p.md)});
+ try{return await _hb.apply(this,arguments)}finally{if(HW===H)H.pages.forEach((p,i)=>p.md=saved[i])}}}
+// hwQAmd يشتغل على أول سطر بس — نخلي باقي الأسطر تبقى بنفس الصندوق
+{const _q=hwQAmd;hwQAmd=function(l){const s=String(l);if(!s.includes(SBR))return _q(s);const[a,...r]=s.split(SBR);return _q(a)+SBR+r.join(SBR)}}
+// الريجكس (.*) ما يعبر نزول السطر، فنبدله مؤقتاً بحرف خاص أثناء التحليل
+{const PUA=String.fromCharCode(0xE001),PUA_G=new RegExp(PUA,'g');const back=v=>typeof v==='string'?v.replace(PUA_G,SBR):v;
+ const _pi=parseItems;parseItems=function(txt){const s=String(txt==null?'':txt);if(!s.includes(SBR))return _pi(s);
+  return _pi(s.replace(SBR_G,PUA)).map(it=>{for(const k in it){if(typeof it[k]==='string')it[k]=back(it[k]);else if(k==='rows'&&Array.isArray(it[k]))it[k]=it[k].map(r=>r.map(back))}return it})}}
+
+/* ---- "وزاري" + س = سؤال وزاري ---- */
+BOXK['سؤال وزاري']='q';BOXK['وزاري']='q';
+const WZ_A=/^\s*\**\s*\(?\s*(?:سؤال\s+)?وزار(?:ي|ية)\s*([0-9٠-٩\/\-\s]*(?:(?:د|دور)\s*[0-9٠-٩]+|(?:دور\s*)?(?:أول|اول|ثاني|ثالث|تمهيدي))?[0-9٠-٩\/\-\s]*)\)?\s*[:：\-–]?\s*س\s*[0-9٠-٩]*\s*[\/:：\-.)]?\s*(.*)$/;
+const WZ_B=/^\s*\**\s*س\s*[0-9٠-٩]*\s*[\/:：\-.)]?\s*[\(\[]?\s*وزار(?:ي|ية)\s*([0-9٠-٩\/\-\s]*(?:(?:د|دور)\s*[0-9٠-٩]+|(?:دور\s*)?(?:أول|اول|ثاني|ثالث|تمهيدي))?[0-9٠-٩\/\-\s]*)[\)\]]?\s*[:：\-–\/]?\s*(.*)$/;
+function hwWz(l){const t=String(l).replace(/\*\*$/,'');const m=t.match(WZ_A)||t.match(WZ_B);if(!m)return null;const yr=(m[1]||'').replace(/\s+/g,' ').trim();
+ return '[سؤال وزاري] '+(yr?'('+yr+') ':'')+m[2].trim()}
+{const _q=hwQAmd;hwQAmd=function(l){const s=String(l);const[a,...r]=s.split(SBR);const w=hwWz(a);return (w||_q(a))+(r.length?SBR+r.join(SBR):'')}}
+{const _isq=hwIsQ;hwIsQ=function(l){return !!hwWz(l)||/^\[سؤال وزاري\]/.test(String(l).trim())||_isq(l)}}
+{const _st=hwIsStop;hwIsStop=function(l){return !!hwWz(l)||_st(l)}}
+if(typeof W_BOX==='object'&&W_BOX['سؤال'])W_BOX['سؤال وزاري']=W_BOX['سؤال'];
 
 {const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
 {const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}
