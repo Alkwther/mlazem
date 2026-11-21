@@ -5959,6 +5959,29 @@ async function nsSwitch(id){id=id||'guest';if(id===UNS&&!(id!=='guest'&&!localSt
 // نربطه بتسجيل الدخول/الخروج
 if(typeof firebase!=='undefined'||true){const _ia=initAuth;initAuth=function(){_ia();try{FB&&FB.auth&&FB.auth.onAuthStateChanged(u=>{nsSwitch(u?u.uid:'guest')})}catch(e){}}}
 
+/* ===== شريط خط اليد السفلي: صغير ومرتب ===== */
+hwFoot=function(){const f=$('#ptF');if(!f||!HW)return;const P=HW.pages,rd=P.filter(p=>p.md).length,ok=P.filter(p=>p.ok).length,un=P.reduce((a,p)=>a+hwUns(p.md||''),0);
+ const fr=hwFree(),pr=HWPRICE(),done=P.filter(p=>p.paid&&p.md).length,wait=P.filter(p=>p.paid&&!p.md).length;
+ const ch=(i,t,c)=>`<span class="hfc ${c||''}">${i} ${t}</span>`;
+ f.classList.add('hwft');
+ f.innerHTML=`<div class="hfr">${ch('📄',`انقرت <b>${rd}/${P.length}</b>`)}${ch('✅',`مراجعة <b>${ok}</b>`)}${un?ch('🟡',`<b>${un}</b> كلمة`,'wr'):''}
+  ${fr?ch('🆓','مجاني','ok'):ch('💰',`سعر الصفحة <b>${fmt(pr)}</b>`)+ch('💳',`انخصم <b>${fmt(done*pr)}</b>`)}${wait?ch('⏳',`${wait} قيد القراءة`,'wt'):''}${HW.left!=null?ch('📅',`باقي اليوم <b>${HW.left}</b>`,HW.left?'':'wr'):''}</div>
+  ${wait?'<div class="hfn">إذا الصفحة ما انقرت يرجعلك سعرها</div>':''}
+  <div class="hfb"><button class="btn primary" ${rd<P.length?'disabled':''} onclick="hwBuild()">📘 تكوين الملزمة <small>(${P.length} صفحة)</small></button><button class="btn hfx" onclick="hwCancel()" title="إلغاء">🗑<small>إلغاء</small></button></div>`};
+{const st=document.createElement('style');st.textContent=`
+#ptF.hwft{display:block;padding:8px 10px calc(8px + env(safe-area-inset-bottom))}
+.hwft .hfr{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;padding-bottom:7px;white-space:nowrap}
+.hwft .hfr::-webkit-scrollbar{display:none}
+.hwft .hfc{flex:0 0 auto;font-size:12px;background:#f1f5f9;color:#334155;border-radius:999px;padding:4px 9px;font-weight:600}
+.hwft .hfc b{color:#0f172a}.hwft .hfc.ok{background:#dcfce7;color:#166534}.hwft .hfc.wr{background:#fef3c7;color:#92400e}.hwft .hfc.wt{background:#e0e7ff;color:#3730a3}
+.hwft .hfn{font-size:11px;color:#64748b;text-align:center;margin:-2px 0 6px}
+#ptF.hwft .hfb{display:flex;gap:8px;align-items:stretch}
+#ptF.hwft .hfb .btn{flex:0 0 auto!important;padding:9px 12px!important;font-size:14px!important;border-radius:12px!important;min-height:0!important;line-height:1.25!important;white-space:nowrap}
+#ptF.hwft .hfb .btn.primary{flex:1 1 auto!important}#ptF.hwft .hfb .btn small{font-weight:500;opacity:.85;font-size:12px}
+#ptF.hwft .hfb .hfx{display:flex!important;flex-direction:row;align-items:center;gap:4px;background:#fef2f2!important;color:#b91c1c!important;font-size:13px!important}
+#ptF.hwft .hfb .hfx small{font-size:13px}
+#ptool .ptb{padding-bottom:150px}`;document.head.appendChild(st)}
+
 {const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
 {const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}
 {const _ap=applyPick;applyPick=function(img){const T=pTarget;if(T&&T.kind==='kidColor'){closePicker();const o=overlay('🖍️ جاري تحويلها لرسمة تلوين...');kLineArt(img.src).then(r=>{o.remove();kAdd([{kind:'color',src:r.src,word:'',lang:'ar'}])}).catch(()=>{o.remove();kAdd([{kind:'color',src:img.src,word:'',lang:'ar'}])});return}return _ap.apply(this,arguments)}}
