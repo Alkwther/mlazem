@@ -5847,14 +5847,14 @@ const ARN=t=>(String(t).match(/[ء-ي]/g)||[]).length,LTN=t=>(String(t).match(/[
 function hwProse(l){const t=String(l).trim();if(!t||/^(#|[-•]\s|\||\[|=|!|---|─|[0-9٠-٩]+\s*[-.)]|[أابجده]\s*[-)])/.test(t))return false;return ARN(t)>=5&&ARN(t)>LTN(t)}
 const NEWPART=/^\s*(احسب|جد|اوجد|أوجد|فما|ما\s|ماذا|اذكر|عرف|عرّف|علل|وضح|بين|بيّن|قارن|اشرح|[0-9٠-٩]+\s*[-.)]|[أابجده]\s*[-)]|[-•])/;
 const ENDS=/[.:؟?!؛]\s*$/;
-function hwJoin(prev,next){return hwProse(prev.split(SBR).pop().replace(/^\s*\[[^\]]*\]\s*/,''))&&hwProse(next)&&!ENDS.test(prev)&&!NEWPART.test(next)?' ':SBR}
+function hwLnJoin(prev,next){return hwProse(prev.split(SBR).pop().replace(/^\s*\[[^\]]*\]\s*/,''))&&hwProse(next)&&!ENDS.test(prev)&&!NEWPART.test(next)?' ':SBR}
 function hwHardStop(l){const t=String(l).trim();return !t||/^(#|\||\[|---|─)/.test(t)||/^\[\[شكل/.test(t)}
 hwMergeQ=function(md){const L=String(md||'').split('\n'),out=[];
  for(let i=0;i<L.length;i++){let l=L[i];const t=l.trim();
   const w=hwWz(t),sol=!w&&hwSol(t);
-  if(w||hwIsQ(t)){l=w||t;let n=0;while(i+1<L.length&&n<10&&!hwIsStop(L[i+1])&&!hwWz(L[i+1])&&!hwSol(L[i+1])){const nx=L[i+1].trim();l+=hwJoin(l,nx)+nx;i++;n++}out.push(l);continue}
+  if(w||hwIsQ(t)){l=w||t;let n=0;while(i+1<L.length&&n<10&&!hwIsStop(L[i+1])&&!hwWz(L[i+1])&&!hwSol(L[i+1])){const nx=L[i+1].trim();l+=hwLnJoin(l,nx)+nx;i++;n++}out.push(l);continue}
   if(sol){l='['+sol.lab+'] '+sol.t;let first=!sol.t,n=0;
-   while(i+1<L.length&&n<40){const nx=L[i+1].trim();if(hwHardStop(nx)||hwIsQ(nx)||hwWz(nx)||hwSol(nx))break;if(n>0&&ARN(nx)>=12&&ARN(nx)>LTN(nx)*2&&!/^(بما|نعوض|اذن|إذن|لذلك|وعليه|حيث|نستخدم|بالتعويض)/.test(nx)&&!hwProse(l.split(SBR).pop()))break;l+=(first?'':hwJoin(l,nx))+nx;first=false;i++;n++}
+   while(i+1<L.length&&n<40){const nx=L[i+1].trim();if(hwHardStop(nx)||hwIsQ(nx)||hwWz(nx)||hwSol(nx))break;if(n>0&&ARN(nx)>=12&&ARN(nx)>LTN(nx)*2&&!/^(بما|نعوض|اذن|إذن|لذلك|وعليه|حيث|نستخدم|بالتعويض)/.test(nx)&&!hwProse(l.split(SBR).pop()))break;l+=(first?'':hwLnJoin(l,nx))+nx;first=false;i++;n++}
    out.push(l);continue}
   // فقرة عادية: إذا السطر انقطع لأن الورقة خلصت، نكمله بنفس السطر
   if(hwProse(t)&&out.length&&hwProse(out[out.length-1])&&!/\[/.test(out[out.length-1].slice(0,1))&&!ENDS.test(out[out.length-1])&&!NEWPART.test(t)&&!hwQA(t)){out[out.length-1]+=' '+t;continue}
