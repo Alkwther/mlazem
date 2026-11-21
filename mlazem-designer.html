@@ -5999,6 +5999,43 @@ setInterval(()=>{try{if(!HW||!document.getElementById('ptool'))return;const P=HW
  if(pend&&HWBUSY&&!busy){HWBUSY=0}
  if(pend&&!HWBUSY)hwRun()}catch(e){}},4000);
 
+/* ===================== زر "تنزيل للهاتف": الاسم + المادة + PDF أو Word ===================== */
+function openDownload(){if(S.demo||DEMO){return exportPDF()}
+ let m=document.getElementById('dlM');if(m)m.remove();m=document.createElement('div');m.className='modal ui';m.id='dlM';
+ const L=S.lock,tch=(L?L.teacher:S.teacher)||'',n=document.querySelectorAll('#pages .page').length;
+ m.innerHTML=`<div class="sheet dlsh"><div class="dlhd"><b>⬇️ تنزيل الملزمة للهاتف</b><button class="dlx" aria-label="إغلاق">✕</button></div>
+  <div class="dlinfo">📘 ${esc(S.title||'ملزمة')} — ${n} صفحة</div>
+  <label class="f">👤 اسم الأستاذ</label><input class="in" id="dlT" value="${esc(tch)}" placeholder="مثلاً: أ. علي حسين" ${L?'disabled':''}>
+  ${L?'<div class="dlnote">🔒 الاسم مثبّت على هاي الملزمة من أول تنزيل</div>':''}
+  <label class="f">📚 المادة</label><input class="in" id="dlS" value="${esc(S.subject||'')}" placeholder="مثلاً: الكيمياء">
+  <div class="dlbtns"><button class="dlb dpdf"><i>📕</i><b>PDF</b><small>للطباعة والمشاركة</small></button><button class="dlb dwd"><i>📘</i><b>Word</b><small>للتعديل بالورد</small></button></div>
+  <div class="dlnote">💡 تدفع الصفحات مرة وحدة بس — بعدها تكدر تنزّلها PDF أو Word كل ما تريد بدون خصم</div></div>`;
+ document.body.appendChild(m);const close=()=>m.remove();
+ m.onclick=e=>{if(e.target===m)close()};m.querySelector('.dlx').onclick=close;
+ const go=async kind=>{const t=$('#dlT').value.trim(),s=$('#dlS').value.trim();
+  if(!t||(!L&&/^الأستاذ\s*(\.{2,}|…)?$/.test(t))){$('#dlT').focus();$('#dlT').select();$('#dlT').classList.add('dlerr');toast('اكتب اسم الأستاذ الحقيقي');return}
+  if(!L)S.teacher=t;S.subject=s;bindInfo();saveNow();close();
+  if(kind==='pdf')exportPDF();else exportWord()};
+ m.querySelector('.dpdf').onclick=()=>go('pdf');m.querySelector('.dwd').onclick=()=>go('word');
+ setTimeout(()=>{if(!tch)$('#dlT').focus()},250)}
+// كل أزرار PDF القديمة صارت "تنزيل"
+function dlWire(){document.querySelectorAll('[onclick="exportPDF()"]').forEach(b=>{b.setAttribute('onclick','openDownload()');
+  if(b.classList.contains('ab3'))b.innerHTML='<i>⬇️</i>تنزيل';else if(b.classList.contains('pdfb'))b.innerHTML=b.querySelector('b')?'<b>⬇️</b>تنزيل':'<i>⬇️</i>تنزيل';else b.textContent='⬇️ تنزيل PDF / Word'})}
+dlWire();setTimeout(dlWire,1500);
+{const st=document.createElement('style');st.textContent=`
+html body #vPreview .abar button.wd,html body #fsBar button.wdb{display:none!important}
+html body.ishw.pscr #vPreview .abar{grid-template-columns:1fr 1.3fr 1fr!important}
+#dlM{align-items:flex-end;z-index:200}.dlsh{padding:16px 16px calc(16px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0}
+.dlhd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.dlhd b{font-size:18px}
+.dlx{width:38px;height:38px;border-radius:12px;border:0;background:#eef2f9;font-size:16px}
+.dlinfo{background:#f1f5f9;border-radius:12px;padding:8px 10px;font-size:13px;color:#334155;margin-bottom:8px}
+.dlsh label.f{display:block;font-weight:700;font-size:13px;margin:8px 0 4px}.dlsh .in{width:100%}.dlsh .in.dlerr{border-color:#e11d48}
+.dlnote{font-size:12px;color:#64748b;margin-top:6px;line-height:1.7}
+.dlbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.dlb{border:0;border-radius:16px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;color:#fff;font-family:inherit;cursor:pointer;box-shadow:0 6px 16px rgba(16,32,72,.15)}
+.dlb i{font-style:normal;font-size:24px}.dlb b{font-size:16px}.dlb small{font-size:11.5px;opacity:.9}
+.dlb.dpdf{background:linear-gradient(135deg,#e11d48,#be123c)}.dlb.dwd{background:linear-gradient(135deg,#2563eb,#1d4ed8)}`;document.head.appendChild(st)}
+
 {const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
 {const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}
 {const _ap=applyPick;applyPick=function(img){const T=pTarget;if(T&&T.kind==='kidColor'){closePicker();const o=overlay('🖍️ جاري تحويلها لرسمة تلوين...');kLineArt(img.src).then(r=>{o.remove();kAdd([{kind:'color',src:r.src,word:'',lang:'ar'}])}).catch(()=>{o.remove();kAdd([{kind:'color',src:img.src,word:'',lang:'ar'}])});return}return _ap.apply(this,arguments)}}
