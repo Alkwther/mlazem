@@ -5988,6 +5988,9 @@ hwFoot=function(){const f=$('#ptF');if(!f||!HW)return;const P=HW.pages,rd=P.filt
 /* للمدير بس: سبب الفشل التقني تحت زر إعادة المحاولة (حتى نعرف المشكلة) */
 {const _c5=hwCard;hwCard=function(i){_c5(i);const p=HW&&HW.pages[i],el=document.getElementById('hwc'+i);if(!IS_ADMIN||!p||!el||p.md||!p.err||!p.dbg)return;
  const d=document.createElement('div');d.style.cssText='direction:ltr;font-size:11px;color:#94a3b8;margin-top:6px;word-break:break-all;text-align:left';d.textContent='🛠 '+String(p.dbg).slice(0,300);el.appendChild(d)}}
+// صفحة علقت "جاري القراءة" (البرنامج انسد بنصها) ترجع تنقرا
+{const _r6=hwRun;hwRun=function(){if(HW&&HW.pages){const now=Date.now();HW.pages.forEach(p=>{if(p.busy&&!p.md&&now-p.busy>200000)p.busy=0})}return _r6()}}
+{const _os=hwOpenSaved;hwOpenSaved=async function(){const s=await DB.get('hw:cur');if(s&&s.pages)s.pages.forEach(p=>p.busy=0),DB.set('hw:cur',s);return _os()}}
 
 {const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
 {const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}

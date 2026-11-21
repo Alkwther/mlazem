@@ -632,7 +632,7 @@ async function hwReq(m,body,q){if(!R2U)throw new Error('noworker');const t=await
 async function hwLoad(){const b=$('#hwBody');if(!b)return;if(!R2U){b.innerHTML='⚠️ اربط رابط الـ Worker من الإعدادات أولاً';return}
  try{HWS=await hwReq('GET');hwRender()}catch(e){b.innerHTML=/admin only|403/.test(e.message)?'⚠️ حدّث كود الـ Worker على Cloudflare حتى تظهر الإحصائيات':'⚠️ تعذّر التحميل — '+esc(e.message)}}
 function hwRender(){const b=$('#hwBody');if(!b||!HWS)return;const D=HWS.days||{},T=D[HWS.today]||{n:0,gem:0,cf:0,usd:0,u:{}};
- let mn=0,mg=0,mc=0,mu=0;const per={};Object.values(D).forEach(d=>{mn+=d.n||0;mg+=d.gem||0;mc+=d.cf||0;mu+=d.usd||0;Object.entries(d.u||{}).forEach(([k,v])=>{per[k]=(per[k]||0)+(v.n||0)})});
+ let mn=0,mg=0,mc=0,mu=0,mf=0;const per={};Object.values(D).forEach(d=>{mn+=d.n||0;mg+=(d.paid||0)+(d.gem||0);mf+=d.free||0;mc+=d.cf||0;mu+=d.usd||0;Object.entries(d.u||{}).forEach(([k,v])=>{per[k]=(per[k]||0)+(v.n||0)})});
  const c=HWS.credit||{bal:0,spent:0},bal=+c.bal||0,lastTop=(c.top||[]).slice().reverse().find(x=>x.add||x.set),base=lastTop?(lastTop.add||lastTop.set):10;
  const avg=mg?mu/mg:0,leftPages=avg?Math.floor(Math.max(0,bal)/avg):0,low=!!(HWS.flag&&HWS.flag.nocredit)||bal<Math.max(1,base*.2);
  const name=k=>{const d=DES.find(x=>x.id===k);return d?(d.name||d.phone||k):((Object.values(D).map(x=>x.u&&x.u[k]&&x.u[k].e).find(Boolean))||k.slice(0,8))};
@@ -640,10 +640,14 @@ function hwRender(){const b=$('#hwBody');if(!b||!HWS)return;const D=HWS.days||{}
  b.className='';b.innerHTML=`<div class="hwbal ${low?'low':''}"><small>💳 رصيد Gemini المتبقي (تقديري)</small><b>$${bal.toFixed(2)}</b>
   <div style="font-size:13px">${HWS.flag&&HWS.flag.nocredit?'⛔ Google أوقفت القراءة — الرصيد خلص. <b>لازم تشحن هسه</b> (القراءة شغالة مؤقتاً من Cloudflare المجاني)':low?'⚠️ الرصيد قليل — <b>لازم تشحن</b>':'✅ يكفي تقريباً لـ '+fmt(leftPages)+' صفحة'}</div>
   <div class="hwbar"><i style="width:${Math.max(2,Math.min(100,bal/base*100))}%"></i></div></div>
+ ${(()=>{const K=HWS.keys||{},fo=HWS.freeOut||{m:[]};let h='';
+  h+=`<div class="hwrow" style="border:0;background:${fo.m&&fo.m.length?'#fff7ed':'#f0fdf4'};border-radius:10px;padding:9px 10px;margin-bottom:8px"><span>🆓 Gemini المجاني اليوم</span><b>${!K.free?'⚠️ مفتاحه مو مضاف':fo.m&&fo.m.length?'خلص — يقرا بالمدفوع لحد 11 الصبح':'شغّال ✅'}</b></div>`;
+  if(!K.paid)h+=`<div class="muted" style="color:#b45309;margin-bottom:8px">⚠️ مفتاح المدفوع (GEMINI_KEY_PAID) مو مضاف بالـ Worker — إذا خلص المجاني يقرا من Cloudflare</div>`;return h})()}
  <div class="hwk"><div><small>صفحات اليوم</small><b>${fmt(T.n||0)}</b></div><div><small>صفحات هذا الشهر</small><b>${fmt(mn)}</b></div>
-  <div><small>قراءة Gemini / Cloudflare</small><b style="font-size:16px">${fmt(mg)} / ${fmt(mc)}</b></div><div><small>صرف Gemini هذا الشهر</small><b style="font-size:16px">$${mu.toFixed(2)}</b><small>${avg?'≈ $'+avg.toFixed(4)+' للصفحة':''}</small></div></div>
+  <div><small>مجاني / مدفوع / Cloudflare</small><b style="font-size:16px">${fmt(mf)} / ${fmt(mg)} / ${fmt(mc)}</b></div><div><small>صرف المدفوع هذا الشهر</small><b style="font-size:16px">$${mu.toFixed(2)}</b><small>${avg?'≈ $'+avg.toFixed(4)+' للصفحة':''}</small></div></div>
  <div style="font-weight:800;margin:6px 0">👨‍🏫 الأساتذة هذا الشهر (حد كل أستاذ ${HWS.limit} صفحة باليوم)</div>
  ${top.length?top.map(([k,n])=>`<div class="hwrow"><span>${esc(name(k))}</span><b>${fmt(n)} صفحة</b></div>`).join(''):'<div class="muted">ما اكو تحويل بعد</div>'}
+ <button class="btn sm" style="width:100%;margin-top:12px" onclick="hwTestRun()">🧪 فحص خدمة قراءة خط اليد</button><div id="hwTestOut"></div>
  <div style="font-weight:800;margin:12px 0 4px">➕ سجّل شحنة جديدة بحساب Google</div>
  <div class="hwtop"><input class="in" id="hwAdd" inputmode="decimal" placeholder="المبلغ بالدولار مثلاً 10" dir="ltr"><button class="btn primary sm" onclick="hwTop('add')">إضافة</button></div>
  <div class="hwtop"><input class="in" id="hwSet" inputmode="decimal" placeholder="تصحيح: الرصيد الحقيقي من AI Studio" dir="ltr"><button class="btn sm" onclick="hwTop('set')">تصحيح</button></div>
@@ -651,6 +655,11 @@ function hwRender(){const b=$('#hwBody');if(!b||!HWS)return;const D=HWS.days||{}
 async function hwTop(k){const v=+String($(k==='add'?'#hwAdd':'#hwSet').value).replace(/[^\d.]/g,'');if(k==='add'&&!v){toast('اكتب المبلغ');return}
  try{await hwReq('POST',k==='add'?{add:v}:{set:v});toast('تم ✓');hwLoad()}catch(e){toast('تعذّر: '+e.message)}}
 setInterval(()=>{if(FB&&FB.auth&&FB.auth.currentUser&&!$('#vHome').classList.contains('hidden'))hwLoad()},60000);
+
+async function hwTestRun(){const o=$('#hwTestOut');o.innerHTML='<div class="muted" style="text-align:center;padding:8px">⏳ جاري الفحص (حتى دقيقة)...</div>';
+ try{const r=await hwReq('GET',null,'?test=1');const row=(n,x,tip)=>`<div class="hwrow" style="align-items:flex-start"><span>${n}</span><b style="color:${x&&x.ok?'#15803d':'#b91c1c'};max-width:65%;text-align:left;direction:ltr;font-size:12px;word-break:break-all">${x==null?'—':x.ok?'✅ شغّال'+(x.model?' ('+esc(x.model)+')':''):'❌ '+esc(x.why||x.status||'')}</b></div>${x&&!x.ok&&tip?`<div class="muted" style="font-size:12px;margin-bottom:6px">💡 ${tip}</div>`:''}`;
+  o.innerHTML=row('🆓 Gemini المجاني (GEMINI_KEY)',r.free,'تأكد إن المفتاح صحيح ومنسوخ كامل، وإنه Secret باسم GEMINI_KEY بالضبط')+row('💳 Gemini المدفوع (GEMINI_KEY_PAID)',r.paid,'إذا ما سويت المشروع المدفوع بعد، هذا طبيعي')+row('☁️ Cloudflare AI',r.cf,'لازم ربط Workers AI باسم AI بإعدادات الـ Worker')+row('🗄 التخزين R2',{ok:r.bucket,why:'ربط BUCKET ناقص'},'')}
+ catch(e){o.innerHTML=`<div style="color:#b91c1c;padding:8px">❌ ${esc(e.message)} — ${/403|admin only/.test(e.message)?'سجّل دخول بحساب المدير':/noworker/.test(e.message)?'اربط رابط الـ Worker من الإعدادات':'تأكد إنك رفعت كود الـ Worker الجديد'}</div>`}}
 </script>
 </body>
 </html>
