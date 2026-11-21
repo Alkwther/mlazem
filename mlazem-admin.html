@@ -41,6 +41,9 @@ button,input,select{font-family:inherit;font-size:15px}
 .view{padding:12px;max-width:760px;margin:0 auto}
 .card{background:#fff;border-radius:14px;padding:12px;margin-bottom:12px;box-shadow:0 1px 4px #0001}
 .card h2{font-size:15px;color:#1b2a4a;margin-bottom:8px}
+.hwk{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.hwk div{background:#f6f8fc;border-radius:12px;padding:10px}.hwk small{color:#6b7585;font-weight:700;font-size:12px}.hwk b{display:block;font-size:20px;font-weight:900;color:#1b2a4a}
+.hwbal{border-radius:14px;padding:12px;margin-bottom:10px;color:#fff;background:linear-gradient(135deg,#0f766e,#14b8a6)}.hwbal.low{background:linear-gradient(135deg,#b91c1c,#ef4444)}.hwbal>b{font-size:26px;font-weight:900;display:block}.hwbar{height:8px;border-radius:8px;background:#ffffff55;margin-top:8px;overflow:hidden}.hwbar i{display:block;height:100%;background:#fff}
+.hwrow{display:flex;justify-content:space-between;padding:7px 2px;border-bottom:1px solid #eef1f6;font-size:14px}.hwtop{display:flex;gap:6px;margin-top:8px}.hwtop .in{flex:1}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .st{background:#fff;border-radius:14px;padding:12px;box-shadow:0 1px 4px #0001}
 .st small{color:#6b7585;font-weight:700;font-size:12px}
@@ -114,6 +117,7 @@ pre{background:#1d2430;color:#d6e2ff;border-radius:10px;padding:10px;font-size:1
   <div class="st p"><small>مجموع أرصدة المشتركين</small><b id="sBal">0</b></div>
   <div class="st"><small>أكواد غير مستخدمة</small><b id="sUnused" style="font-size:15px">-</b></div>
  </div>
+ <div class="card" id="hwCard"><h2>✍️ تحويل خط اليد + رصيد Gemini</h2><div id="hwBody" class="muted">⏳ جاري التحميل...</div></div>
  <div class="card"><h2>👥 آخر المشتركين</h2><div id="lastDes"></div></div>
  <div class="card"><h2>🏆 الأكثر استخداماً بالفترة</h2><div id="topDes"></div></div>
 </div>
@@ -401,7 +405,7 @@ document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.quer
 function segs(){
  const mk=(el,list,cur,cb)=>{el.innerHTML=list.map(([k,l])=>`<button class="${k===cur?'on':''}" data-k="${k}">${l}</button>`).join('');el.querySelectorAll('button').forEach(b=>b.onclick=()=>cb(b.dataset.k))};
  mk($('#perSeg'),PERS,PER,k=>{PER=k;segs();loadTx()});mk($('#perSeg2'),PERS,PER,k=>{PER=k;segs();loadTx()});
- mk($('#typeSeg'),[['all','الكل'],['ready','جاهزة'],['export','حفظ'],['code','أكواد'],['admin','شحن إدارة'],['deduct','خصم إدارة']],TXTYPE,k=>{TXTYPE=k;segs();renderTx()});
+ mk($('#typeSeg'),[['all','الكل'],['hw','خط يد'],['ready','جاهزة'],['export','حفظ'],['code','أكواد'],['admin','شحن إدارة'],['deduct','خصم إدارة']],TXTYPE,k=>{TXTYPE=k;segs();renderTx()});
 }
 
 /* ---- login ---- */
@@ -422,7 +426,7 @@ function startData(){
  unsubs.push(FB.db.collection('codes').orderBy('createdAt','desc').limit(500).onSnapshot(q=>{CODES=q.docs.map(d=>({id:d.id,...d.data()}));renderCodes();renderHome()}));
  FB.db.doc('settings/main').get().then(async s=>{let v=s.exists?s.data():{};
   if(!s.exists||v.pricePerPage==null||v.trialPages==null){v={pricePerPage:v.pricePerPage||150,trialPages:v.trialPages!=null?v.trialPages:3};await FB.db.doc('settings/main').set(v,{merge:true})}
-  PRICE=+v.pricePerPage;$('#price').value=PRICE;$('#trial').value=v.trialPages;$('#cvp').value=v.coverPrice!=null?v.coverPrice:'';RPP=+v.readyPagePrice||0;$('#rpp').value=RPP||'';R2U=v.r2Url||'';$('#r2u').value=R2U;renderReady()});
+  PRICE=+v.pricePerPage;$('#price').value=PRICE;$('#trial').value=v.trialPages;$('#cvp').value=v.coverPrice!=null?v.coverPrice:'';RPP=+v.readyPagePrice||0;$('#rpp').value=RPP||'';R2U=v.r2Url||'';$('#r2u').value=R2U;renderReady();hwLoad()});
  unsubs.push(FB.db.collection('ready').onSnapshot(q=>{RD=q.docs.map(d=>({id:d.id,...d.data()}));RD.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));renderReady()},e=>{$('#rdList').innerHTML='<div class="muted" style="padding:16px;color:#c62828">⚠️ حدّث قواعد Firebase من الإعدادات حتى تشتغل الملازم الجاهزة</div>'}));
  unsubs.push(FB.db.collection('secrets').onSnapshot(q=>{SECRETS={};q.docs.forEach(d=>SECRETS[d.id]=d.data());renderDes()}));
  unsubs.push(FB.db.collection('booklets').orderBy('lastAt','desc').limit(500).onSnapshot(q=>{BK=q.docs.map(d=>({id:d.id,...d.data()}));renderBk();renderReady()}));
@@ -437,8 +441,8 @@ async function loadTx(){
 function renderHome(){
  let pages=0,spent=0,ref=0,refPg=0,codes=0,manual=0,exps=0;const per={};
  TX.forEach(t=>{const u=per[t.uid]=per[t.uid]||{name:t.name,pages:0,amt:0};
-  if(t.type==='page'){pages+=t.pages||0;spent+=-(t.amount||0);u.pages+=t.pages||0;u.amt+=-(t.amount||0)}
-  else if(t.type==='refund'){ref+=t.amount||0;refPg+=t.pages||0;u.pages-=t.pages||0;u.amt-=t.amount||0}
+  if(t.type==='page'||t.type==='hw'){pages+=t.pages||0;spent+=-(t.amount||0);u.pages+=t.pages||0;u.amt+=-(t.amount||0)}
+  else if(t.type==='refund'||t.type==='hwrefund'){ref+=t.amount||0;refPg+=t.pages||0;u.pages-=t.pages||0;u.amt-=t.amount||0}
   else if(t.type==='export')exps++;
   else if(t.type==='code')codes+=t.amount||0;else if(t.type==='admin')manual+=t.amount||0});
  $('#sPages').textContent=fmt(pages);$('#sSpent').textContent=fmt(spent-ref);$('#sRef').textContent=fmt(refPg);$('#sKinds').textContent=fmt(exps);
@@ -560,7 +564,7 @@ function renderCodes(){
 async function delCode(id){if(!confirm('حذف الكود '+id+'؟'))return;await FB.db.doc('codes/'+id).delete();toast('تم الحذف')}
 
 /* ---- transactions ---- */
-const TN={ready:'شراء ملزمة جاهزة',page:'إضافة صفحات',refund:'إرجاع صفحات',export:'حفظ PDF',code:'شحن بكود',admin:'شحن من الإدارة',deduct:'خصم من الإدارة'},KN={pdf:'PDF',word:'Word',print:'طباعة'};
+const TN={hw:'✍️ تحويل خط يد',hwrefund:'↩️ إرجاع تحويل خط يد',ready:'شراء ملزمة جاهزة',page:'إضافة صفحات',refund:'إرجاع صفحات',export:'حفظ PDF',code:'شحن بكود',admin:'شحن من الإدارة',deduct:'خصم من الإدارة'},KN={pdf:'PDF',word:'Word',print:'طباعة'};
 function txRow(t){return `<div class="item" style="cursor:default"><div class="mid"><b>${TN[t.type]||t.type}${t.kind?' '+KN[t.kind]:''}${t.pages?' — '+t.pages+' صفحة':''}${t.free?' (🎁 '+t.free+' مجانية)':''}</b>${t.teacher?'<span class="muted"> 👨‍🏫 '+esc(t.teacher)+'</span>':''}
  <span class="muted">${esc(t.name||'')} ${t.title?'• '+esc(t.title):''}${t.note?' • '+esc(t.note):''}${t.code?' • '+t.code:''} • ${dstr(t.at)}</span></div><span class="amt ${t.amount>0?'p':'n'}">${t.amount>0?'+':''}${fmt(t.amount)}</span></div>`}
 function renderTx(){const l=TX.filter(t=>TXTYPE==='all'||t.type===TXTYPE);
@@ -621,6 +625,32 @@ async function savePrice(){const p=Math.round(+normD($('#price').value)),t=Math.
  }
  setTimeout(()=>{if(!deferred)show()},ios?2500:6000);
 })();
+
+/* ---- تحويل خط اليد + رصيد Gemini (من الـ Worker) ---- */
+let HWS=null;
+async function hwReq(m,body,q){if(!R2U)throw new Error('noworker');const t=await FB.auth.currentUser.getIdToken();const r=await fetch(R2U.replace(/\/+$/,'')+'/admin/hwstats'+(q||''),{method:m,headers:{Authorization:'Bearer '+t,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||('e'+r.status));return j}
+async function hwLoad(){const b=$('#hwBody');if(!b)return;if(!R2U){b.innerHTML='⚠️ اربط رابط الـ Worker من الإعدادات أولاً';return}
+ try{HWS=await hwReq('GET');hwRender()}catch(e){b.innerHTML=/admin only|403/.test(e.message)?'⚠️ حدّث كود الـ Worker على Cloudflare حتى تظهر الإحصائيات':'⚠️ تعذّر التحميل — '+esc(e.message)}}
+function hwRender(){const b=$('#hwBody');if(!b||!HWS)return;const D=HWS.days||{},T=D[HWS.today]||{n:0,gem:0,cf:0,usd:0,u:{}};
+ let mn=0,mg=0,mc=0,mu=0;const per={};Object.values(D).forEach(d=>{mn+=d.n||0;mg+=d.gem||0;mc+=d.cf||0;mu+=d.usd||0;Object.entries(d.u||{}).forEach(([k,v])=>{per[k]=(per[k]||0)+(v.n||0)})});
+ const c=HWS.credit||{bal:0,spent:0},bal=+c.bal||0,lastTop=(c.top||[]).slice().reverse().find(x=>x.add||x.set),base=lastTop?(lastTop.add||lastTop.set):10;
+ const avg=mg?mu/mg:0,leftPages=avg?Math.floor(Math.max(0,bal)/avg):0,low=!!(HWS.flag&&HWS.flag.nocredit)||bal<Math.max(1,base*.2);
+ const name=k=>{const d=DES.find(x=>x.id===k);return d?(d.name||d.phone||k):((Object.values(D).map(x=>x.u&&x.u[k]&&x.u[k].e).find(Boolean))||k.slice(0,8))};
+ const top=Object.entries(per).sort((a,b)=>b[1]-a[1]).slice(0,10);
+ b.className='';b.innerHTML=`<div class="hwbal ${low?'low':''}"><small>💳 رصيد Gemini المتبقي (تقديري)</small><b>$${bal.toFixed(2)}</b>
+  <div style="font-size:13px">${HWS.flag&&HWS.flag.nocredit?'⛔ Google أوقفت القراءة — الرصيد خلص. <b>لازم تشحن هسه</b> (القراءة شغالة مؤقتاً من Cloudflare المجاني)':low?'⚠️ الرصيد قليل — <b>لازم تشحن</b>':'✅ يكفي تقريباً لـ '+fmt(leftPages)+' صفحة'}</div>
+  <div class="hwbar"><i style="width:${Math.max(2,Math.min(100,bal/base*100))}%"></i></div></div>
+ <div class="hwk"><div><small>صفحات اليوم</small><b>${fmt(T.n||0)}</b></div><div><small>صفحات هذا الشهر</small><b>${fmt(mn)}</b></div>
+  <div><small>قراءة Gemini / Cloudflare</small><b style="font-size:16px">${fmt(mg)} / ${fmt(mc)}</b></div><div><small>صرف Gemini هذا الشهر</small><b style="font-size:16px">$${mu.toFixed(2)}</b><small>${avg?'≈ $'+avg.toFixed(4)+' للصفحة':''}</small></div></div>
+ <div style="font-weight:800;margin:6px 0">👨‍🏫 الأساتذة هذا الشهر (حد كل أستاذ ${HWS.limit} صفحة باليوم)</div>
+ ${top.length?top.map(([k,n])=>`<div class="hwrow"><span>${esc(name(k))}</span><b>${fmt(n)} صفحة</b></div>`).join(''):'<div class="muted">ما اكو تحويل بعد</div>'}
+ <div style="font-weight:800;margin:12px 0 4px">➕ سجّل شحنة جديدة بحساب Google</div>
+ <div class="hwtop"><input class="in" id="hwAdd" inputmode="decimal" placeholder="المبلغ بالدولار مثلاً 10" dir="ltr"><button class="btn primary sm" onclick="hwTop('add')">إضافة</button></div>
+ <div class="hwtop"><input class="in" id="hwSet" inputmode="decimal" placeholder="تصحيح: الرصيد الحقيقي من AI Studio" dir="ltr"><button class="btn sm" onclick="hwTop('set')">تصحيح</button></div>
+ <div class="muted" style="font-size:12px;margin-top:8px;line-height:1.8">الرصيد هنا محسوب تقريبياً من عدد الكلمات اللي قرأها Gemini. الرقم الحقيقي تشوفه بـ <a href="https://aistudio.google.com/billing" target="_blank">AI Studio → Billing</a> — إذا اختلف اكتبه بخانة التصحيح.</div>`}
+async function hwTop(k){const v=+String($(k==='add'?'#hwAdd':'#hwSet').value).replace(/[^\d.]/g,'');if(k==='add'&&!v){toast('اكتب المبلغ');return}
+ try{await hwReq('POST',k==='add'?{add:v}:{set:v});toast('تم ✓');hwLoad()}catch(e){toast('تعذّر: '+e.message)}}
+setInterval(()=>{if(FB&&FB.auth&&FB.auth.currentUser&&!$('#vHome').classList.contains('hidden'))hwLoad()},60000);
 </script>
 </body>
 </html>

@@ -5855,6 +5855,76 @@ hwMergeQ=function(md){const L=String(md||'').split('\n'),out=[];
   out.push(l)}
  return out.join('\n')};
 
+/* ---- قراءة خط اليد: يعيد المحاولة وحده، والأستاذ ما يشوف رسائل تقنية ---- */
+if(typeof hwAsk==='function'){const _ask=hwAsk;hwAsk=async function(p){let e0;
+ for(let a=0;a<3;a++){try{const j=await _ask(p);if(HW&&j&&j.left!=null){HW.left=j.left;HW.limit=j.limit}return j}catch(e){e0=e;const m=String(e&&e.message||'');console.warn('HW try',a+1,m);
+  if(/^limit/.test(m)){if(HW){HW.left=0;HW.limit=+(m.match(/\d+/)||[25])[0]}throw new Error('limit')}
+  if(!navigator.onLine)break;await new Promise(z=>setTimeout(z,[4000,10000,0][a]))}}
+ throw new Error(navigator.onLine?'retry':'net')}}
+if(typeof hwCard==='function'){const _card=hwCard;hwCard=function(i){_card(i);const p=HW&&HW.pages[i],el=document.getElementById('hwc'+i);if(!p||!el||p.md||!p.err)return;
+ const d=el.querySelector('img+div');if(p.err==='limit'){if(d){d.style.color='#b45309';d.innerHTML=`⏳ خلصت صفحات اليوم (<b>${HW.limit||25}</b> صفحات لكل أستاذ)<br>تكمل باچر — اضغط إعادة المحاولة بعد نص الليل`}return}
+ if(d){d.style.color='#64748b';d.textContent=p.err==='net'?'📶 تأكد من الإنترنت':''; if(!d.textContent)d.remove()}}}
+if(typeof hwFoot==='function'){const _ft=hwFoot;hwFoot=function(){_ft();const f=document.getElementById('ptF');if(!f||!HW||HW.left==null)return;const d=document.createElement('div');d.style.cssText='text-align:center;font-size:13px;margin-bottom:6px;color:'+(HW.left?'#0f766e':'#b45309');
+ d.innerHTML=HW.left?`📄 باقي لك اليوم: <b>${HW.left}</b> من ${HW.limit} صفحة`:`⏳ خلصت صفحات اليوم (${HW.limit}) — ترجع باچر`;d.style.marginBottom='0';const info=[...f.querySelectorAll('div')].find(x=>/انقرت/.test(x.textContent)&&!x.querySelector('div'));info?info.appendChild(d):f.prepend(d)}}
+
+/* ===================== دفع تحويل خط اليد: يخصم صفحة صفحة وقت التحويل ===================== */
+const hwFree=()=>IS_ADMIN||(typeof DEMO!=='undefined'&&DEMO)||!FB||!ME;
+async function hwLedger(){if(HW.ledger)return HW.ledger;const id=ME.id+'_hw'+Date.now().toString(36)+uid();
+ await FB.db.doc('booklets/'+id).set({uid:ME.id,designer:ME.name||'',designerPhone:ME.phone||'',teacher:'',teacherPhone:'',title:'✍️ تحويل خط يد — '+(HW.name||''),subject:S.subject||'',price:HWPRICE(),hw:true,hwLedger:true,charged:0,exported:0,amountPaid:0,freePages:0,exports:0,createdAt:TS(),lastAt:TS()});
+ HW.ledger=id;await DB.set('hw:cur',HW);return id}
+// يخصم سعر صفحة وحدة (sign=1) أو يرجعها (sign=-1)
+async function hwPay(sign,bid){const dref=FB.db.doc('designers/'+ME.id),bref=FB.db.doc('booklets/'+bid);let out=0;SELF_T=Date.now();
+ await FB.db.runTransaction(async tx=>{const d=(await tx.get(dref)).data(),b=(await tx.get(bref)).data();const price=b.price||HWPRICE(),bal=d.balance||0;
+  if(sign>0&&price>bal)throw new Error('LOW:'+price);if(sign<0&&(b.charged||0)<1)return;
+  const nb=bal-sign*price;
+  tx.update(dref,{balance:nb,totalSpent:Math.max(0,(d.totalSpent||0)+sign*price),totalPages:Math.max(0,(d.totalPages||0)+sign),lastBooklet:bid,updatedAt:TS()});
+  tx.update(bref,{charged:(b.charged||0)+sign,amountPaid:(b.amountPaid||0)+sign*price,lastAt:TS()});
+  tx.set(txDoc(),{uid:ME.id,name:ME.name||'',type:sign>0?'hw':'hwrefund',pages:1,amount:-sign*price,title:HW?('✍️ '+(HW.name||'خط يد')):'خط يد',booklet:bid,balanceAfter:nb,at:TS()});out=price});
+ SELF_T=Date.now();return out}
+async function hwAskRaw(p){const tok=await FB.auth.currentUser.getIdToken();
+ const r=await fetch(R2URL.replace(/\/+$/,'')+'/ai/hw',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({image:p.src.split(',')[1],mime:'image/jpeg',subject:S.subject||'',bid:HW&&HW.ledger||''}),signal:AbortSignal.timeout?AbortSignal.timeout(170000):undefined}).catch(e=>{throw new Error('net')});
+ const j=await r.json().catch(()=>({error:'bad'}));if(!r.ok||!j.ok)throw new Error(String(j.error||('e'+r.status)));return j}
+hwAsk=async function(p){
+ if(!hwFree()&&!p.paid){if((ME.balance||0)<HWPRICE())throw new Error('low');
+  try{const bid=await hwLedger();await hwPay(1,bid);p.paid=1;p.paidBid=bid;HW.paidN=(HW.paidN||0)+1;DB.set('hw:cur',HW)}
+  catch(e){if(/LOW/.test(e.message))throw new Error('low');console.warn('hw pay',e);throw new Error('retry')}}
+ let last='';
+ for(let a=0;a<3;a++){try{const j=await hwAskRaw(p);if(HW&&j&&j.left!=null){HW.left=j.left;HW.limit=j.limit}return j}
+  catch(e){last=String(e&&e.message||'');console.warn('HW try',a+1,last);
+   if(/^limit/.test(last)){if(HW){HW.left=0;HW.limit=+(last.match(/\d+/)||[25])[0]}break}
+   if(/^pay/.test(last)||last==='net'&&!navigator.onLine)break;
+   await new Promise(z=>setTimeout(z,[4000,10000,0][a]))}}
+ // القراءة فشلت: نرجع فلوس الصفحة للأستاذ
+ if(p.paid&&!hwFree()){try{await hwPay(-1,p.paidBid||HW.ledger);p.paid=0;HW.paidN=Math.max(0,(HW.paidN||0)-1);DB.set('hw:cur',HW)}catch(e){console.warn('hw refund',e)}}
+ throw new Error(/^limit/.test(last)?'limit':!navigator.onLine?'net':'retry')};
+// رسالة الرصيد بكارت الصفحة
+{const _c3=hwCard;hwCard=function(i){_c3(i);const p=HW&&HW.pages[i],el=document.getElementById('hwc'+i);if(!p||!el||p.md||p.err!=='low')return;
+ let d=el.querySelector('img+div');if(!d){d=document.createElement('div');const bt=el.querySelector('button');bt?el.insertBefore(d,bt):el.appendChild(d)}d.style.cssText='text-align:center;padding:12px;color:#b45309;line-height:1.9';
+ d.innerHTML=`💳 رصيدك ما يكفي لتحويل هاي الصفحة<br>سعر تحويل الصفحة <b>${fmt(HWPRICE())}</b> دينار — رصيدك <b>${fmt(ME&&ME.balance||0)}</b> دينار<br><a class="btn wa" style="margin-top:8px;display:inline-flex" target="_blank" href="${waLink('أحتاج شحن رصيد لتحويل صفحات خط اليد')}">💬 اشحن عبر واتساب</a>`}}
+// قبل ما يبدي: يتأكد من الرصيد ويخبر الأستاذ بالسعر
+{const _run=hwRun;hwRun=async function(){if(!HW)return _run();if(!hwFree()){const need=HW.pages.filter(p=>!p.md&&!p.paid).length,pr=HWPRICE();
+  if(need&&(ME.balance||0)<pr){HW.pages.forEach((p,i)=>{if(!p.md&&!p.paid){p.err='low';hwCard(i)}});hwFoot();lowBalanceHw(need);return}}
+ return _run()}}
+function lowBalanceHw(n){popup('💳','رصيدك لا يكفي',`تحويل خط اليد ينخصم وقت التحويل: <b>${fmt(HWPRICE())}</b> دينار لكل صفحة.<br>عندك ${n} صفحة تحتاج <b>${fmt(n*HWPRICE())}</b> دينار — رصيدك <b>${fmt(ME.balance||0)}</b> دينار.<br><a class="btn wa" style="width:100%;margin-top:12px" target="_blank" href="${waLink('أحتاج رصيد '+fmt(n*HWPRICE())+' دينار لتحويل خط اليد')}">💬 اشحن عبر واتساب</a>`)}
+// كارت إعادة المحاولة: إذا الرصيد صار يكفي يكمل
+{const _rt=hwRetry;hwRetry=function(i){const p=HW&&HW.pages[i];if(p&&p.err==='low'&&!hwFree()&&(ME.balance||0)<HWPRICE()){lowBalanceHw(1);return}
+ HW.pages.forEach((q,k)=>{if(k!==i&&q.err==='low'){q.err=''}});return _rt(i)}}
+// الشريط السفلي: السعر صار وقت التحويل
+{const _f3=hwFoot;hwFoot=function(){_f3();const f=document.getElementById('ptF');if(!f||!HW)return;
+ f.querySelectorAll('div').forEach(d=>{if(/سعر الصفحة عند التنزيل/.test(d.innerHTML))d.innerHTML=d.innerHTML.replace(/💰 سعر الصفحة عند التنزيل PDF: <b>[^<]*<\/b> دينار/,hwFree()?'💰 التحويل مجاني لحساب المدير':`💰 تحويل الصفحة <b>${fmt(HWPRICE())}</b> دينار ينخصم وقت التحويل — انخصم لحد هسه <b>${fmt((HW.paidN||0)*HWPRICE())}</b> دينار`)})}}
+// الصفحات اللي انخصمت وقت التحويل ما تنخصم مرة ثانية عند الحفظ
+{const _bi=billInfo;billInfo=function(n){const r=_bi(n);if(S&&S.hwPaid)r.pages=Math.max(0,r.pages-S.hwPaid);return r}}
+{const _mx=markExported;markExported=async function(n,t){if(!S.bid)await ensureBooklet();return _mx(n,t)}}
+const pgCount=()=>document.querySelectorAll('#pages .page').length;
+{const _hb2=hwBuild;hwBuild=async function(){const H=HW;if(!H)return _hb2.apply(this,arguments);const paid=hwFree()?0:H.pages.filter(p=>p.paid).length;
+ const tgPid=H.target&&S.pid===H.target.pid?S.pid:null;const before=tgPid?billInfo(pgCount()).pages+(S.hwPaid||0):0;
+ const r=await _hb2.apply(this,arguments);
+ if(HW===null&&paid){await new Promise(z=>setTimeout(z,300));
+  if(tgPid){const after=billInfo(pgCount()).pages+(S.hwPaid||0);S.hwPaid=(S.hwPaid||0)+Math.max(paid,after-before)}
+  else{S.hwPaid=Math.max(paid,billInfo(pgCount()).pages+(S.hwPaid||0));S.hwBid=H.ledger}
+  saveNow();liveSoon(300)}
+ return r}}
+
 {const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
 {const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}
 {const _ap=applyPick;applyPick=function(img){const T=pTarget;if(T&&T.kind==='kidColor'){closePicker();const o=overlay('🖍️ جاري تحويلها لرسمة تلوين...');kLineArt(img.src).then(r=>{o.remove();kAdd([{kind:'color',src:r.src,word:'',lang:'ar'}])}).catch(()=>{o.remove();kAdd([{kind:'color',src:img.src,word:'',lang:'ar'}])});return}return _ap.apply(this,arguments)}}
