@@ -5884,19 +5884,20 @@ async function hwPay(sign,bid){const dref=FB.db.doc('designers/'+ME.id),bref=FB.
 async function hwAskRaw(p){const tok=await FB.auth.currentUser.getIdToken();
  const r=await fetch(R2URL.replace(/\/+$/,'')+'/ai/hw',{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({image:p.src.split(',')[1],mime:'image/jpeg',subject:S.subject||'',bid:HW&&HW.ledger||''}),signal:AbortSignal.timeout?AbortSignal.timeout(170000):undefined}).catch(e=>{throw new Error('net')});
  const j=await r.json().catch(()=>({error:'bad'}));if(!r.ok||!j.ok)throw new Error(String(j.error||('e'+r.status)));return j}
+const hwPh=(p,t)=>{p.phase=t;const i=HW?HW.pages.indexOf(p):-1;if(i>=0){hwCard(i);hwFoot()}};
 hwAsk=async function(p){
- if(!hwFree()&&!p.paid){if((ME.balance||0)<HWPRICE())throw new Error('low');
+ if(!hwFree()&&!p.paid){if((ME.balance||0)<HWPRICE())throw new Error('low');hwPh(p,'pay');
   try{const bid=await hwLedger();await hwPay(1,bid);p.paid=1;p.paidBid=bid;HW.paidN=(HW.paidN||0)+1;DB.set('hw:cur',HW)}
   catch(e){if(/LOW/.test(e.message))throw new Error('low');console.warn('hw pay',e);throw new Error('retry')}}
  let last='';
- for(let a=0;a<3;a++){try{const j=await hwAskRaw(p);if(HW&&j&&j.left!=null){HW.left=j.left;HW.limit=j.limit}return j}
+ for(let a=0;a<2;a++){hwPh(p,a?'retry':'read');try{const j=await hwAskRaw(p);if(HW&&j&&j.left!=null){HW.left=j.left;HW.limit=j.limit}return j}
   catch(e){last=String(e&&e.message||'');console.warn('HW try',a+1,last);
    if(/^limit/.test(last)){if(HW){HW.left=0;HW.limit=+(last.match(/\d+/)||[25])[0]}break}
    if(/^pay/.test(last)||last==='net'&&!navigator.onLine)break;
-   await new Promise(z=>setTimeout(z,[4000,10000,0][a]))}}
+   await new Promise(z=>setTimeout(z,[3000,0][a]))}}
  // القراءة فشلت: نرجع فلوس الصفحة للأستاذ
- if(p.paid&&!hwFree()){try{await hwPay(-1,p.paidBid||HW.ledger);p.paid=0;HW.paidN=Math.max(0,(HW.paidN||0)-1);DB.set('hw:cur',HW)}catch(e){console.warn('hw refund',e)}}
- throw new Error(/^limit/.test(last)?'limit':!navigator.onLine?'net':'retry')};
+ hwPh(p,'refund');if(p.paid&&!hwFree()){try{await hwPay(-1,p.paidBid||HW.ledger);p.paid=0;HW.paidN=Math.max(0,(HW.paidN||0)-1);DB.set('hw:cur',HW)}catch(e){console.warn('hw refund',e)}}
+ p.phase='';throw new Error(/^limit/.test(last)?'limit':!navigator.onLine?'net':'retry')};
 // رسالة الرصيد بكارت الصفحة
 {const _c3=hwCard;hwCard=function(i){_c3(i);const p=HW&&HW.pages[i],el=document.getElementById('hwc'+i);if(!p||!el||p.md||p.err!=='low')return;
  let d=el.querySelector('img+div');if(!d){d=document.createElement('div');const bt=el.querySelector('button');bt?el.insertBefore(d,bt):el.appendChild(d)}d.style.cssText='text-align:center;padding:12px;color:#b45309;line-height:1.9';
@@ -5911,7 +5912,7 @@ function lowBalanceHw(n){popup('💳','رصيدك لا يكفي',`تحويل خ�
  HW.pages.forEach((q,k)=>{if(k!==i&&q.err==='low'){q.err=''}});return _rt(i)}}
 // الشريط السفلي: السعر صار وقت التحويل
 {const _f3=hwFoot;hwFoot=function(){_f3();const f=document.getElementById('ptF');if(!f||!HW)return;
- f.querySelectorAll('div').forEach(d=>{if(/سعر الصفحة عند التنزيل/.test(d.innerHTML))d.innerHTML=d.innerHTML.replace(/💰 سعر الصفحة عند التنزيل PDF: <b>[^<]*<\/b> دينار/,hwFree()?'💰 التحويل مجاني لحساب المدير':`💰 تحويل الصفحة <b>${fmt(HWPRICE())}</b> دينار ينخصم وقت التحويل — انخصم لحد هسه <b>${fmt((HW.paidN||0)*HWPRICE())}</b> دينار`)})}}
+ f.querySelectorAll('div').forEach(d=>{if(/سعر الصفحة عند التنزيل/.test(d.innerHTML))d.innerHTML=d.innerHTML.replace(/💰 سعر الصفحة عند التنزيل PDF: <b>[^<]*<\/b> دينار/,hwFree()?'💰 التحويل مجاني لحساب المدير':(()=>{const done=HW.pages.filter(p=>p.paid&&p.md).length,wait=HW.pages.filter(p=>p.paid&&!p.md).length;return `💰 تحويل الصفحة <b>${fmt(HWPRICE())}</b> دينار — انخصم <b>${fmt(done*HWPRICE())}</b> دينار`+(wait?`<br><small>⏳ ${wait} صفحة قيد القراءة — إذا ما انقرت يرجعلك سعرها</small>`:'')})())})}}
 // الصفحات اللي انخصمت وقت التحويل ما تنخصم مرة ثانية عند الحفظ
 {const _bi=billInfo;billInfo=function(n){const r=_bi(n);if(S&&S.hwPaid)r.pages=Math.max(0,r.pages-S.hwPaid);return r}}
 {const _mx=markExported;markExported=async function(n,t){if(!S.bid)await ensureBooklet();return _mx(n,t)}}
@@ -5924,6 +5925,39 @@ const pgCount=()=>document.querySelectorAll('#pages .page').length;
   else{S.hwPaid=Math.max(paid,billInfo(pgCount()).pages+(S.hwPaid||0));S.hwBid=H.ledger}
   saveNow();liveSoon(300)}
  return r}}
+
+/* كارت الصفحة: الحالة فوق الصورة حتى تبين، ويه شريط تقدم */
+{const _c4=hwCard;hwCard=function(i){_c4(i);const p=HW&&HW.pages[i],el=document.getElementById('hwc'+i);if(!p||!el||p.md)return;
+ const img=el.querySelector('img');let d=el.querySelector('img+div');if(!img||!d)return;
+ if(p.busy&&!p.err){const ph={pay:'💳 جاري خصم سعر الصفحة...',read:'⏳ جاري قراءة الصفحة...',retry:'🔁 محاولة ثانية للقراءة...',refund:'↩️ القراءة ما نجحت — جاري إرجاع سعر الصفحة...'}[p.phase||'read'];
+  d.innerHTML=`<div style="font-weight:800;color:#1d4ed8">${ph}</div><div class="hwprog"><i></i></div><div style="font-size:12px;color:#64748b">مرّت <b class="hwsec" data-t="${p.busy}">0</b> ثانية — تكدر تكمل شغلك، القراءة تكمل وحدها</div>`}
+ el.insertBefore(d,img);const bt=el.querySelector('button');if(bt)el.insertBefore(bt,img)}}
+{const st=document.createElement('style');st.textContent=`.hwc img{max-height:40vh!important}.hwprog{height:6px;border-radius:6px;background:#e0e7ff;overflow:hidden;margin:8px auto;max-width:260px}.hwprog i{display:block;height:100%;width:35%;border-radius:6px;background:linear-gradient(90deg,#3b82f6,#6366f1);animation:hwpr 1.3s ease-in-out infinite}@keyframes hwpr{0%{margin-right:-35%}100%{margin-right:100%}}`;document.head.appendChild(st)}
+
+/* ===================== كل مستخدم إله ملفاته الخاصة على الجهاز ===================== */
+// المشترك: الملازم الجاهزة + الكراسات + الأغلفة المرفوعة (من السيرفر). الخاص: المشاريع، خط اليد، أغلفتي، الاستيراد
+const PRIV_K=/^(p:|projects$|lastPid$|project$|hw:cur$|cvl$|cv:|imp:)/;
+let UNS=(()=>{try{return localStorage.getItem('mlz_lastuid')||'guest'}catch(e){return 'guest'}})();
+const nsK=k=>typeof k==='string'&&PRIV_K.test(k)?'u:'+UNS+':'+k:k;
+{const g=DB.get.bind(DB),s=DB.set.bind(DB),d=DB.del.bind(DB);DB._get=g;DB._set=s;DB._del=d;
+ DB.get=k=>g(nsK(k));DB.set=(k,v)=>s(nsK(k),v);DB.del=k=>d(nsK(k));
+ DB.keys=function(){return new Promise(res=>{try{const q=this.db.transaction('kv').objectStore('kv').getAllKeys();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>res([])}catch(e){res([])}})}}
+{const LG=Storage.prototype.getItem,LS=Storage.prototype.setItem;const PL=k=>k==='kgInfo'||k==='mlz_nb';
+ Storage.prototype.getItem=function(k){return LG.call(this,PL(k)?k+':'+UNS:k)};Storage.prototype.setItem=function(k,v){return LS.call(this,PL(k)?k+':'+UNS:k,v)}}
+// الملفات القديمة (قبل هذا التحديث) تروح لأول حساب يسجل دخول على الجهاز
+async function nsMigrate(){try{if(localStorage.getItem('mlz_ns_mig'))return;}catch(e){return}
+ const ks=await DB.keys();for(const k of ks){if(typeof k==='string'&&PRIV_K.test(k)){const v=await DB._get(k);DB._set('u:'+UNS+':'+k,v);DB._del(k)}}
+ try{localStorage.setItem('mlz_ns_mig','1')}catch(e){}}
+let NS_BUSY=null;
+async function nsSwitch(id){id=id||'guest';if(id===UNS&&!(id!=='guest'&&!localStorage.getItem('mlz_ns_mig')))return;
+ if(NS_BUSY)await NS_BUSY;let done;NS_BUSY=new Promise(r=>done=r);
+ try{clearTimeout(saveT);if(UNS!=='guest'&&S&&S.pid&&id!==UNS)saveNow();clearTimeout(saveT);
+  UNS=id;try{localStorage.setItem('mlz_lastuid',id)}catch(e){}
+  if(id!=='guest')await nsMigrate();
+  HW=null;S=sample();PJ=[];await loadProjects();bindInfo();renderTopics();renderProjects();liveSoon(300)}
+ finally{NS_BUSY=null;done()}}
+// نربطه بتسجيل الدخول/الخروج
+if(typeof firebase!=='undefined'||true){const _ia=initAuth;initAuth=function(){_ia();try{FB&&FB.auth&&FB.auth.onAuthStateChanged(u=>{nsSwitch(u?u.uid:'guest')})}catch(e){}}}
 
 {const _bi=bindInfo;bindInfo=function(){const r=_bi.apply(this,arguments);kidsUI();return r}}
 {const _tp=toolPage;toolPage=function(){if(S.kids)return kidTools();return _tp.apply(this,arguments)}}
