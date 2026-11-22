@@ -6,6 +6,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>مصمم الكوثر</title>
 <link rel="manifest" href="manifest.json">
+<script>/* التقاط حدث التثبيت مبكراً */
+window.__bip=null;window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__bip=e});
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){navigator.serviceWorker.register('sw.js').catch(function(){})}
+</script>
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#0b1f45">
@@ -1015,6 +1019,25 @@ body:has(.modal:not(.hidden)) #vPreview .abar,body:has(#ptool) #vPreview .abar,b
 .axnote{color:#c7d4ff!important;text-align:center;font-size:12.5px;margin-top:4px}
 #auth.lux #aErr{color:#ffb4b4!important}
 @media(max-width:380px){.axt{font-size:38px!important}.axf span{font-size:8.5px}}
+/* ===== واجهة الدخول: شاشة وحدة كاملة بدون تنزيل/معلومات تحت ===== */
+#auth.lux{overflow-y:auto}
+#auth.lux .wrap{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;padding-top:max(10px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}
+#auth.lux #dlCard,#auth.lux .axfoot{display:none!important}
+#auth.lux .hero{margin-bottom:6px!important}
+#auth.lux .axlogo{width:min(19vw,84px)!important;height:min(19vw,84px)!important;border-radius:22px!important;margin:0 auto 4px!important}
+#auth.lux .axlogo *{max-width:100%;max-height:100%}
+#auth.lux .axt{font-size:clamp(30px,8.6vw,40px)!important;line-height:1.15!important;margin:0!important}
+#auth.lux .axrib{font-size:clamp(15px,4.2vw,19px)!important;padding:4px 22px!important;margin:4px auto!important}
+#auth.lux .axsub{font-size:12px!important;margin:4px 0 8px!important}
+#auth.lux .axfeats{margin:2px -4px 8px!important}
+#auth.lux .axf span{font-size:8.5px!important;line-height:1.25!important;padding:3px 2px!important}
+#auth.lux .axwel{padding:8px 12px!important;margin-bottom:8px!important}
+#auth.lux .axwel b{font-size:17px!important}
+#auth.lux .axin{height:50px!important;margin-bottom:8px!important}
+#auth.lux .axgo{height:52px!important;font-size:19px!important}
+#auth.lux .axor{margin:6px 0!important}
+#auth.lux .axalt{height:48px!important;font-size:16px!important}
+#auth.lux .axnote{margin-top:4px!important;font-size:11.5px!important}
 </style>
 </head>
 <body>
@@ -4077,10 +4100,22 @@ function shareApp(){
  function pcSteps(){sheet(`<h3>💻 تنزيل البرنامج على اللابتوب</h3><div class="sub">يفتح بنافذة لوحده مثل البرامج</div>`+
    stp(1,'افتح الرابط بمتصفح <b>Chrome</b> أو <b>Edge</b>')+stp(2,'اضغط أيقونة التثبيت <b>⊕</b> بآخر شريط الرابط فوق، أو <b>⋮</b> ← «حفظ ومشاركة» ← «تثبيت»')+
    stp(3,'اضغط <b>«تثبيت»</b> — ويصير عندك أيقونة على سطح المكتب'))}
+ let IBUSY=0;
+ function instWait(){const ov=document.createElement('div');ov.id='instWait';
+  ov.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(8,18,40,.72);display:flex;align-items:center;justify-content:center;direction:rtl;font-family:Cairo,sans-serif';
+  ov.innerHTML=`<div style="background:#fff;border-radius:22px;padding:22px 20px;max-width:320px;width:86%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.4)"><img src="${ICON}" style="width:64px;height:64px;border-radius:16px"><div id="iwT" style="font:900 17px Cairo;color:#0b1f45;margin:10px 0 6px">⏳ جاري تثبيت البرنامج...</div><div id="iwS" style="font:700 13px Cairo;color:#475569;line-height:1.7">لا تضغط مرة ثانية — الهاتف يجهّز الأيقونة<br>تأخذ من ثواني إلى دقيقة حسب الإنترنت</div><div style="height:6px;background:#e2e8f0;border-radius:6px;margin:14px 0 4px;overflow:hidden"><div id="iwB" style="height:100%;width:8%;background:linear-gradient(90deg,#16a34a,#22c55e);border-radius:6px;transition:width .8s"></div></div><button id="iwX" style="margin-top:10px;border:0;background:#eef2ff;color:#1e3a8a;font:800 13px Cairo;border-radius:12px;padding:9px 18px">إخفاء</button></div>`;
+  document.body.appendChild(ov);let w=8;const t=setInterval(()=>{w=Math.min(92,w+(92-w)*.12);const b=document.getElementById('iwB');if(b)b.style.width=w+'%';else clearInterval(t)},700);
+  document.getElementById('iwX').onclick=()=>{clearInterval(t);ov.remove()};
+  window.addEventListener('appinstalled',()=>{const b=document.getElementById('iwB');if(b)b.style.width='100%';const T=document.getElementById('iwT');if(T)T.textContent='✅ تم التثبيت';const S=document.getElementById('iwS');if(S)S.innerHTML='افتح البرنامج من أيقونته على شاشتك 🎉';setTimeout(()=>{clearInterval(t);ov.remove()},2500)},{once:true});
+  setTimeout(()=>{const S=document.getElementById('iwS');if(S)S.innerHTML='إذا ما ظهرت الأيقونة بعد، شوف شاشة الهاتف أو قائمة التطبيقات — Chrome يكمل التثبيت لوحده'},45000)}
  async function open(){
+  if(IBUSY)return;
+  if(!deferred&&window.__bip)deferred=window.__bip;
+  if(!deferred&&web&&!ios&&!standalone()){IBUSY=1;if(typeof toast==='function')toast('⏳ جاري تجهيز التنزيل...');
+   for(let i=0;i<20&&!deferred;i++){await new Promise(r=>setTimeout(r,200));if(window.__bip)deferred=window.__bip}IBUSY=0}
+  if(deferred){IBUSY=1;const d=deferred;deferred=null;window.__bip=null;try{d.prompt();const r=await d.userChoice;if(r.outcome==='accepted'){try{localStorage.setItem('mlz_inst','1')}catch(e){}const b=document.getElementById('instBar');if(b)b.remove();instWait();card()}}catch(e){android?androidSteps():pcSteps()}IBUSY=0;return}
   if(standalone()){toast('✅ البرنامج منزّل وأنت فاتحه من أيقونته');return}
   if(!web){toast('افتح البرنامج من الرابط حتى تنزّله');return}
-  if(deferred){try{deferred.prompt();const r=await deferred.userChoice;deferred=null;if(r.outcome==='accepted'){try{localStorage.setItem('mlz_inst','1')}catch(e){}card();toast('⏳ جاري التنزيل... راح تطلع أيقونة البرنامج على شاشتك')}}catch(e){android?androidSteps():pcSteps()}return}
   if(ios)iosSteps();else if(android)androidSteps();else pcSteps()}
  function card(){
   const box=document.getElementById('dlCard');if(!box)return;
@@ -4099,6 +4134,7 @@ function shareApp(){
   document.getElementById('instX').onclick=()=>{d.remove();try{localStorage.setItem('mlz_inst_x',Date.now())}catch(e){}};
   document.getElementById('instGo').onclick=()=>{open()}}
  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;card();show()});
+ if(window.__bip){deferred=window.__bip;setTimeout(()=>{card();show()},0)}
  window.addEventListener('appinstalled',()=>{try{localStorage.setItem('mlz_inst','1')}catch(e){}const b=document.getElementById('instBar');if(b)b.remove();card();if(typeof toast==='function')toast('✅ تم تنزيل البرنامج — افتحه من أيقونته على شاشتك',4000)});
  window.INST={open,card,show};
  const acB=document.getElementById('acDl');if(acB&&standalone())acB.style.display='none';
@@ -6206,6 +6242,32 @@ const LRI=String.fromCharCode(0x2066),PDI=String.fromCharCode(0x2069);
 function hwIso(line){const AR=/[ء-ي]/;return line.split(SBR).map(seg=>{if(!AR.test(seg)||seg.includes(LRI))return seg;
  return seg.replace(/(?:[A-Za-z0-9²³⁴⁵ⁿ√∛_]+(?:\s*[+\-−=×÷*/^]\s*|\s*\(\s*|\s*\)\s*|\s+(?=[A-Za-z0-9√_(]))?)+/g,m=>{const t=m.trim();if(t.length<3||!/[A-Za-z_]/.test(t)||!/[+\-−=×÷*/^]/.test(t))return m;const lead=m.match(/^\s*/)[0],tail=m.match(/\s*$/)[0];return lead+LRI+t+PDI+tail})}).join(SBR)}
 {const _mq3=hwMergeQ;hwMergeQ=function(md){return _mq3(md).split('\n').map(hwIso).join('\n')}}
+
+/* ===================== "نفس ترتيب الورقة": أرقام بدوائر + بدون مربعات/أسهم زايدة ===================== */
+{const _hl=hwLine;hwLine=function(l){let t=String(l).trim(),m;
+ // فقرة مرقمة: (1) أو ① أو 1- ← رقم بدائرة مثل ورقة الأستاذ
+ const n0=hwNumNorm(t);if((m=n0.match(/^([0-9]{1,2})-\s+(.+)$/))&&!/^[0-9]{1,2}-\s*$/.test(n0)){const body=m[2];
+  return `<div class="hl hwn" dir="${/[ء-ي]/.test(body)?'rtl':'ltr'}"><span class="hwnum">${m[1]}</span>${inline(body)}</div>`}
+ // س1/ س2/ ← الوسم يبين رقم السؤال
+ if((m=t.match(/^\**\s*س\s*([0-9٠-٩]{1,2})\s*[\/:\-)]\s*(.*)$/))){const n=toEn(m[1]);
+  return `<div class="hl qa q" dir="rtl"><span class="hwtag q">س${n}</span>${inline(m[2])||'&nbsp;'}</div>`}
+ return _hl(l)}}
+// تنظيف الرسومات اللي يرجعها الذكاء الاصطناعي: نخلي بس اللي فعلاً مرسوم
+function hwCleanMarks(marks,blocks){const B=(blocks||[]).filter(b=>b.k!=='fig').map(b=>b.box);
+ const ov=(a,b)=>!(a[2]<b[0]||a[0]>b[2]||a[3]<b[1]||a[1]>b[3]);
+ return (marks||[]).filter(m=>m&&Array.isArray(m.p)&&m.p.length>=2).map(m=>{const k=String(m.k||'line'),P=m.p.map(q=>[+q[0],+q[1]]);
+  const ys=P.map(q=>q[0]),xs=P.map(q=>q[1]),h=Math.max(...ys)-Math.min(...ys),w=Math.max(...xs)-Math.min(...xs);
+  if(k==='box'||k==='circle'){const r=[Math.min(...ys),Math.min(...xs),Math.max(...ys),Math.max(...xs)];
+   if(w<70&&h<70)return null;                       // دوائر الأرقام: صارت أرقام بدائرة
+   if(!B.some(b=>ov(r,b)))return null;               // مربع فارغ ما حول كلام
+   return m}
+  if(k==='arrow'||k==='curve'){const len=Math.hypot(h,w);if(len>450&&(h<40||w<40))return Object.assign({},m,{k:'line',p:[P[0],P[P.length-1]]}); // خط فاصل مو سهم
+   if(len<25)return null;return m}
+  if(k==='line'){if(Math.hypot(h,w)<25)return null;return m}
+  return null}).filter(Boolean)}
+{const _a9=hwAsk;hwAsk=async function(p){const j=await _a9(p);if(j&&Array.isArray(j.marks))j.marks=hwCleanMarks(j.marks,j.blocks);return j}}
+{const st=document.createElement('style');st.textContent=`.hl .hwnum{display:inline-grid;place-items:center;min-width:1.35em;height:1.35em;border:.09em solid currentColor;border-radius:50%;font-size:.78em;font-weight:700;margin-inline-end:.45em;vertical-align:.08em;line-height:1}
+.hl.hwn{direction:ltr}.hl.hwn[dir=rtl]{direction:rtl}`;document.head.appendChild(st)}
 
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
