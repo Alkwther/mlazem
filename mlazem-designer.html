@@ -6028,7 +6028,7 @@ dlWire();setTimeout(dlWire,1500);
 {const st=document.createElement('style');st.textContent=`
 html body #vPreview .abar button.wd,html body #fsBar button.wdb{display:none!important}
 html body.ishw.pscr #vPreview .abar{grid-template-columns:1fr 1.3fr 1fr!important}
-#dlM{align-items:flex-end;z-index:200}.dlsh{padding:16px 16px calc(16px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0}
+#dlM,#cvDlM{align-items:flex-end;z-index:300}.dlsh{padding:16px 16px calc(16px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0}
 .dlhd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.dlhd b{font-size:18px}
 .dlx{width:38px;height:38px;border-radius:12px;border:0;background:#eef2f9;font-size:16px}
 .dlinfo{background:#f1f5f9;border-radius:12px;padding:8px 10px;font-size:13px;color:#334155;margin-bottom:8px}
@@ -6038,6 +6038,79 @@ html body.ishw.pscr #vPreview .abar{grid-template-columns:1fr 1.3fr 1fr!importan
 .dlb{border:0;border-radius:16px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;color:#fff;font-family:inherit;cursor:pointer;box-shadow:0 6px 16px rgba(16,32,72,.15)}
 .dlb i{font-style:normal;font-size:24px}.dlb b{font-size:16px}.dlb small{font-size:11.5px;opacity:.9}
 .dlb.dpdf{background:linear-gradient(135deg,#e11d48,#be123c)}.dlb.dwd{background:linear-gradient(135deg,#2563eb,#1d4ed8)}`;document.head.appendChild(st)}
+
+/* ===================== الغلاف: زر واضح "شراء وتنزيل" ويه السعر + PDF أو صورة ===================== */
+function cvPriceInfo(){const t=(typeof cvTeacher==='function'?cvTeacher():'')||'';
+ if(IS_ADMIN)return {txt:'مجاني للمدير',paid:true};
+ if(CV&&CV.ready){if(CV.ready.paid)return {txt:'✅ مدفوع — تنزّله كل ما تريد',paid:true};return {txt:CV.ready.total!=null?(CV.ready.total?fmt(CV.ready.total)+' دينار':'🎁 مجاني'):'سعر الغلاف الجاهز',paid:false}}
+ if(COVER_P<=0)return {txt:'🎁 مجاني',paid:true};
+ if(CV&&CV.paidT&&CV.paidT===t)return {txt:'✅ مدفوع لهذا الاسم — تنزّله كل ما تريد',paid:true};
+ return {txt:fmt(COVER_P)+' دينار',paid:false}}
+function cvDlOpen(){if(!CV)return;cvEndEdit();const t=(typeof cvTeacher==='function'?cvTeacher():'')||'',P=cvPriceInfo();
+ let m=document.getElementById('cvDlM');if(m)m.remove();m=document.createElement('div');m.className='modal ui';m.id='cvDlM';
+ m.innerHTML=`<div class="sheet dlsh"><div class="dlhd"><b>⬇️ شراء وتنزيل الغلاف</b><button class="dlx">✕</button></div>
+  ${CV.thumb?`<img src="${CV.thumb}" style="width:100%;max-height:170px;object-fit:contain;border-radius:12px;background:#f1f5f9;margin-bottom:8px">`:''}
+  <div class="dlinfo">🎨 ${esc(CV.title||'غلاف')}<br>👨‍🏫 باسم: <b>${t?esc(t):'<span style="color:#e11d48">اكتب اسم الأستاذ على الغلاف أولاً</span>'}</b><br>💰 السعر: <b>${P.txt}</b></div>
+  <div class="dlbtns"><button class="dlb dpdf"><i>📕</i><b>PDF</b><small>للطباعة بالمطبعة</small></button><button class="dlb dimg" style="background:linear-gradient(135deg,#0d9488,#0f766e)"><i>🖼️</i><b>صورة</b><small>للمشاركة بالواتساب</small></button></div>
+  <div class="dlnote">💡 ${P.paid?'تنزيل بدون خصم.':'تدفع مرة وحدة باسم الأستاذ — بعدها تنزّله PDF أو صورة كل ما تريد بدون خصم.'}</div></div>`;
+ document.body.appendChild(m);const close=()=>m.remove();m.onclick=e=>{if(e.target===m)close()};m.querySelector('.dlx').onclick=close;
+ m.querySelector('.dpdf').onclick=()=>{close();cvExport()};m.querySelector('.dimg').onclick=()=>{close();cvExportImg()}}
+// تنزيل صورة: نفس الدفع بالضبط مثل PDF
+async function cvExportImg(){if(DEMO){toast('يعمل بعد تسجيل الدخول');return}if(!window.html2canvas){toast('تأكد من الإنترنت');return}
+ cvEndEdit();const teacher=cvTeacher();
+ if(!IS_ADMIN){if(!FB||!ME){toast('سجّل الدخول أولاً');return}if(!teacher){toast('✍️ اكتب اسم الأستاذ على الغلاف أولاً',3500);const t=CV.layers.find(l=>l.role==='teacher');if(t){CSEL=t.id;cvRender();setTimeout(()=>cvStartEdit(t,true),80)}else cvInfo();return}
+  if(CV.ready&&!CV.ready.paid){if(!await cvBuy(teacher))return}
+  else if(!CV.ready&&COVER_P>0&&CV.paidT!==teacher){if(!await cvPayCustom(teacher))return}}
+ const o=overlay('🖼️ جاري تجهيز صورة الغلاف...');
+ try{const Z=CSZ[CV.size]||CSZ.a3l;const cv=await cvCanvas(Z.w>1200?1.6:2.2);const blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',.92));cv.width=cv.height=0;
+  const nm=('غلاف - '+[teacher,(CV.layers.find(l=>l.role==='subject')||{}).text||CV.title].filter(Boolean).join(' - ')).replace(/[\\/:*?"<>|\n]/g,' ').replace(/\s+/g,' ').trim()+'.jpg';
+  o.remove();download(blob,nm);
+  try{const f=new File([blob],nm,{type:'image/jpeg'});if(navigator.canShare&&navigator.canShare({files:[f]}))setTimeout(()=>popup('✅','انحفظت الصورة',`<button class="btn primary" style="width:100%" id="cvShr">📤 مشاركة الصورة</button>`)||0,300),setTimeout(()=>{const b=document.getElementById('cvShr');if(b)b.onclick=()=>navigator.share({files:[f],title:nm}).catch(()=>{})},400);else toast('✅ انحفظت صورة الغلاف بالهاتف',3000)}catch(e){toast('✅ انحفظت صورة الغلاف',3000)}}
+ catch(e){try{o.remove()}catch(_){}popup('⚠️','تعذّر الحفظ',esc(e.message||String(e)))}}
+// زر الهيدر: "⬇️ شراء وتنزيل" بدل "PDF" + زر عائم تحت
+setInterval(()=>{const E=document.getElementById('cvEd');if(!E)return;const b=E.querySelector('.ceh button.pdf');if(b&&!b.dataset.dl){b.dataset.dl=1;b.setAttribute('onclick','cvDlOpen()');b.innerHTML=cvPriceInfo().paid?'⬇️ تنزيل':'🛒 شراء وتنزيل'}},700);
+
+/* ===================== شاشة البداية بمكان الملزمة: 5 طرق لإضافة ملزمة ===================== */
+function stEmpty(P){P=P||S;if(!P||P.kids||P.coverImg)return false;return (P.topics||[]).every(t=>!(t.title||'').trim()&&(t.blocks||[]).every(b=>b.type==='text'&&!String(b.text||'').trim()))&&!(P.cv)}
+function stShouldShow(){if(!S)return false;let f=null;try{f=localStorage.getItem('mlz_start')}catch(e){}
+ if(!f){try{localStorage.setItem('mlz_start','first:'+S.pid)}catch(e){}f='first:'+S.pid}
+ return f==='first:'+S.pid||(stEmpty()&&f!=='blank:'+S.pid)}
+function stDone(){try{localStorage.setItem('mlz_start','done')}catch(e){}stCheck()}
+function stCheck(){const stg=document.querySelector('#vPreview .stage');if(!stg)return;let P=document.getElementById('stP');const on=stShouldShow()&&!document.body.classList.contains('fs');
+ document.body.classList.toggle('startp',on);if(!on){if(P)P.remove();return}if(P)return;
+ P=document.createElement('div');P.id='stP';
+ const it=(cls,ic,t,s,fn)=>`<button class="stc ${cls}" onclick="${fn}"><span class="sti">${ic}</span><span class="stt"><b>${t}</b><small>${s}</small></span><span class="sta">‹</span></button>`;
+ P.innerHTML=`<div class="sth"><div class="stl">👋</div><b>أهلاً بيك! شلون تريد تبدي ملزمتك؟</b><small>اختار طريقة — والملزمة تتصمم هنا بأدوات البرنامج وتگدر تعدّل كلشي</small></div>
+  ${it('s1','✍️','ملزمة خط يد','صوّر أوراقك المكتوبة باليد وتتحول لتصميم','stGo(\'hw\')')}
+  ${it('s2','📕','ملزمة PDF','ارفع ملف PDF ويتحول لملزمة قابلة للتعديل','stGo(\'pdf\')')}
+  ${it('s3','📘','ملزمة Word','ارفع ملف ورد (.docx) ويتصمم فوراً','stGo(\'word\')')}
+  ${it('s4','📦','ملزمة جاهزة من البرنامج','اختار حسب الصف والمادة وعدّل عليها','stGo(\'ready\')')}
+  ${it('s5','🧒','كراسات الروضة','حروف وأرقام وتلوين — جاهزة بضغطة','stGo(\'kids\')')}
+  <div class="stf"><button class="btn sm" onclick="stGo('blank')">📝 ملزمة فارغة أكتبها بنفسي</button><button class="btn sm" onclick="stGo('sample')">👀 شوف مثال</button></div>`;
+ const pg=document.getElementById('pages');stg.insertBefore(P,pg)}
+async function stGo(k){
+ if(k==='hw')return hwPick();if(k==='pdf')return openPdfImport();if(k==='word')return pickDocx();if(k==='ready')return openReady();if(k==='kids')return kidsHome();
+ if(k==='sample'){stDone();return}
+ if(k==='blank'){stDone();if(!stEmpty()){clearTimeout(saveT);saveNow();S=blankProject();saveNow();bindInfo();renderTopics();renderProjects();await renderPages();liveSoon(300)}
+  try{localStorage.setItem('mlz_start','blank:'+S.pid)}catch(e){}document.getElementById('stP')?.remove();document.body.classList.remove('startp');toast('✍️ اضغط على الورقة وابدأ الكتابة',3000)}}
+{const _rp=renderPages;renderPages=async function(){const r=await _rp.apply(this,arguments);try{stCheck()}catch(e){}return r}}
+// فتح أي ملزمة ثانية = خلص أول مرة
+setInterval(()=>{try{const f=localStorage.getItem('mlz_start');if(f&&/^(first|blank):/.test(f)&&S&&f.split(':')[1]!==S.pid){localStorage.setItem('mlz_start','done');stCheck()}}catch(e){}},1500);
+{const LS=Storage.prototype.setItem,LG=Storage.prototype.getItem;Storage.prototype.getItem=function(k){return LG.call(this,k==='mlz_start'?k+':'+UNS:k)};Storage.prototype.setItem=function(k,v){return LS.call(this,k==='mlz_start'?k+':'+UNS:k,v)}}
+{const st=document.createElement('style');st.textContent=`
+body.startp #pages,body.startp #vPreview .stb{display:none!important}
+body.startp #vPreview .stage{overflow-y:auto!important;-webkit-overflow-scrolling:touch}
+#stP{padding:10px 8px 18px;display:flex;flex-direction:column;gap:8px;animation:stIn .35s ease}
+@keyframes stIn{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+#stP .sth{text-align:center;padding:4px 6px 6px}#stP .stl{font-size:34px}#stP .sth b{display:block;font-size:16.5px;font-weight:900;color:#0f172a}#stP .sth small{display:block;color:#64748b;font-size:12.5px;margin-top:2px;line-height:1.6}
+#stP .stc{display:flex;align-items:center;gap:10px;border:0;border-radius:16px;padding:10px 12px;text-align:right;color:#fff;font-family:inherit;cursor:pointer;box-shadow:0 8px 18px rgba(16,32,72,.14);transition:transform .15s}
+#stP .stc:active{transform:scale(.97)}
+#stP .sti{flex:0 0 42px;height:42px;border-radius:14px;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:26px}
+#stP .stt{flex:1;display:flex;flex-direction:column}#stP .stt b{font-size:15px;font-weight:900}#stP .stt small{font-size:11.5px;opacity:.92;line-height:1.45}
+#stP .sta{font-size:26px;opacity:.8}
+#stP .s1{background:linear-gradient(135deg,#2563eb,#1e40af)}#stP .s2{background:linear-gradient(135deg,#e11d48,#9f1239)}#stP .s3{background:linear-gradient(135deg,#0ea5e9,#0369a1)}
+#stP .s4{background:linear-gradient(135deg,#059669,#065f46)}#stP .s5{background:linear-gradient(135deg,#f97316,#db2777)}
+#stP .stf{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:2px}#stP .stf .btn{font-size:13px}`;document.head.appendChild(st)}
 
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
