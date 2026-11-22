@@ -5804,7 +5804,7 @@ function hwIsStop(l){const t=String(l).trim().replace(/^\*\*|\*\*$/g,'').trim();
  if(hwQA(t))return true;
  if(/^(ال)?(حل|جواب|الجواب|الحل)\s*[:：]?\s*$/.test(t)||/^(الحل|الجواب|الجواب\s*\/|ج\s*[\/:：])/.test(t))return true;
  const ar=(t.match(/[ء-ي]/g)||[]).length,lat=(t.match(/[A-Za-z0-9=+×÷·\/()]/g)||[]).length;
- if(ar<3&&lat>3)return true; // معادلة مو كلام
+ // معادلات السؤال (المعطيات) تبقى داخل صندوق السؤال
  return false}
 function hwMergeQ(md){const L=String(md||'').split('\n'),out=[];
  for(let i=0;i<L.length;i++){let l=L[i];
@@ -5852,7 +5852,7 @@ function hwHardStop(l){const t=String(l).trim();return !t||/^(#|\||\[|---|─)/.
 hwMergeQ=function(md){const L=String(md||'').split('\n'),out=[];
  for(let i=0;i<L.length;i++){let l=L[i];const t=l.trim();
   const w=hwWz(t),sol=!w&&hwSol(t);
-  if(w||hwIsQ(t)){l=w||t;let n=0;while(i+1<L.length&&n<10&&!hwIsStop(L[i+1])&&!hwWz(L[i+1])&&!hwSol(L[i+1])){const nx=L[i+1].trim();l+=hwLnJoin(l,nx)+nx;i++;n++}out.push(l);continue}
+  if(w||hwIsQ(t)){l=w||t;let n=0;while(i+1<L.length&&n<14&&!hwIsStop(L[i+1])&&!hwWz(L[i+1])&&!hwSol(L[i+1])){const nx=L[i+1].trim();l+=hwLnJoin(l,nx)+nx;i++;n++}out.push(l);continue}
   if(sol){l='['+sol.lab+'] '+sol.t;let first=!sol.t,n=0;
    while(i+1<L.length&&n<40){const nx=L[i+1].trim();if(hwHardStop(nx)||hwIsQ(nx)||hwWz(nx)||hwSol(nx))break;if(n>0&&ARN(nx)>=12&&ARN(nx)>LTN(nx)*2&&!/^(بما|نعوض|اذن|إذن|لذلك|وعليه|حيث|نستخدم|بالتعويض)/.test(nx)&&!hwProse(l.split(SBR).pop()))break;l+=(first?'':hwLnJoin(l,nx))+nx;first=false;i++;n++}
    out.push(l);continue}
@@ -6157,6 +6157,26 @@ document.addEventListener('pointerdown',e=>{if(!e.target.closest('#lpM'))lpHide(
 {const st=document.createElement('style');st.textContent=`#lpM{position:fixed;z-index:400;display:flex;gap:2px;background:#0f172a;border-radius:12px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,.35);direction:rtl}
 #lpM button{border:0;background:transparent;color:#fff;font-family:inherit;font-size:13px;font-weight:700;padding:8px 9px;border-radius:9px;white-space:nowrap}#lpM button:active{background:#334155}
 #pages .etx{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}`;document.head.appendChild(st)}
+
+/* ===== خط اليد: علامات التكرار (" 〃 =) ورقم السؤال المقلوب ===== */
+function hwDitto(md){const L=String(md||'').split('\n');let prevQ='';const AR=/[ء-ي]/;
+ return L.map(line=>{const t=line.trim();
+  if(/^(الفصل|الموضوع|الباب|الوحدة|المحاضرة|الدرس)\s+\S+/.test(t)&&t.split(/\s+/).length<=6&&!/[:：.؟?]$/.test(t))return '## '+t;
+  // سؤال عادي: نحفظ نصه
+  const q=t.match(/^\**\s*س\s*([0-9٠-٩]*)\s*[\/:\-)]\s*(.+)$/);
+  const lab=t.match(/س\s*([0-9٠-٩]*)\s*\//);const dit=(t.match(/(^|\s)("|〃|''|،،|”|“)(?=\s|$)/g)||[]).length,eqs=(t.match(/(^|\s)=(?=\s|$)/g)||[]).length;
+  const looks=lab&&AR.test(t)&&!/[A-Za-z]/.test(t)&&(dit>=2||(eqs>=3&&dit+eqs>=3));
+  if(!looks){if(q)prevQ=q[2].trim();return line}
+  let num=lab[1]||'';if(!num){const m=t.match(/^([0-9٠-٩]+)\s/)||t.match(/\s([0-9٠-٩]+)\s*$/);if(m)num=m[1]}
+  const words=t.replace(/س\s*[0-9٠-٩]*\s*\//,' ').split(/\s+/).filter(w=>AR.test(w)&&!/^(س|ج)$/.test(w));
+  const pw=prevQ.split(/\s+/).filter(Boolean);let txt;
+  if(!pw.length)txt=words.join(' ');
+  else if(!words.length||(words.length===1&&words[0]===pw[0]))txt=prevQ;
+  else if(words[0]===pw[0])txt=prevQ; // نفس البداية والباقي تكرار
+  else txt=pw.slice(0,Math.max(1,pw.length-words.length)).join(' ')+' '+words.join(' ');
+  prevQ=txt;return 'س'+num+'/ '+txt})
+ .join('\n')}
+{const _mq=hwMergeQ;hwMergeQ=function(md){return _mq(hwDitto(md))}}
 
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
