@@ -5852,7 +5852,7 @@ function hwHardStop(l){const t=String(l).trim();return !t||/^(#|\||\[|---|─)/.
 hwMergeQ=function(md){const L=String(md||'').split('\n'),out=[];
  for(let i=0;i<L.length;i++){let l=L[i];const t=l.trim();
   const w=hwWz(t),sol=!w&&hwSol(t);
-  if(w||hwIsQ(t)){l=w||t;let n=0;while(i+1<L.length&&n<14&&!hwIsStop(L[i+1])&&!hwWz(L[i+1])&&!hwSol(L[i+1])){const nx=L[i+1].trim();l+=hwLnJoin(l,nx)+nx;i++;n++}out.push(l);continue}
+  if(w||hwIsQ(t)){l=w||t;let n=0;while(i+1<L.length&&n<30&&!hwIsStop(L[i+1])&&!hwWz(L[i+1])&&!hwSol(L[i+1])){const nx=L[i+1].trim();l+=hwLnJoin(l,nx)+nx;i++;n++}out.push(l);continue}
   if(sol){l='['+sol.lab+'] '+sol.t;let first=!sol.t,n=0;
    while(i+1<L.length&&n<40){const nx=L[i+1].trim();if(hwHardStop(nx)||hwIsQ(nx)||hwWz(nx)||hwSol(nx))break;if(n>0&&ARN(nx)>=12&&ARN(nx)>LTN(nx)*2&&!/^(بما|نعوض|اذن|إذن|لذلك|وعليه|حيث|نستخدم|بالتعويض)/.test(nx)&&!hwProse(l.split(SBR).pop()))break;l+=(first?'':hwLnJoin(l,nx))+nx;first=false;i++;n++}
    out.push(l);continue}
@@ -6177,6 +6177,35 @@ function hwDitto(md){const L=String(md||'').split('\n');let prevQ='';const AR=/[
   prevQ=txt;return 'س'+num+'/ '+txt})
  .join('\n')}
 {const _mq=hwMergeQ;hwMergeQ=function(md){return _mq(hwDitto(md))}}
+
+/* ===== السؤال الأول / الثاني ... + الفقرات المرقمة بالترتيب داخل السؤال ===== */
+const ORD=['','الأول','الثاني','الثالث','الرابع','الخامس','السادس','السابع','الثامن','التاسع','العاشر','الحادي عشر','الثاني عشر','الثالث عشر','الرابع عشر','الخامس عشر','السادس عشر','السابع عشر','الثامن عشر','التاسع عشر','العشرون'];
+ORD.forEach((o,i)=>{if(i){BOXK['السؤال '+o]='q';if(typeof W_BOX==='object'&&W_BOX['سؤال'])W_BOX['السؤال '+o]=W_BOX['سؤال']}});
+const toEn=d=>String(d).replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c));
+{const _q4=hwQAmd;hwQAmd=function(l){const s=String(l);const[a,...r]=s.split(SBR);
+ const m=a.match(/^\s*\**\s*س\s*([0-9٠-٩]{1,2})\s*[\/:\-)]\s*(.*)$/);
+ if(m&&!/وزار/.test(a)){const n=+toEn(m[1]);if(n>=1&&n<ORD.length){const head='[السؤال '+ORD[n]+'] '+m[2].trim();return head+(r.length?SBR+r.join(SBR):'')}}
+ return _q4(s)}}
+// (1) أو ① أو 1) ببداية السطر → "1- " حتى تصير قائمة مرقمة
+const CIRC='①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳';
+function hwNumNorm(t){let m;const s=String(t);
+ if((m=s.match(/^\s*\(\s*([0-9٠-٩]{1,2})\s*\)\s*(.+)$/)))return toEn(m[1])+'- '+m[2];
+ const c=CIRC.indexOf(s.trim()[0]);if(c>=0)return (c+1)+'- '+s.trim().slice(1).trim();
+ if((m=s.match(/^\s*([0-9٠-٩]{1,2})\s*\)\s*(.+)$/)))return toEn(m[1])+'- '+m[2];
+ return s}
+{const _mq2=hwMergeQ;hwMergeQ=function(md){const L=String(md||'').split('\n').map(hwNumNorm);let out=_mq2(L.join('\n'));
+ // داخل كل سؤال: إذا الفقرات المرقمة مخربطة (عمودين) نرتبها حسب الرقم
+ return out.split('\n').map(line=>{if(!line.includes(SBR))return line;const P=line.split(SBR);const head=P[0],rest=P.slice(1);
+  const num=x=>{const m=String(x).match(/^\s*([0-9]{1,2})\s*-\s/);return m?+m[1]:null};
+  const idx=rest.map((x,i)=>num(x)!=null?i:-1).filter(i=>i>=0);if(idx.length<3)return line;
+  const first=idx[0],last=idx[idx.length-1];if(last-first+1!==idx.length)return line; // لازم تكون ورا بعض
+  const items=idx.map(i=>rest[i]).sort((a,b)=>num(a)-num(b));
+  return [head,...rest.slice(0,first),...items,...rest.slice(last+1)].join(SBR)}).join('\n')}}
+// معادلة داخل سطر عربي: نعزلها حتى تنقرا من اليسار لليمين بمكانها (x² + __ + 81)
+const LRI=String.fromCharCode(0x2066),PDI=String.fromCharCode(0x2069);
+function hwIso(line){const AR=/[ء-ي]/;return line.split(SBR).map(seg=>{if(!AR.test(seg)||seg.includes(LRI))return seg;
+ return seg.replace(/(?:[A-Za-z0-9²³⁴⁵ⁿ√∛_]+(?:\s*[+\-−=×÷*/^]\s*|\s*\(\s*|\s*\)\s*|\s+(?=[A-Za-z0-9√_(]))?)+/g,m=>{const t=m.trim();if(t.length<3||!/[A-Za-z_]/.test(t)||!/[+\-−=×÷*/^]/.test(t))return m;const lead=m.match(/^\s*/)[0],tail=m.match(/\s*$/)[0];return lead+LRI+t+PDI+tail})}).join(SBR)}
+{const _mq3=hwMergeQ;hwMergeQ=function(md){return _mq3(md).split('\n').map(hwIso).join('\n')}}
 
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
