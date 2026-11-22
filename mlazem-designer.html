@@ -6080,13 +6080,13 @@ function stCheck(){const stg=document.querySelector('#vPreview .stage');if(!stg)
  document.body.classList.toggle('startp',on);if(!on){if(P)P.remove();return}if(P)return;
  P=document.createElement('div');P.id='stP';
  const it=(cls,ic,t,s,fn)=>`<button class="stc ${cls}" onclick="${fn}"><span class="sti">${ic}</span><span class="stt"><b>${t}</b><small>${s}</small></span><span class="sta">‹</span></button>`;
- P.innerHTML=`<div class="sth"><div class="stl">👋</div><b>أهلاً بيك! شلون تريد تبدي ملزمتك؟</b><small>اختار طريقة — والملزمة تتصمم هنا بأدوات البرنامج وتگدر تعدّل كلشي</small></div>
-  ${it('s1','✍️','ملزمة خط يد','صوّر أوراقك المكتوبة باليد وتتحول لتصميم','stGo(\'hw\')')}
-  ${it('s2','📕','ملزمة PDF','ارفع ملف PDF ويتحول لملزمة قابلة للتعديل','stGo(\'pdf\')')}
-  ${it('s3','📘','ملزمة Word','ارفع ملف ورد (.docx) ويتصمم فوراً','stGo(\'word\')')}
-  ${it('s4','📦','ملزمة جاهزة من البرنامج','اختار حسب الصف والمادة وعدّل عليها','stGo(\'ready\')')}
-  ${it('s5','🧒','كراسات الروضة','حروف وأرقام وتلوين — جاهزة بضغطة','stGo(\'kids\')')}
-  <div class="stf"><button class="btn sm" onclick="stGo('blank')">📝 ملزمة فارغة أكتبها بنفسي</button><button class="btn sm" onclick="stGo('sample')">👀 شوف مثال</button></div>`;
+ P.innerHTML=`<div class="sth"><div class="stl">👋</div><b>👋 شلون تريد تبدي ملزمتك؟</b><small>اختار طريقة وتتصمم هنا بأدوات البرنامج</small></div>
+  ${it('s1','✍️','ملزمة خط يد','صوّر أوراقك وتتحول لتصميم','stGo(\'hw\')')}
+  ${it('s2','📕','ملزمة PDF','يتحول لملزمة قابلة للتعديل','stGo(\'pdf\')')}
+  ${it('s3','📘','ملزمة Word','ملف docx يتصمم فوراً','stGo(\'word\')')}
+  ${it('s4','📦','ملزمة جاهزة','حسب الصف والمادة','stGo(\'ready\')')}
+  ${it('s5','🧒','كراسات الروضة','حروف وأرقام وتلوين','stGo(\'kids\')')}
+  <div class="stf"><button class="btn sm" onclick="stGo('blank')">📝 ملزمة فارغة</button><button class="btn sm" onclick="stGo('sample')">👀 شوف مثال</button></div>`;
  const pg=document.getElementById('pages');stg.insertBefore(P,pg)}
 async function stGo(k){
  if(k==='hw')return hwPick();if(k==='pdf')return openPdfImport();if(k==='word')return pickDocx();if(k==='ready')return openReady();if(k==='kids')return kidsHome();
@@ -6100,17 +6100,19 @@ setInterval(()=>{try{const f=localStorage.getItem('mlz_start');if(f&&/^(first|bl
 {const st=document.createElement('style');st.textContent=`
 body.startp #pages,body.startp #vPreview .stb{display:none!important}
 body.startp #vPreview .stage{overflow-y:auto!important;-webkit-overflow-scrolling:touch}
-#stP{padding:10px 8px 18px;display:flex;flex-direction:column;gap:8px;animation:stIn .35s ease}
+#stP{padding:10px 6px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;animation:stIn .35s ease;align-content:start}
 @keyframes stIn{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
-#stP .sth{text-align:center;padding:4px 6px 6px}#stP .stl{font-size:34px}#stP .sth b{display:block;font-size:16.5px;font-weight:900;color:#0f172a}#stP .sth small{display:block;color:#64748b;font-size:12.5px;margin-top:2px;line-height:1.6}
-#stP .stc{display:flex;align-items:center;gap:10px;border:0;border-radius:16px;padding:10px 12px;text-align:right;color:#fff;font-family:inherit;cursor:pointer;box-shadow:0 8px 18px rgba(16,32,72,.14);transition:transform .15s}
-#stP .stc:active{transform:scale(.97)}
-#stP .sti{flex:0 0 42px;height:42px;border-radius:14px;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:26px}
-#stP .stt{flex:1;display:flex;flex-direction:column}#stP .stt b{font-size:15px;font-weight:900}#stP .stt small{font-size:11.5px;opacity:.92;line-height:1.45}
-#stP .sta{font-size:26px;opacity:.8}
+#stP .sth{grid-column:1/-1;text-align:center;padding:2px 4px 4px}#stP .stl{display:none}
+#stP .sth b{display:block;font-size:15px;font-weight:900;color:#0f172a}#stP .sth small{display:block;color:#64748b;font-size:11.5px;margin-top:2px;line-height:1.5}
+#stP .stc{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:0;border-radius:16px;padding:12px 6px 10px;min-height:96px;text-align:center;color:#fff;font-family:inherit;cursor:pointer;box-shadow:0 6px 14px rgba(16,32,72,.13);transition:transform .15s}
+#stP .stc:active{transform:scale(.96)}
+#stP .sti{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:21px}
+#stP .stt{display:flex;flex-direction:column;gap:1px}#stP .stt b{font-size:13.5px;font-weight:900;line-height:1.3}#stP .stt small{font-size:10.5px;opacity:.9;line-height:1.35}
+#stP .sta{display:none}
+#stP .s5{grid-column:1/-1;flex-direction:row;min-height:0;padding:10px 12px;gap:10px}#stP .s5 .stt{text-align:right}
 #stP .s1{background:linear-gradient(135deg,#2563eb,#1e40af)}#stP .s2{background:linear-gradient(135deg,#e11d48,#9f1239)}#stP .s3{background:linear-gradient(135deg,#0ea5e9,#0369a1)}
 #stP .s4{background:linear-gradient(135deg,#059669,#065f46)}#stP .s5{background:linear-gradient(135deg,#f97316,#db2777)}
-#stP .stf{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:2px}#stP .stf .btn{font-size:13px}`;document.head.appendChild(st)}
+#stP .stf{grid-column:1/-1;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}#stP .stf .btn{font-size:12px;padding:7px 10px}`;document.head.appendChild(st)}
 
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
