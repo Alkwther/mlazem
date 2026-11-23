@@ -5,7 +5,7 @@
  "lang": "ar",
  "dir": "rtl",
  "start_url": "mlazem-designer.html?src=app",
- "scope": "./",
+ "scope": "mlazem-designer.html",
  "display": "standalone",
  "orientation": "portrait",
  "background_color": "#0b1f45",
