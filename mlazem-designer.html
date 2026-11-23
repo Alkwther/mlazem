@@ -2058,7 +2058,7 @@ async function exportPDF(){
   if(ok){
    if(!S.lock){S.lock={id:EXPORT_ID,uid:ME?ME.id:'',teacher,phone:(S.phone||'').trim(),at:Date.now()};saveNow();bindInfo()}
    const nm=pdfName();window._lastPdf=blob;download(blob,nm);EXP_DONE={blob,nm,n:pages.length};}
- }catch(e){console.error(e);toast('حدث خطأ أثناء التصدير — جرّب دقة أقل',4000)}
+ }catch(e){console.error(e);const em=String(e&&(e.message||e.name)||e).slice(0,160);try{localStorage.setItem('mlz_experr',em)}catch(_){}toast(IS_ADMIN?'🛠 خطأ التصدير: '+em:'حدث خطأ أثناء التصدير — اضغط تنزيل مرة ثانية، وإذا تكرر راسلنا',7000)}
  EXPORT_ID=null;document.body.classList.remove('exporting');o.remove();renderPages();statusBar();
  if(EXP_DONE){const d=EXP_DONE;EXP_DONE=null;openPdfView(d.blob,d.nm,d.n)}
 }
@@ -5687,7 +5687,8 @@ function wRun(t,o={}){const ar=/[؀-ۿ]/.test(t);const sz=Math.round((o.pt||13)*
  return String(t).split('\n').map((ln,i)=>(i?'<w:r><w:br/></w:r>':'')+`<w:r>${pr}<w:t xml:space="preserve">${wx(ln)}</w:t></w:r>`).join('')}
 function wRich(t,o={}){// **غامق** و ==تظليل==
  const out=[];String(t).split(/(\*\*[^*]+\*\*|==[^=]+==)/).forEach(s=>{if(!s)return;if(/^\*\*.*\*\*$/.test(s))out.push(wRun(s.slice(2,-2),Object.assign({},o,{b:1})));else if(/^==.*==$/.test(s))out.push(wRun(s.slice(2,-2),Object.assign({},o,{hl:1})));else out.push(wRun(s,o))});return out.join('')}
-function wPara(runs,o={}){const j0=o.jc||'right',jc=j0==='right'?'left':j0==='left'?'right':j0;return `<w:p><w:pPr><w:bidi/>${o.shd?`<w:shd w:val="clear" w:color="auto" w:fill="${o.shd}"/>`:''}${o.bdr?`<w:pBdr><w:right w:val="single" w:sz="24" w:space="6" w:color="${o.bdr}"/></w:pBdr>`:''}<w:spacing w:before="${o.before||60}" w:after="${o.after||60}"/><w:jc w:val="${jc}"/></w:pPr>${runs}</w:p>`}
+const wEN=t=>{t=String(t||'');const a=(t.match(/[\u0600-\u06FF]/g)||[]).length,n=(t.match(/[A-Za-z]/g)||[]).length;return n>=3&&n>a*1.5};
+function wPara(runs,o={}){const j0=o.jc||'right',jc=o.ltr?(j0==='center'?'center':'left'):j0==='right'?'left':j0==='left'?'right':j0;return `<w:p><w:pPr>${o.ltr?'<w:bidi w:val="0"/>':'<w:bidi/>'}${o.shd?`<w:shd w:val="clear" w:color="auto" w:fill="${o.shd}"/>`:''}${o.bdr?`<w:pBdr><w:${o.ltr?'left':'right'} w:val="single" w:sz="24" w:space="6" w:color="${o.bdr}"/></w:pBdr>`:''}<w:spacing w:before="${o.before||60}" w:after="${o.after||60}"/><w:jc w:val="${jc}"/></w:pPr>${runs}</w:p>`}
 const wBreak=()=>'<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
 function wTable(rows,col){const n=Math.max(...rows.map(r=>r.length));const C=wHex(col)||'1E88E5';
  return `<w:tbl><w:tblPr><w:bidiVisual/><w:tblW w:w="5000" w:type="pct"/><w:tblBorders>${['top','left','bottom','right','insideH','insideV'].map(s=>`<w:${s} w:val="single" w:sz="6" w:color="94A3B8"/>`).join('')}</w:tblBorders></w:tblPr>`+
@@ -5695,13 +5696,13 @@ function wTable(rows,col){const n=Math.max(...rows.map(r=>r.length));const C=wHe
 const W_BOX={'تعريف':['#1d4ed8','EFF6FF'],'قانون':['#7c3aed','F5F3FF'],'مثال':['#0f766e','F0FDFA'],'سؤال':['#c2410c','FFF7ED'],'الجواب':['#15803d','F0FDF4'],'ملاحظة':['#475569','F8FAFC'],'مهم':['#be123c','FFF1F2'],'تذكر':['#a16207','FEFCE8']};
 function wTextBlock(text,color){const out=[];const L=String(text||'').split('\n');let tb=null;const flushT=()=>{if(tb){out.push(wTable(tb,color));tb=null}};
  for(let raw of L){const s=raw.trim();if(/^\|.*\|$/.test(s)){const cells=s.slice(1,-1).split('|').map(x=>x.trim());if(cells.every(c=>/^:?-{2,}:?$/.test(c)))continue;(tb=tb||[]).push(cells);continue}flushT();
-  if(!s){out.push(wPara(''));continue}if(s==='---'){out.push(wBreak());continue}
-  let m;if((m=s.match(/^#\s+(.*)/)))out.push(wPara(wRich(m[1],{b:1,pt:18,c:color}),{before:200,after:80}));
-  else if((m=s.match(/^##\s+(.*)/)))out.push(wPara(wRich(m[1],{b:1,pt:15,c:color}),{before:140,after:60}));
-  else if((m=s.match(/^[-•]\s+(.*)/)))out.push(wPara(wRun('•  ',{b:1,c:color})+wRich(m[1]),{}));
-  else if((m=s.match(/^(\d+)\.\s+(.*)/)))out.push(wPara(wRun(m[1]+'.  ',{b:1,c:color})+wRich(m[2]),{}));
-  else if((m=s.match(/^\[([^\]]+)\]\s*(.*)/))&&W_BOX[m[1]]){const [c,f]=W_BOX[m[1]];out.push(wPara(wRun(m[1]+': ',{b:1,c})+wRich(m[2]),{shd:f,bdr:wHex(c)}))}
-  else out.push(wPara(wRich(s)))}
+  if(!s){out.push(wPara(''));continue}if(s==='---'){out.push(wBreak());continue}const L1={ltr:wEN(s.replace(/^\[[^\]]+\]\s*/,''))};
+  let m;if((m=s.match(/^#\s+(.*)/)))out.push(wPara(wRich(m[1],{b:1,pt:18,c:color}),{before:200,after:80,ltr:L1.ltr}));
+  else if((m=s.match(/^##\s+(.*)/)))out.push(wPara(wRich(m[1],{b:1,pt:15,c:color}),{before:140,after:60,ltr:L1.ltr}));
+  else if((m=s.match(/^[-•]\s+(.*)/)))out.push(wPara(wRun('•  ',{b:1,c:color})+wRich(m[1]),L1));
+  else if((m=s.match(/^(\d+)\.\s+(.*)/)))out.push(wPara(wRun(m[1]+'.  ',{b:1,c:color})+wRich(m[2]),L1));
+  else if((m=s.match(/^\[([^\]]+)\]\s*(.*)/))&&W_BOX[m[1]]){const [c,f]=W_BOX[m[1]];out.push(wPara(wRun(m[1]+': ',{b:1,c})+wRich(m[2]),{shd:f,bdr:wHex(c),ltr:L1.ltr}))}
+  else out.push(wPara(wRich(s),L1))}
  flushT();return out.join('')}
 /* صفحة خط يد (نفس ترتيب الورقة) ← أسطر مرتبة بنفس تسلسل الورقة */
 function wHwPage(b,imgs){const its=(b.items||[]).slice().sort((p,q)=>(p.y-q.y)||(q.x-p.x));const rows=[];
@@ -5770,7 +5771,7 @@ function wdExtract(page){const pr=page.getBoundingClientRect();const k=pr.width/
    cur.x0=Math.min(cur.x0,x0);cur.x1=Math.max(cur.x1,x1);cur.y0=Math.min(cur.y0,y0);cur.y1=Math.max(cur.y1,y1);cur.fs=Math.max(cur.fs,fs);
    const last=cur.runs[cur.runs.length-1];if(last&&last.sk===sk)last.t+=m[0];else cur.runs.push({sk,st,t:m[0]});used=true}
   if(used)parents.add(el)}
- lines.forEach(l=>{const t=l.runs.map(r=>r.t).join('');l.ar=/[\u0600-\u06FF]/.test(t);l.runs.forEach((r,i)=>{if(i===l.runs.length-1)r.t=r.t.replace(/\s+$/,'')})});
+ lines.forEach(l=>{const t=l.runs.map(r=>r.t).join('');l.ar=l.dir==='ltr'?false:/[\u0600-\u06FF]/.test(t);l.runs.forEach((r,i)=>{if(i===l.runs.length-1)r.t=r.t.replace(/\s+$/,'')})});
  return {lines:lines.filter(l=>l.runs.some(r=>r.t.trim())),parents:[...parents]}}
 const wTw=px=>Math.round(px*15),wEmu=px=>Math.round(px*9525);
 function wdRun(r){const s=r.st,sz=Math.max(2,Math.round(s.pt*2)),ar=/[\u0600-\u06FF]/.test(r.t);const col=wHex(s.c);const hl=s.hl&&wHex(s.hl);
@@ -5779,7 +5780,7 @@ let WD_ID=5000;
 // كل سطر = مربع نص مثبّت بمكانه بالصفحة (يشتغل بورد الهاتف والكمبيوتر بدون ما تتزحلق الأسطر)
 function wdLineXml(l){const rtl=l.ar;const h=Math.max(l.y1-l.y0,l.fs*1.15);const slack=l.fs*1.2+(l.x1-l.x0)*.15;let w=(l.x1-l.x0)+slack;
  let x=rtl?l.x1+3-w:l.x0-3;if(x<0){w+=x;x=0}if(x+w>794)w=794-x;const bh=h+l.fs*.7;const id=++WD_ID;
- const para=`<w:p><w:pPr>${rtl?'<w:bidi/>':''}<w:spacing w:before="0" w:after="0" w:line="${wTw(h)}" w:lineRule="exact"/><w:ind w:left="0" w:right="0"/><w:jc w:val="left"/></w:pPr>${l.runs.map(wdRun).join('')}</w:p>`;
+ const para=`<w:p><w:pPr>${rtl?'<w:bidi/>':'<w:bidi w:val="0"/>'}<w:spacing w:before="0" w:after="0" w:line="${wTw(h)}" w:lineRule="exact"/><w:ind w:left="0" w:right="0"/><w:jc w:val="left"/></w:pPr>${l.runs.map(wdRun).join('')}</w:p>`;
  return `<w:r><mc:AlternateContent><mc:Choice Requires="wps"><w:drawing><wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="${id}" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1"><wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="page"><wp:posOffset>${wEmu(x)}</wp:posOffset></wp:positionH><wp:positionV relativeFrom="page"><wp:posOffset>${wEmu(Math.max(0,l.y0-1))}</wp:posOffset></wp:positionV><wp:extent cx="${wEmu(w)}" cy="${wEmu(bh)}"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapNone/><wp:docPr id="${id}" name="سطر ${id}"/><wp:cNvGraphicFramePr/><a:graphic><a:graphicData uri="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"><wps:wsp><wps:cNvSpPr txBox="1"/><wps:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${wEmu(w)}" cy="${wEmu(bh)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></wps:spPr><wps:txbx><w:txbxContent>${para}</w:txbxContent></wps:txbx><wps:bodyPr rot="0" vert="horz" wrap="none" lIns="0" tIns="0" rIns="0" bIns="0" anchor="t" anchorCtr="0"><a:noAutofit/></wps:bodyPr></wps:wsp></a:graphicData></a:graphic></wp:anchor></w:drawing></mc:Choice></mc:AlternateContent></w:r>`}
 function wdBgXml(src,imgs,first){const n=imgs.length+1,rid='rIdImg'+n;imgs.push({name:`media/image${n}.jpeg`,rid,data:Uint8Array.from(atob(src.split(',')[1]),c=>c.charCodeAt(0))});
  return `<w:p><w:pPr><w:spacing w:before="0" w:after="0"/></w:pPr>${first?'':'<w:r><w:br w:type="page"/></w:r>'}<w:r><w:drawing><wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="1" behindDoc="1" locked="1" layoutInCell="1" allowOverlap="1"><wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="page"><wp:posOffset>0</wp:posOffset></wp:positionH><wp:positionV relativeFrom="page"><wp:posOffset>0</wp:posOffset></wp:positionV><wp:extent cx="${wEmu(794)}" cy="${wEmu(1123)}"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapNone/><wp:docPr id="${1000+n}" name="page ${n}"/><wp:cNvGraphicFramePr/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${1000+n}" name="bg${n}"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="${rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${wEmu(794)}" cy="${wEmu(1123)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:anchor></w:drawing></w:r>`}
@@ -6111,13 +6112,13 @@ setInterval(()=>{const E=document.getElementById('cvEd');if(!E)return;const b=E.
 function stEmpty(P){P=P||S;if(!P||P.kids||P.coverImg)return false;return (P.topics||[]).every(t=>!(t.title||'').trim()&&(t.blocks||[]).every(b=>b.type==='text'&&!String(b.text||'').trim()))&&!(P.cv)}
 function stShouldShow(){if(!S)return false;let f=null;try{f=localStorage.getItem('mlz_start')}catch(e){}
  if(!f){try{localStorage.setItem('mlz_start','first:'+S.pid)}catch(e){}f='first:'+S.pid}
- return f==='first:'+S.pid||(stEmpty()&&f!=='blank:'+S.pid)}
+ return f==='first:'+S.pid&&stEmpty()}
 function stDone(){try{localStorage.setItem('mlz_start','done')}catch(e){}stCheck()}
 function stCheck(){const stg=document.querySelector('#vPreview .stage');if(!stg)return;let P=document.getElementById('stP');const on=stShouldShow()&&!document.body.classList.contains('fs');
  document.body.classList.toggle('startp',on);if(!on){if(P)P.remove();return}if(P)return;
  P=document.createElement('div');P.id='stP';
  const it=(cls,ic,t,s,fn)=>`<button class="stc ${cls}" onclick="${fn}"><span class="sti">${ic}</span><span class="stt"><b>${t}</b><small>${s}</small></span><span class="sta">‹</span></button>`;
- P.innerHTML=`<div class="sth"><div class="stl">👋</div><b>👋 شلون تريد تبدي ملزمتك؟</b><small>اختار طريقة وتتصمم هنا بأدوات البرنامج</small></div>
+ P.innerHTML=`<button onclick="stDone()" aria-label="إغلاق" style="position:absolute;top:10px;left:10px;width:34px;height:34px;border-radius:50%;border:0;background:#eef2ff;color:#1e3a8a;font-size:18px;font-weight:900;z-index:2">✕</button><div class="sth"><div class="stl">👋</div><b>👋 شلون تريد تبدي ملزمتك؟</b><small>اختار طريقة وتتصمم هنا بأدوات البرنامج</small></div>
   ${it('s1','✍️','ملزمة خط يد','صوّر أوراقك وتتحول لتصميم','stGo(\'hw\')')}
   ${it('s2','📕','ملزمة PDF','يتحول لملزمة قابلة للتعديل','stGo(\'pdf\')')}
   ${it('s3','📘','ملزمة Word','ملف docx يتصمم فوراً','stGo(\'word\')')}
@@ -6137,7 +6138,7 @@ setInterval(()=>{try{const f=localStorage.getItem('mlz_start');if(f&&/^(first|bl
 {const st=document.createElement('style');st.textContent=`
 body.startp #pages,body.startp #vPreview .stb{display:none!important}
 body.startp #vPreview .stage{overflow-y:auto!important;-webkit-overflow-scrolling:touch}
-#stP{padding:10px 6px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;animation:stIn .35s ease;align-content:start}
+#stP{position:relative;padding:10px 6px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;animation:stIn .35s ease;align-content:start}
 @keyframes stIn{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
 #stP .sth{grid-column:1/-1;text-align:center;padding:2px 4px 4px}#stP .stl{display:none}
 #stP .sth b{display:block;font-size:15px;font-weight:900;color:#0f172a}#stP .sth small{display:block;color:#64748b;font-size:11.5px;margin-top:2px;line-height:1.5}
@@ -6268,6 +6269,70 @@ function hwCleanMarks(marks,blocks){const B=(blocks||[]).filter(b=>b.k!=='fig').
 {const _a9=hwAsk;hwAsk=async function(p){const j=await _a9(p);if(j&&Array.isArray(j.marks))j.marks=hwCleanMarks(j.marks,j.blocks);return j}}
 {const st=document.createElement('style');st.textContent=`.hl .hwnum{display:inline-grid;place-items:center;min-width:1.35em;height:1.35em;border:.09em solid currentColor;border-radius:50%;font-size:.78em;font-weight:700;margin-inline-end:.45em;vertical-align:.08em;line-height:1}
 .hl.hwn{direction:ltr}.hl.hwn[dir=rtl]{direction:rtl}`;document.head.appendChild(st)}
+
+/* ===== تصدير PDF أقوى: يطلع من ملء الشاشة، يعيد المحاولة بدقة أقل، ويبين السبب للمدير ===== */
+{const _ep=exportPDF;exportPDF=async function(){
+  try{if(document.body.classList.contains('fs'))exitFS(true)}catch(e){}
+  try{CAPQ_RESET()}catch(e){}
+  let one=false;try{if(typeof SINGLE!=='undefined'&&SINGLE){one=true;SINGLE=false;const P=$('#pages');if(P)P.classList.remove('single')}}catch(e){}
+  try{return await _ep.apply(this,arguments)}
+  finally{if(one){try{SINGLE=true;const P=$('#pages');if(P)P.classList.add('single');showPage(CURP)}catch(e){}}}}}
+{const _cp=capturePage;let CAPQ=0;window.CAPQ_RESET=()=>{CAPQ=0};capturePage=async function(p,q){
+  if(CAPQ&&CAPQ<q&&document.body.classList.contains('exporting'))q=CAPQ;
+  const pw=p.closest('.pw');let fixd=0;
+  if(pw&&getComputedStyle(pw).display==='none'){pw.style.setProperty('display','block','important');fixd=1}
+  const qs=[...new Set([q,Math.min(q,2),1.5,1].filter(x=>x>0&&x<=q))];let last;
+  try{for(const s of qs){try{const cv=await _cp(p,s);if(!cv||!cv.width||!cv.height)throw new Error('canvas-empty');
+     cv.getContext('2d').getImageData(0,0,1,1);if(s!==q){CAPQ=s;console.warn('export: lower scale',s)}return cv}
+    catch(e){last=e;console.warn('capture fail @'+s,e)}}
+   throw last||new Error('capture')}
+  finally{if(fixd)pw.style.removeProperty('display')}}}
+window.addEventListener('error',e=>{try{if(document.body.classList.contains('exporting'))localStorage.setItem('mlz_experr',String(e.message||e).slice(0,200))}catch(_){}});
+
+/* ===== نفس ترتيب الورقة — بس مرتّب: أسطر على خط واحد، هوامش موحّدة، مسافات منتظمة، نفس الألوان ===== */
+function hwTidy(B){const its=(B.items||[]);if(its.length<2)return B;
+ const AR=/[؀-ۿ]/g,EN=/[A-Za-z]/g;
+ const rtl=t=>{const a=(String(t).match(AR)||[]).length,e=(String(t).match(EN)||[]).length;return a>0&&a>=e};
+ its.forEach(i=>{const t=String(i.t||'');i._r=i.k==='t'?rtl(t):false;i._L=i.k==='t'?Math.max(1,t.split('\n').length):1;i._one=i.k==='t'&&i._L===1&&!/^\s*\|/.test(t)&&!/\)\/\(/.test(t)&&!/^#/.test(t.trim())});
+ const ONE=its.filter(i=>i._one);if(!ONE.length)return B;
+ const hs=ONE.map(i=>i.h).sort((a,b)=>a-b),m=hs[hs.length>>1];
+ const hit=(a,b,pad=.004)=>a!==b&&a.x<b.x+b.w-pad&&b.x<a.x+a.w-pad&&a.y<b.y+b.h-pad&&b.y<a.y+a.h-pad;
+ const free=(i,cand)=>its.every(o=>o===i||!hit(cand,o));
+ // 0) سطر داخل على جدول/كتابة جنبه: نقصّه لحد اللي جنبه (والخط يصغر لوحده حتى يدخل)
+ ONE.forEach(i=>its.forEach(o=>{if(!hit(i,o,.002))return;const oy=Math.min(i.y+i.h,o.y+o.h)-Math.max(i.y,o.y);if(oy<.4*Math.min(i.h,o.h))return;const oc=o.x+o.w/2,ic=i.x+i.w/2;
+   if(!i._r&&oc>ic&&o.x>i.x+.05)i.w=Math.max(.05,o.x-.01-i.x);else if(i._r&&oc<ic&&o.x+o.w<i.x+i.w-.05){const R=i.x+i.w;i.x=o.x+o.w+.01;i.w=Math.max(.05,R-i.x)}}));
+ // 1) نفس حجم الخط للأسطر العادية (تعديل بسيط بس)
+ ONE.forEach(i=>{const r=i.h/m;if(r>.78&&r<1.28){const c={x:i.x,y:i.y+(i.h-m)/2,w:i.w,h:m};if(free(i,c)){i.y=c.y;i.h=m}}});
+ // 2) الكلمات اللي على نفس السطر تنزل على خط واحد
+ const S=[...ONE].sort((a,b)=>(a.y+a.h/2)-(b.y+b.h/2));const rows=[];
+ S.forEach(i=>{const c=i.y+i.h/2,r=rows[rows.length-1];if(r&&Math.abs(c-r.c)<m*.38){r.its.push(i);r.c=r.its.reduce((s,x)=>s+x.y+x.h/2,0)/r.its.length}else rows.push({c,its:[i]})});
+ rows.forEach(r=>{if(r.its.length<2)return;r.its.forEach(i=>{const c={x:i.x,y:r.c-i.h/2,w:i.w,h:i.h};if(free(i,c))i.y=c.y})});
+ // 3) هوامش موحّدة: الإنكليزي من نفس الخط يسار — العربي من نفس الخط يمين
+ const snap=(arr,get,mk)=>{const s=[...arr].sort((a,b)=>get(a)-get(b));let g=[];
+  const fl=()=>{if(g.length>1){const v=get(g[0]),w=get(g[g.length-1]);g.forEach(i=>{const c=mk(i,v,w);if(free(i,c))Object.assign(i,c)})}g=[]};
+  s.forEach(i=>{if(g.length&&get(i)-get(g[g.length-1])>.022)fl();g.push(i)});fl()};
+ snap(ONE.filter(i=>!i._r),i=>i.x,(i,v)=>({x:v,w:i.w+(i.x-v)}));
+ snap(ONE.filter(i=>i._r),i=>i.x+i.w,(i,v,w)=>({w:w-i.x}));
+ // 4) وسّع السطر لحد أقرب شي جنبه حتى ما يصغر خطه
+ ONE.forEach(i=>{const band=its.filter(o=>o!==i&&o.y<i.y+i.h-.003&&i.y<o.y+o.h-.003);
+  if(!i._r){const lim=Math.min(.995,...band.filter(o=>o.x>=i.x+i.w-.002).map(o=>o.x-.012));if(lim>i.x+i.w)i.w=Math.min(lim-i.x,i.w*2)}
+  else{const lim=Math.max(.005,...band.filter(o=>o.x+o.w<=i.x+.002).map(o=>o.x+o.w+.012));const R=i.x+i.w;if(lim<i.x){const nx=Math.max(lim,R-i.w*2);i.x=nx;i.w=R-nx}}});
+ its.forEach(i=>{delete i._r;delete i._L;delete i._one});return B}
+{const _pb=hwPageBlock;hwPageBlock=function(p){return hwTidy(_pb(p))}}
+
+/* ===== الإنكليزي من اليسار بتصميم البرنامج ===== */
+function hwFit(root){if(!root)return;root.querySelectorAll('.hwp .hwi:not(.img):not(.flow)').forEach(e=>{if(e.dataset.fit===e.style.fontSize||!e.clientWidth)return;if(e.querySelectorAll('.hl').length===1)e.classList.add('fitw');
+  let fs=parseFloat(e.style.fontSize)||0;const f0=fs,mn=f0*.62;let n=0;
+  const over=()=>[...e.querySelectorAll('.hl')].some(h=>h.scrollWidth>h.clientWidth+1)||e.scrollWidth>e.clientWidth+1;
+  while(fs>mn&&n<14&&over()){fs*=.94;e.style.fontSize=fs.toFixed(1)+'px';n++}
+  e.dataset.fit=e.style.fontSize})}
+function enDirFix(root){if(!root)return;root.querySelectorAll('.etx').forEach(e=>{const host=e.parentElement;if(!host||host.closest('.hwp'))return;
+  const t=host.textContent||'';const a=(t.match(/[؀-ۿ]/g)||[]).length,n=(t.match(/[A-Za-z]/g)||[]).length;const en=n>=3&&n>a*1.5;
+  if(en){if(host.getAttribute('dir')!=='ltr'){host.setAttribute('dir','ltr');host.classList.add('enl')}}
+  else if(host.classList.contains('enl')){host.removeAttribute('dir');host.classList.remove('enl')}})}
+(function(){const st=document.createElement('style');st.textContent='.hwp .hwi.fitw .hl{white-space:nowrap}.enl{direction:ltr!important;text-align:left!important}.enl .etx{unicode-bidi:plaintext}';document.head.appendChild(st);
+ let tm=0;const run=()=>{clearTimeout(tm);tm=setTimeout(()=>{const P=document.getElementById('pages');enDirFix(P);hwFit(P)},60)};
+ const go=()=>{const P=document.getElementById('pages');if(!P)return setTimeout(go,500);new MutationObserver(run).observe(P,{childList:true,subtree:true,characterData:true});run()};go()})();
 
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
