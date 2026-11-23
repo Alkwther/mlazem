@@ -647,7 +647,7 @@ function hwRender(){const b=$('#hwBody');if(!b||!HWS)return;const D=HWS.days||{}
   <div><small>مجاني / مدفوع / Cloudflare</small><b style="font-size:16px">${fmt(mf)} / ${fmt(mg)} / ${fmt(mc)}</b></div><div><small>صرف المدفوع هذا الشهر</small><b style="font-size:16px">$${mu.toFixed(2)}</b><small>${avg?'≈ $'+avg.toFixed(4)+' للصفحة':''}</small></div></div>
  <div style="font-weight:800;margin:6px 0">👨‍🏫 الأساتذة هذا الشهر (حد كل أستاذ ${HWS.limit} صفحة باليوم)</div>
  ${top.length?top.map(([k,n])=>`<div class="hwrow"><span>${esc(name(k))}</span><b>${fmt(n)} صفحة</b></div>`).join(''):'<div class="muted">ما اكو تحويل بعد</div>'}
- <button class="btn sm" style="width:100%;margin-top:12px" onclick="hwTestRun()">🧪 فحص خدمة قراءة خط اليد</button><div id="hwTestOut"></div>
+ <button class="btn sm" style="width:100%;margin-top:12px" onclick="hwTestRun()">🧪 فحص خدمة قراءة خط اليد</button><div id="hwTestOut"></div>${hwLogHtml(HWS.log||[])}
  <div style="font-weight:800;margin:12px 0 4px">➕ سجّل شحنة جديدة بحساب Google</div>
  <div class="hwtop"><input class="in" id="hwAdd" inputmode="decimal" placeholder="المبلغ بالدولار مثلاً 10" dir="ltr"><button class="btn primary sm" onclick="hwTop('add')">إضافة</button></div>
  <div class="hwtop"><input class="in" id="hwSet" inputmode="decimal" placeholder="تصحيح: الرصيد الحقيقي من AI Studio" dir="ltr"><button class="btn sm" onclick="hwTop('set')">تصحيح</button></div>
@@ -656,6 +656,10 @@ async function hwTop(k){const v=+String($(k==='add'?'#hwAdd':'#hwSet').value).re
  try{await hwReq('POST',k==='add'?{add:v}:{set:v});toast('تم ✓');hwLoad()}catch(e){toast('تعذّر: '+e.message)}}
 setInterval(()=>{if(FB&&FB.auth&&FB.auth.currentUser&&!$('#vHome').classList.contains('hidden'))hwLoad()},60000);
 
+function hwLogHtml(L){if(!L.length)return '';const sec=x=>x==null?'—':(x/1000).toFixed(0)+'ث';const src={free:'🆓 مجاني',cf:'☁️ Cloudflare',paid:'💳 مدفوع',fail:'❌ فشل'};
+ return `<div style="margin-top:14px;font-weight:800">🕑 آخر القراءات (شكد أخذت)</div>`+L.slice().reverse().slice(0,12).map(e=>`<div style="border:1px solid #e2e8f0;border-radius:12px;padding:8px 10px;margin-top:6px;font-size:12.5px;line-height:1.8">
+  <div style="display:flex;justify-content:space-between"><b>${src[e.s]||esc(e.s||'')} — ${sec(e.T)}</b><span class="muted">${new Date(e.t).toLocaleTimeString('ar-IQ',{hour:'2-digit',minute:'2-digit'})} · ${esc(e.u||'')}</span></div>
+  <div class="muted" style="direction:rtl">Gemini: ${e.g!=null?sec(e.g)+(e.ge?' ❌ <span style="direction:ltr;unicode-bidi:isolate">'+esc(e.ge)+'</span>':' ✅'):'ما خلص'} · Cloudflare: ${e.cs!=null?'بدأ '+sec(e.cs)+' ← '+(e.c!=null?sec(e.c)+(e.ce?' ❌':' ✅'):'ما خلص'):'ما احتاج'} · الصورة ${e.kb||'?'}KB</div></div>`).join('')}
 async function hwTestRun(){const o=$('#hwTestOut');o.innerHTML='<div class="muted" style="text-align:center;padding:8px">⏳ جاري الفحص (حتى دقيقة)...</div>';
  try{const r=await hwReq('GET',null,'?test=1');const row=(n,x,tip)=>`<div class="hwrow" style="align-items:flex-start"><span>${n}</span><b style="color:${x&&x.ok?'#15803d':'#b91c1c'};max-width:65%;text-align:left;direction:ltr;font-size:12px;word-break:break-all">${x==null?'—':x.ok?'✅ شغّال'+(x.model?' ('+esc(x.model)+')':''):'❌ '+esc(x.why||x.status||'')}</b></div>${x&&!x.ok&&tip?`<div class="muted" style="font-size:12px;margin-bottom:6px">💡 ${tip}</div>`:''}`;
   o.innerHTML=row('🆓 Gemini المجاني (GEMINI_KEY)',r.free,'تأكد إن المفتاح صحيح ومنسوخ كامل، وإنه Secret باسم GEMINI_KEY بالضبط')+row('💳 Gemini المدفوع (GEMINI_KEY_PAID)',r.paid,'إذا ما سويت المشروع المدفوع بعد، هذا طبيعي')+row('☁️ Cloudflare AI',r.cf,'لازم ربط Workers AI باسم AI بإعدادات الـ Worker')+row('🗄 التخزين R2',{ok:r.bucket,why:'ربط BUCKET ناقص'},'')}
