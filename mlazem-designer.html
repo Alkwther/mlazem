@@ -1990,7 +1990,7 @@ async function _render(){
    if(b.type==='hwpage'){if(cur.body.children.length)cur=newPageFn();const bh=cur.body.clientHeight,HH=bh>200?bh:(PH-(S.frame&&S.frame!=='none'?194:170));let rows=hwFlowRows(b,ti,bi,HH);if(rows){rows.forEach(add);full=true;return}const el=hwPageEl(b,ti,bi,HH);cur.body.appendChild(el);
     if(cur.body.clientHeight&&hwBad(el)){el.remove();rows=hwFlowRows(b,ti,bi,HH,true);if(rows){rows.forEach(add);full=true;return}cur.body.appendChild(el)}full=true;return}
    if(b.type==='kid'){if(cur.body.children.length)cur=newPageFn();const bh=cur.body.clientHeight,HH=bh>200?bh:(PH-(S.frame&&S.frame!=='none'?194:170));const el=kidEl(b,HH);Object.assign(el.dataset,{ed:'kid',t:ti,b:bi});cur.body.appendChild(el);full=true;return}
-   if(b.type==='cmap'){const el=cmapEl(b,t.color);setVars(el,t.color);Object.assign(el.dataset,{ed:'cmap',t:ti,b:bi});add(el);return}
+   if(b.type==='cmap'){const el=cmapEl(b,t.color);setVars(el,t.color);Object.assign(el.dataset,{ed:'cmap',t:ti,b:bi});try{cur.body.appendChild(el);cmapFit1(el,cur.body);el.remove()}catch(e){}add(el);return}
    if(b.type==='text'){parseItemsLn(b.text).forEach(it=>{if(it.k==='pb'){if(cur.body.children.length)cur=newPageFn();return}const el=itemEl(it,t.color);if((it.k==='p'||it.k==='nl'||it.k==='li')&&!/[ء-ي]/.test(it.t||'')&&/[0-9√∛=+×÷]/.test(it.t||'')){el.dir='ltr';el.style.textAlign='left'}setVars(el,t.color);Object.assign(el.dataset,{ed:'line',t:ti,b:bi,ln:it.ln,ln2:it.ln2,ty:itemType(it),n:it.n||'',lab:it.lab||''});add(el)})}
    else{const el=figEl(figs[b.id],b);setVars(el,t.color);Object.assign(el.dataset,{ed:'img',t:ti,b:bi});add(el)}
   });
@@ -6320,10 +6320,10 @@ function hwTidy(B){const its=(B.items||[]);if(its.length<2)return B;
   if(!i._r){const lim=Math.min(.995,...band.filter(o=>o.x>=i.x+i.w-.002).map(o=>o.x-.012));if(lim>i.x+i.w)i.w=Math.min(lim-i.x,i.w*2)}
   else{const lim=Math.max(.005,...band.filter(o=>o.x+o.w<=i.x+.002).map(o=>o.x+o.w+.012));const R=i.x+i.w;if(lim<i.x){const nx=Math.max(lim,R-i.w*2);i.x=nx;i.w=R-nx}}});
  its.forEach(i=>{delete i._r;delete i._L;delete i._one});return B}
-{const _pb=hwPageBlock;hwPageBlock=function(p){return hwTidy(_pb(p))}}
+{const _pb=hwPageBlock;hwPageBlock=function(p){const r=_pb(p);return p&&p.ink?r:hwTidy(r)}}
 
 /* ===== الإنكليزي من اليسار بتصميم البرنامج ===== */
-function hwFit(root){if(!root)return;root.querySelectorAll('.hwp .hwi:not(.img):not(.flow)').forEach(e=>{if(e.dataset.fit===e.style.fontSize||!e.clientWidth)return;if(e.querySelectorAll('.hl').length===1)e.classList.add('fitw');
+function hwFit(root){if(!root)return;root.querySelectorAll('.hwp:not(.fid) .hwi:not(.img):not(.flow)').forEach(e=>{if(e.dataset.fit===e.style.fontSize||!e.clientWidth)return;if(e.querySelectorAll('.hl').length===1)e.classList.add('fitw');
   let fs=parseFloat(e.style.fontSize)||0;const f0=fs,mn=f0*.62;let n=0;
   const over=()=>[...e.querySelectorAll('.hl')].some(h=>h.scrollWidth>h.clientWidth+1)||e.scrollWidth>e.clientWidth+1;
   while(fs>mn&&n<14&&over()){fs*=.94;e.style.fontSize=fs.toFixed(1)+'px';n++}
@@ -6333,7 +6333,7 @@ function enDirFix(root){if(!root)return;root.querySelectorAll('.etx').forEach(e=
   if(en){if(host.getAttribute('dir')!=='ltr'){host.setAttribute('dir','ltr');host.classList.add('enl')}}
   else if(host.classList.contains('enl')){host.removeAttribute('dir');host.classList.remove('enl')}})}
 (function(){const st=document.createElement('style');st.textContent='.hwp .hwi.fitw .hl{white-space:nowrap}.enl{direction:ltr!important;text-align:left!important}.enl .etx{unicode-bidi:plaintext}';document.head.appendChild(st);
- let tm=0;const run=()=>{clearTimeout(tm);tm=setTimeout(()=>{const P=document.getElementById('pages');try{hwStyApply(P)}catch(e){}enDirFix(P);hwFit(P);try{cmapFit(P)}catch(e){}},60)};
+ let tm=0;const run=()=>{clearTimeout(tm);tm=setTimeout(()=>{const P=document.getElementById('pages');try{hwStyApply(P)}catch(e){}enDirFix(P);try{hwFitFid(P)}catch(e){}hwFit(P);try{cmapFit(P)}catch(e){}},60)};
  const go=()=>{const P=document.getElementById('pages');if(!P)return setTimeout(go,500);new MutationObserver(run).observe(P,{childList:true,subtree:true,characterData:true});run()};go()})();
 
 /* ===== أدوات التصميم فوق لصفحات «نفس ترتيب الورقة» ===== */
@@ -6548,7 +6548,7 @@ function cmapSplitBlocks(){let n=0;S.topics.forEach(t=>{const nb=[];t.blocks.for
   let L=[];const fl=()=>{const s=L.join('\n').replace(/^(\s*\n)+|(\n\s*)+$/g,'');if(s.trim())nb.push({id:uid(),type:'text',text:s});L=[]};
   b.text.split('\n').forEach(l=>{const m=l.replace(/[​\s]/g,' ').trim().match(/^(?:\[[^\]]*\]\s*)?\[\[خريطة (m[\w]+)\]\]$/);if(m&&HWMAPS[m[1]]){fl();nb.push({id:uid(),type:'cmap',n:HWMAPS[m[1]].n});n++}else if(m){}else L.push(l)});fl()});t.blocks=nb});return n}
 {const _hb4=hwBuild;hwBuild=async function(){const H=HW;if(!H||!H.pages)return _hb4.apply(this,arguments);
- const saved=H.pages.map(p=>p.md);H.pages.forEach(p=>{p._md0=p.md;if(p.maps&&p.maps.length)p.md=hwMapMd(p)});
+ const saved=H.pages.map(p=>p.md);H.pages.forEach(p=>{p._md0=p.md;if(p.maps&&p.maps.length)p.md=hwMapMd(p);p.md=hwTagMd(p.md)});
  let r;try{r=await _hb4.apply(this,arguments)}finally{H.pages.forEach((p,i)=>{p.md=saved[i];delete p._md0})}
  try{if(cmapSplitBlocks()){save();renderTopics();await renderPages();try{showPage(1)}catch(e){}}}catch(e){console.warn('cmap',e)}return r}}
 {const _hp2=hwPageBlock;hwPageBlock=function(p){const r=_hp2(p);try{if(p._md0)r.md=p._md0;if(p.maps&&p.maps.length){r.maps=p.maps;r.mb=(p.blocks||[]).map(b=>b.k==='fig'?null:b.box)}}catch(e){}return r}}
@@ -6569,6 +6569,7 @@ async function hwSwitchMode(){const old=S;if(!old||!old.hwSrc)return;const toExa
  if(!nw||nw===old){toast('تعذّر التغيير');return}
  const tmp=nw.pid;const M=Object.assign({},old,{topics:nw.topics,newPage:nw.newPage,showToc:nw.showToc,chapterPage:nw.chapterPage,hwSrc:old.hwSrc});
  if(nw.hwExact)M.hwExact=1;else delete M.hwExact;
+ if(!M.hwExact){M.newPage=false;M.topics.forEach(t=>t.blocks.forEach(b=>{if(b.type==='text')b.text=b.text.split('\n').filter(l=>l.trim()!=='---').join('\n')}))}
  S=M;try{DB.del('p:'+tmp);PJ=PJ.filter(x=>x.id!==tmp);DB.set('projects',PJ)}catch(e){}
  saveNow();bindInfo();renderTopics();renderProjects();
  document.querySelectorAll('.modal:not(.hidden)').forEach(m=>{if(m.id==='popM')m.classList.add('hidden')});
@@ -6577,7 +6578,7 @@ function hwModeBar(){let b=document.getElementById('hwMode');const P=document.ge
  if(!S||!S.hwSrc||!P){if(b)b.remove();return}
  if(!b){b=document.createElement('button');b.id='hwMode';b.onclick=hwSwitchMode}
  if(b.parentElement!==P.parentElement||b.nextElementSibling!==P)P.parentElement.insertBefore(b,P);
- b.innerHTML=S.hwExact?'🔄 خليها <b>📘 بتصميم البرنامج</b>':'🔄 رجّعها <b>📐 نفس ترتيب الورقة</b>'}
+ b.innerHTML=S.hwExact?'🔄 رجّعها <b>📘 بتصميم البرنامج</b>':'📐 خيار: <b>نفس ترتيب ورقة الأستاذ</b>'}
 {const _rp3=renderPages;renderPages=async function(){const r=await _rp3.apply(this,arguments);try{hwModeBar()}catch(e){}return r}}
 (function(){const st=document.createElement('style');st.textContent=`#hwMode{display:block;margin:6px auto 10px;border:0;border-radius:999px;padding:9px 16px;background:linear-gradient(135deg,#fef3c7,#fde68a);color:#78350f;font:700 13.5px Cairo,sans-serif;box-shadow:0 4px 12px rgba(180,83,9,.18)}#hwMode b{color:#1e3a8a}body.fs #hwMode,body.exporting #hwMode{display:none}`;document.head.appendChild(st)})();
 
@@ -6598,10 +6599,12 @@ async function hwInk(src,blocks){if(!src||!blocks||!blocks.length)return null;
  const B2=R*2,bg=(x,y)=>{const a=Math.max(0,x-B2),b=Math.max(0,y-B2),c=Math.min(W,x+B2+1),d=Math.min(H,y+B2+1);return (S2[d*(W+1)+c]-S2[b*(W+1)+c]-S2[d*(W+1)+a]+S2[b*(W+1)+a])/((c-a)*(d-b))};
  const ink=new Uint8Array(N);
  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=y*W+x,n=gr[i]/Math.max(1,bg(x,y));const r=px[i*4],gg=px[i*4+1],b=px[i*4+2],M=Math.max(r,gg,b),m=Math.min(r,gg,b),sat=(M-m)/Math.max(1,M);if(n<.72||(sat>.38&&n<.9))ink[i]=1}
- // نشيل مكان الكتابة (Gemini رجّع مكانها) — حتى ما تتكرر
- const sX=W/(x1-x0),sY=H/(y1-y0),pX=Math.round(W*.006),pY=Math.round(H*.004);
- blocks.forEach(b=>{if(b.k==='fig'||!b.box)return;const[a,bx,c,d]=b.box;const X0=Math.max(0,Math.floor((bx-x0)*sX)-pX),X1=Math.min(W,Math.ceil((d-x0)*sX)+pX),Y0=Math.max(0,Math.floor((a-y0)*sY)-pY),Y1=Math.min(H,Math.ceil((c-y0)*sY)+pY);
-  for(let y=Y0;y<Y1;y++)ink.fill(0,y*W+X0,y*W+X1)});
+ // مكان الكتابة (Gemini رجّع مكانها): أي قطعة حبر أغلبها داخل الكتابة = كتابة → تنشال كلها
+ const sX=W/(x1-x0),sY=H/(y1-y0),pX=Math.round(W*.006),pY=Math.round(H*.004),eX=Math.round(W*.01),eY=Math.round(H*.005);
+ const tight=new Uint8Array(N),wide=new Uint8Array(N);
+ blocks.forEach(b=>{if(b.k==='fig'||!b.box)return;const[a,bx,c,d]=b.box;const L=Math.floor((bx-x0)*sX),R=Math.ceil((d-x0)*sX),T=Math.floor((a-y0)*sY),Bm=Math.ceil((c-y0)*sY);
+  for(let y=Math.max(0,T-eY);y<Math.min(H,Bm+eY);y++)wide.fill(1,y*W+Math.max(0,L-eX),y*W+Math.min(W,R+eX));
+  for(let y=Math.max(0,T-pY);y<Math.min(H,Bm+pY);y++)tight.fill(1,y*W+Math.max(0,L-pX),y*W+Math.min(W,R+pX))});
  // الصور الحقيقية (fig) تنرسم بروحها — نشيلها
  blocks.forEach(b=>{if(b.k!=='fig'||!b.box)return;const[a,bx,c,d]=b.box;const X0=Math.max(0,Math.floor((bx-x0)*sX)),X1=Math.min(W,Math.ceil((d-x0)*sX)),Y0=Math.max(0,Math.floor((a-y0)*sY)),Y1=Math.min(H,Math.ceil((c-y0)*sY));for(let y=Y0;y<Y1;y++)ink.fill(0,y*W+X0,y*W+X1)});
  // مجموعات متصلة: نخلي الخطوط والأسهم والمربعات، ونشيل بقايا الحروف والنقط
@@ -6611,20 +6614,68 @@ async function hwInk(src,blocks){if(!src||!blocks||!blocks.length)return null;
   for(const q of nb)if(q){const r=find(q);if(!L)L=r;else if(r!==L){if(r<L){par[L]=r;L=r}else par[r]=L}}
   if(!L){L=++nl;par.push(L)}lab[i]=L}
  const bb=new Map();for(let i=0;i<N;i++){if(!lab[i])continue;const r=find(lab[i]);lab[i]=r;let o=bb.get(r);const x=i%W,y=(i/W)|0;if(!o){o={a:x,b:y,c:x,d:y,n:0};bb.set(r,o)}if(x<o.a)o.a=x;if(x>o.c)o.c=x;if(y<o.b)o.b=y;if(y>o.d)o.d=y;o.n++}
- const minL=Math.max(W,H)*.035,keep=new Set();bb.forEach((o,r)=>{const w=o.c-o.a+1,h=o.d-o.b+1,L=Math.max(w,h),fill=o.n/(w*h);
+ const inW=new Map();for(let i=0;i<N;i++){if(lab[i]&&wide[i])inW.set(lab[i],(inW.get(lab[i])||0)+1)}
+ const minL=Math.max(W,H)*.035,keep=new Set();bb.forEach((o,r)=>{if((inW.get(r)||0)>=o.n*.5)return;const w=o.c-o.a+1,h=o.d-o.b+1,L=Math.max(w,h),fill=o.n/(w*h);
   const tl=o.a<=2,tt=o.b<=2,tr=o.c>=W-3,tb=o.d>=H-3;const edge=(tl+tt+tr+tb)>=2||((tl||tr)&&h>H*.3)||((tt||tb)&&w>W*.3);if(L>=minL&&fill<.42&&!edge)keep.add(r)});
  if(!keep.size)return null;
  const col=(r,gg,b)=>{const M=Math.max(r,gg,b),m=Math.min(r,gg,b),s=(M-m)/Math.max(1,M);if(s<.28||M<60)return[30,41,59];let h;const d=M-m;
   if(M===r)h=((gg-b)/d)%6;else if(M===gg)h=(b-r)/d+2;else h=(r-gg)/d+4;h*=60;if(h<0)h+=360;
   if(h<20||h>=335)return[220,38,38];if(h<50)return[194,65,12];if(h<170)return[22,163,74];if(h<255)return[29,78,216];return[124,58,237]};
- const out=g.createImageData(W,H),o=out.data;for(let i=0;i<N;i++){if(!lab[i]||!keep.has(lab[i]))continue;const c=col(px[i*4],px[i*4+1],px[i*4+2]);o[i*4]=c[0];o[i*4+1]=c[1];o[i*4+2]=c[2];o[i*4+3]=255}
+ const out=g.createImageData(W,H),o=out.data;for(let i=0;i<N;i++){if(!lab[i]||!keep.has(lab[i])||tight[i])continue;const c=col(px[i*4],px[i*4+1],px[i*4+2]);o[i*4]=c[0];o[i*4+1]=c[1];o[i*4+2]=c[2];o[i*4+3]=255}
  g.putImageData(out,0,0);const url=cv.toDataURL('image/png');cv.width=cv.height=0;return url}
 {const _ha4=hwAsk;hwAsk=async function(p){const j=await _ha4.apply(this,arguments);try{if(j&&Array.isArray(j.blocks)&&j.blocks.length&&p.src){p.ink=await hwInk(p.src,j.blocks)}}catch(e){console.warn('ink',e)}return j}}
 {const _hp3=hwPageBlock;hwPageBlock=function(p){const r=_hp3(p);try{if(p.ink){r.ink=p.ink;const T=(r.items||[]).filter(i=>i.k==='t');const inT=q=>T.some(i=>q[0]>=i.x-.01&&q[0]<=i.x+i.w+.01&&q[1]>=i.y-.01&&q[1]<=i.y+i.h+.01);
    /* الرسومات اللي برا الكتابة تجي من الصورة نفسها؛ اللي فوق الكتابة (أسهم مقوسة، تأشيرات) نخليها من Gemini */
    r.marks=(r.marks||[]).filter(m=>m.p.filter(inT).length>=m.p.length/2)}}catch(e){}return r}}
-{const _pe=hwPageEl;hwPageEl=function(b){const d=_pe.apply(this,arguments);try{if(b.ink){const i=document.createElement('img');i.className='hwink';i.src=b.ink;i.draggable=false;d.insertBefore(i,d.firstChild)}}catch(e){}return d}}
+{const _pe=hwPageEl;hwPageEl=function(b){const d=_pe.apply(this,arguments);try{if(b.ink){d.classList.add('fid');const i=document.createElement('img');i.className='hwink';i.src=b.ink;i.draggable=false;d.insertBefore(i,d.firstChild)}}catch(e){}return d}}
 (function(){const st=document.createElement('style');st.textContent='.hwp .hwink{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0;image-rendering:auto}.hwp .hwi{z-index:1}';document.head.appendChild(st)})();
+
+/* ===== الخريطة تتصغر قبل توزيع الصفحات (حتى ما يبقى فراغ) ===== */
+function cmapFit1(m,body){const inn=m.firstElementChild;if(!inn)return;inn.style.transform='';m.style.height='';
+ const W=m.clientWidth,w=inn.scrollWidth,h=inn.scrollHeight;if(!W||!w)return;const maxH=Math.max(300,(body&&body.clientHeight||1000)-30);
+ const k=Math.min(1,W/w,maxH/h);if(k<.995){inn.style.transform=`scale(${k.toFixed(3)})`;m.style.height=Math.ceil(h*k)+'px';m.dataset.fit=k.toFixed(3)}}
+cmapFit=function(root){if(!root)return;root.querySelectorAll('.cmap').forEach(m=>{if(m.dataset.fit)return;cmapFit1(m,m.closest('.body,.pbody')||m.parentElement)})};
+
+/* ===== خط اليد: تصميم البرنامج دائماً — «نفس ترتيب الورقة» خيار من الزر الأصفر ===== */
+{const _hb6=hwBuild;hwBuild=async function(){const H=HW;if(!H||!H.pages||H._sw||H.target)return _hb6.apply(this,arguments);
+ const ask0=window.ask;window.ask=async(t,o)=>t==='شكل الملزمة'?false:ask0(t,o);
+ const before=S&&S.pid;let r;try{r=await _hb6.apply(this,arguments)}finally{window.ask=ask0}
+ try{if(S&&S.pid!==before&&S.hw){let ch=0;S.topics.forEach(t=>t.blocks.forEach(b=>{if(b.type==='text'&&/(^|\n)---(\n|$)/.test(b.text)){b.text=b.text.split('\n').filter(l=>l.trim()!=='---').join('\n');ch=1}}));
+   S.newPage=false;if(ch){saveNow();await renderPages();try{showPage(1)}catch(e){}}}}catch(e){console.warn(e)}
+ setTimeout(hwAddCard,600);return r}}
+/* إضافة صفحات خط يد لنفس الملزمة — بدون فراغ */
+{const _ip=insertPagesAt;insertPagesAt=async function(a,nb,each){if(!a||!a.append)return _ip.apply(this,arguments);
+ const t=S.topics[S.topics.length-1];if(!t)return _ip.apply(this,arguments);
+ nb.forEach(x=>{if(x.type==='text')x.text=x.text.split('\n').filter(l=>l.trim()!=='---').join('\n')});
+ t.blocks.push(...nb.filter(x=>x.type!=='text'||x.text.trim()));
+ try{if(cmapSplitBlocks()){}}catch(e){}
+ save();renderTopics();await renderPages();try{showPage(pagesList().length-1)}catch(e){}liveSoon(300);setTimeout(hwAddCard,400)}}
+{const _hb7=hwBuild;hwBuild=async function(){const H=HW;const ap=H&&H.target&&H.target.append;let src=null;
+ if(ap){try{src=JSON.parse(JSON.stringify(H.pages.map(p=>({md:p.md,blocks:p.blocks||null,maps:p.maps||null,figs:p.figs||[],marks:p.marks||[],ink:p.ink||null,paid:p.paid||0,paidBid:p.paidBid||''}))))}catch(e){}
+  const ask0=window.ask;window.ask=async(t,o)=>t==='شكل الملزمة'?!!(S&&S.hwExact):ask0(t,o);try{var r=await _hb7.apply(this,arguments)}finally{window.ask=ask0}
+  try{if(src&&S.hwSrc){S.hwSrc.pages.push(...src);saveNow()}}catch(e){}return r}
+ return _hb7.apply(this,arguments)}}
+function hwAddMore(){if(!R2URL){popup('☁️','الخدمة غير مفعّلة','يحتاج ربط الـ Worker.');return}
+ const i=document.createElement('input');i.type='file';i.multiple=true;i.accept='image/*,application/pdf,.pdf';
+ i.onchange=()=>{const f=[...i.files];if(!f.length)return;const t=S.topics.length-1;hwStart(f,{pid:S.pid,ti:t,bi:Math.max(0,S.topics[t].blocks.length-1),ln:-1,append:1})};i.click()}
+function hwAddCard(){let c=document.getElementById('hwAdd');
+ if(!S||!S.hw||S.kids){if(c)c.remove();return}
+ if(!c){c=document.createElement('button');c.id='hwAdd';c.onclick=hwAddMore;c.innerHTML='✍️ أضف صفحة خط يد <small>صورة أو أكثر</small>';document.body.appendChild(c)}}
+{const _rp4=renderPages;renderPages=async function(){const r=await _rp4.apply(this,arguments);try{hwAddCard()}catch(e){}return r}}
+(function(){const st=document.createElement('style');st.textContent=`#hwAdd{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom));z-index:60;border:0;border-radius:999px;padding:10px 18px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font:800 14px Cairo,sans-serif;box-shadow:0 8px 22px rgba(37,99,235,.38);white-space:nowrap;display:none}
+#hwAdd small{font:600 11px Cairo,sans-serif;opacity:.85;margin-right:4px}
+body:has(#vPreview:not(.hidden)) #hwAdd{display:block}body.fs #hwAdd,body.exporting #hwAdd,body:has(.modal:not(.hidden)) #hwAdd,body:has(#ptool) #hwAdd{display:none!important}`;document.head.appendChild(st)})();
+
+function hwTagMd(md){return String(md||'').split('\n').map(l=>{const m=l.match(/^\s*\**\s*(تعريف|ملاحظة|قانون|مهم|مثال|تذكر)\s*\**\s*[:：]\s*\**\s*(.+)$/);return m?'['+m[1]+'] '+m[2].replace(/\*\*$/,''):l}).join('\n')}
+
+/* «نفس الورقة» بالضبط: كل كتابة تاخذ نفس عرض وطول كتابة الأستاذ بالصورة — حتى تركب على رسوماته */
+function hwFitFid(root){if(!root)return;root.querySelectorAll('.hwp.fid').forEach(pg=>{const PH=pg.clientHeight;if(!PH)return;
+ pg.querySelectorAll('.hwi:not(.img)').forEach(e=>{if(e.dataset.ff===e.style.left+e.style.top+e.style.width+'|'+(e.textContent||'').length)return;const F=hwFind(e.dataset.hid);if(!F||F.mark)return;
+  const it=F.it,bw=e.clientWidth,bh=Math.max(8,it.h*PH);if(!bw)return;const L=e.querySelectorAll('.hl');const n=Math.max(1,L.length);
+  const fits=f=>{e.style.fontSize=f+'px';const w=Math.max(...[...L].map(h=>h.scrollWidth),e.scrollWidth);return w<=bw+1&&e.scrollHeight<=bh*1.3};
+  let lo=6,hi=Math.min(64,bh/n*1.05);if(hi<lo)hi=lo;for(let k=0;k<9;k++){const m=(lo+hi)/2;if(fits(m))lo=m;else hi=m}
+  e.style.fontSize=(lo*(it.z||1)).toFixed(1)+'px';e.dataset.fit=e.style.fontSize;e.dataset.ff=e.style.left+e.style.top+e.style.width+'|'+(e.textContent||'').length})})}
+(function(){const st=document.createElement('style');st.textContent='.hwp.fid .hwi .hl{white-space:nowrap}.hwp.fid .hwi{line-height:1.25}';document.head.appendChild(st)})();
 
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
