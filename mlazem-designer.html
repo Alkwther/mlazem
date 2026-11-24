@@ -1564,7 +1564,7 @@ function wrapSel(ta,a,b){const v=ta.value,s=ta.selectionStart,e=ta.selectionEnd;
 function insertAt(ta,t){const v=ta.value,s=ta.selectionStart;ta.value=v.slice(0,s)+t+v.slice(s);ta.focus();ta.setSelectionRange(s+t.length,s+t.length);ta.dispatchEvent(new Event('input'))}
 function blockEditor(t,b,bi){
  const d=document.createElement('div');d.className='blk';
- const bar=`<div class="blk-bar"><span>${b.type==='text'?'📝 نص':b.type==='hwpage'?'📐 صفحة خط يد':b.type==='kid'?'🧒 صفحة كراسة':'🖼️ صورة'}</span>
+ const bar=`<div class="blk-bar"><span>${b.type==='text'?'📝 نص':b.type==='hwpage'?'📐 صفحة خط يد':b.type==='kid'?'🧒 صفحة كراسة':b.type==='cmap'?'🗺️ خريطة مفاهيم':'🖼️ صورة'}</span>
   <button class="btn sm" ${bi==0?'disabled':''}>▲</button><button class="btn sm" ${bi==t.blocks.length-1?'disabled':''}>▼</button><button class="btn sm red">✕</button></div>`;
  if(b.type==='text'){
   d.innerHTML=bar;const ta=document.createElement('textarea');ta.className='in';ta.placeholder=isEN()?'Write here...':'اكتب المحتوى هنا...';ta.value=b.text;
@@ -1573,6 +1573,7 @@ function blockEditor(t,b,bi){
   d.appendChild(toolbar(ta));attachLists(ta,d);d.appendChild(ta);
   const lb=document.createElement('div');lb.className='paper-lbl';lb.textContent='على الورقة:';d.appendChild(lb);d.appendChild(paper);paintText(paper,t,b.text);
  }else if(b.type==='hwpage'){d.innerHTML=bar+`<div class="muted" style="padding:8px">📐 صفحة بنفس ترتيب ورقة الأستاذ (${(b.items||[]).length} جزء) — عدّلها من المعاينة: اضغط على أي كتابة.</div>`;
+ }else if(b.type==='cmap'){d.innerHTML=bar+`<div class="row" style="padding:8px;align-items:center"><span class="muted" style="flex:1">🗺️ خريطة مفاهيم (${cmapCount(b.n)} مربع)</span><button class="btn sm orange" onclick="cmapEdit('${b.id}')">✏️ تعديل</button></div>`;
  }else if(b.type==='kid'){d.innerHTML=bar+`<div class="row" style="padding:8px;align-items:center"><span class="muted" style="flex:1">🧒 ${esc(({letter:'حرف '+(b.ch||''),number:'رقم '+(b.n??''),shapes:'أشكال',color:'تلوين',lines:'سطور كتابة',match:'توصيل',pre:'خطوط تمهيدية'})[b.kind]||'صفحة')}</span><button class="btn sm orange kedit">✏️ تعديل</button></div>`;d.querySelector('.kedit').onclick=()=>kidSheet(S.topics.indexOf(t),bi);
  }else{
   const n=(b.ann||[]).length;
@@ -1989,6 +1990,7 @@ async function _render(){
    if(b.type==='hwpage'){if(cur.body.children.length)cur=newPageFn();const bh=cur.body.clientHeight,HH=bh>200?bh:(PH-(S.frame&&S.frame!=='none'?194:170));let rows=hwFlowRows(b,ti,bi,HH);if(rows){rows.forEach(add);full=true;return}const el=hwPageEl(b,ti,bi,HH);cur.body.appendChild(el);
     if(cur.body.clientHeight&&hwBad(el)){el.remove();rows=hwFlowRows(b,ti,bi,HH,true);if(rows){rows.forEach(add);full=true;return}cur.body.appendChild(el)}full=true;return}
    if(b.type==='kid'){if(cur.body.children.length)cur=newPageFn();const bh=cur.body.clientHeight,HH=bh>200?bh:(PH-(S.frame&&S.frame!=='none'?194:170));const el=kidEl(b,HH);Object.assign(el.dataset,{ed:'kid',t:ti,b:bi});cur.body.appendChild(el);full=true;return}
+   if(b.type==='cmap'){const el=cmapEl(b,t.color);setVars(el,t.color);Object.assign(el.dataset,{ed:'cmap',t:ti,b:bi});add(el);return}
    if(b.type==='text'){parseItemsLn(b.text).forEach(it=>{if(it.k==='pb'){if(cur.body.children.length)cur=newPageFn();return}const el=itemEl(it,t.color);if((it.k==='p'||it.k==='nl'||it.k==='li')&&!/[ء-ي]/.test(it.t||'')&&/[0-9√∛=+×÷]/.test(it.t||'')){el.dir='ltr';el.style.textAlign='left'}setVars(el,t.color);Object.assign(el.dataset,{ed:'line',t:ti,b:bi,ln:it.ln,ln2:it.ln2,ty:itemType(it),n:it.n||'',lab:it.lab||''});add(el)})}
    else{const el=figEl(figs[b.id],b);setVars(el,t.color);Object.assign(el.dataset,{ed:'img',t:ti,b:bi});add(el)}
   });
@@ -5721,7 +5723,7 @@ function buildDocx(teacher){const imgs=[];const body=[];const main=(S.topics[0]&
  if(S.phone)body.push(wPara(wRun(S.phone,{pt:14,c:'#475569'}),{jc:'center'}));body.push(wBreak());
  S.topics.forEach((t,ti)=>{if(t.title&&!S.hwExact)body.push(wPara(wRun(t.title,{pt:20,b:1,c:t.color||main}),{before:240,after:120}));
   t.blocks.forEach((b,bi)=>{if(b.type==='text')body.push(wTextBlock(b.text,t.color||main));else if(b.type==='hwpage'){body.push(wHwPage(b,imgs));if(bi<t.blocks.length-1||ti<S.topics.length-1)body.push(wBreak())}
-   else if(b.type==='img'||b.src){body.push(wImage(b.src,b.w||b.iw,b.h||b.ih,imgs,13))}})});
+   else if(b.type==='cmap'){body.push(wTextBlock(cmapOutline(b.n,1),t.color||main))}else if(b.type==='img'||b.src){body.push(wImage(b.src,b.w||b.iw,b.h||b.ih,imgs,13))}})});
  const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><w:body>${body.join('')}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/><w:bidi/></w:sectPr></w:body></w:document>`;
  const files=[['[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`],
   ['_rels/.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`],
@@ -6331,7 +6333,7 @@ function enDirFix(root){if(!root)return;root.querySelectorAll('.etx').forEach(e=
   if(en){if(host.getAttribute('dir')!=='ltr'){host.setAttribute('dir','ltr');host.classList.add('enl')}}
   else if(host.classList.contains('enl')){host.removeAttribute('dir');host.classList.remove('enl')}})}
 (function(){const st=document.createElement('style');st.textContent='.hwp .hwi.fitw .hl{white-space:nowrap}.enl{direction:ltr!important;text-align:left!important}.enl .etx{unicode-bidi:plaintext}';document.head.appendChild(st);
- let tm=0;const run=()=>{clearTimeout(tm);tm=setTimeout(()=>{const P=document.getElementById('pages');try{hwStyApply(P)}catch(e){}enDirFix(P);hwFit(P)},60)};
+ let tm=0;const run=()=>{clearTimeout(tm);tm=setTimeout(()=>{const P=document.getElementById('pages');try{hwStyApply(P)}catch(e){}enDirFix(P);hwFit(P);try{cmapFit(P)}catch(e){}},60)};
  const go=()=>{const P=document.getElementById('pages');if(!P)return setTimeout(go,500);new MutationObserver(run).observe(P,{childList:true,subtree:true,characterData:true});run()};go()})();
 
 /* ===== أدوات التصميم فوق لصفحات «نفس ترتيب الورقة» ===== */
@@ -6418,6 +6420,166 @@ setInterval(()=>{try{hwBgTick()}catch(e){}},1000);
 #hwBgC .sp{width:14px;height:14px;border-radius:50%;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fbbf24;animation:hwBgS .8s linear infinite}
 @keyframes hwBgS{to{transform:rotate(360deg)}}@keyframes hwBgP{50%{transform:translateX(-50%) scale(1.05)}}
 body.exporting #hwBgC{display:none}`;document.head.appendChild(st)})();
+
+/* ===== LaTeX ($\\sqrt{..}$) → رموز البرنامج √(..) — للقراءات الجديدة وللملازم اللي انحفظت بيها ===== */
+function tex2app(s) {
+  s = String(s || '');
+  if (!/\\[a-zA-Z]|\$/.test(s)) return s;
+  const grab = (str, i) => { // يرجع محتوى {...} اللي يبدي من i
+    if (str[i] !== '{') { const m = str.slice(i).match(/^\s*(\\[a-zA-Z]+|[^\s{}])/); return m ? [m[1], i + m[0].length] : ['', i]; }
+    let d = 0; for (let j = i; j < str.length; j++) { if (str[j] === '{') d++; else if (str[j] === '}') { d--; if (!d) return [str.slice(i + 1, j), j + 1]; } }
+    return [str.slice(i + 1), str.length];
+  };
+  const conv = str => {
+    let out = '', i = 0;
+    while (i < str.length) {
+      if (str.startsWith('\\frac', i) || str.startsWith('\\dfrac', i) || str.startsWith('\\tfrac', i)) {
+        i += str.startsWith('\\frac', i) ? 5 : 6; while (str[i] === ' ') i++;
+        const [a, i1] = grab(str, i); let k = i1; while (str[k] === ' ') k++; const [b, i2] = grab(str, k); i = i2;
+        out += '(' + conv(a) + ')/(' + conv(b) + ')'; continue;
+      }
+      if (str.startsWith('\\sqrt', i)) {
+        i += 5; let n = ''; while (str[i] === ' ') i++;
+        if (str[i] === '[') { const e = str.indexOf(']', i); n = str.slice(i + 1, e).trim(); i = e + 1; while (str[i] === ' ') i++; }
+        const [a, i1] = grab(str, i); i = i1;
+        out += (n === '3' ? '∛' : n === '4' ? '∜' : n ? n + '√' : '√') + '(' + conv(a) + ')'; continue;
+      }
+      if (str[i] === '^' && str[i + 1] === '{') { const [a, i1] = grab(str, i + 1); i = i1; out += '^(' + conv(a) + ')'; continue; }
+      if (str[i] === '_' && str[i + 1] === '{') { const [a, i1] = grab(str, i + 1); i = i1; out += '_' + conv(a); continue; }
+      out += str[i]; i++;
+    }
+    return out;
+  };
+  const SYM = { times: '×', div: '÷', cdot: '·', pm: '±', mp: '∓', le: '≤', leq: '≤', ge: '≥', geq: '≥', neq: '≠', ne: '≠', approx: '≈', pi: 'π', infty: '∞', theta: 'θ', alpha: 'α', beta: 'β', Delta: 'Δ', delta: 'δ', lambda: 'λ', mu: 'μ', sigma: 'σ', omega: 'ω', Omega: 'Ω', rightarrow: '→', to: '→', Rightarrow: '⇒', leftarrow: '←', degree: '°', circ: '°', therefore: '∴', angle: '∠', perp: '⊥', parallel: '∥', in: '∈', cup: '∪', cap: '∩', subset: '⊂', sum: 'Σ', int: '∫', ldots: '…', cdots: '⋯', quad: ' ', qquad: '  ' };
+  return s.split('\n').map(line => {
+    let t = line.replace(/\\\(|\\\)|\\\[|\\\]/g, '').replace(/\$\$?/g, '');
+    t = t.replace(/\\left\s*|\\right\s*/g, '').replace(/\\big[lr]?|\\Big[lr]?/g, '').replace(/\\[{]/g, '{').replace(/\\[}]/g, '}');
+    t = t.replace(/\\text\s*\{([^{}]*)\}|\\mathrm\s*\{([^{}]*)\}|\\textbf\s*\{([^{}]*)\}/g, (m, a, b, c) => a || b || c || '');
+    t = conv(t);
+    t = t.replace(/\\([a-zA-Z]+)/g, (m, w) => SYM[w] != null ? SYM[w] : m).replace(/\\,|\;|\\!|\\ /g, ' ');
+    t = t.replace(/\{([^{}]*)\}/g, '$1').replace(/[ \t]{2,}/g, ' ').trim();
+    return t;
+  }).join('\n');
+}
+
+const TEXRE=/\\(sqrt|frac|dfrac|times|div|cdot|pm|left|right)\b|\$[^$\n]*\\[a-z]/;
+{const _ha=hwAsk;hwAsk=async function(p){const j=await _ha.apply(this,arguments);try{if(j){if(j.md)j.md=tex2app(j.md);if(Array.isArray(j.blocks))j.blocks.forEach(b=>{if(b&&b.t)b.t=tex2app(b.t)})}}catch(e){}return j}}
+function texFixProject(){if(!S||!S.topics)return 0;let n=0;S.topics.forEach(t=>{if(t.title&&TEXRE.test(t.title)){t.title=tex2app(t.title);n++}(t.blocks||[]).forEach(b=>{
+  if(typeof b.text==='string'&&TEXRE.test(b.text)){b.text=b.text.split('\n').map(l=>{if(!TEXRE.test(l)&&!/^\s*\$[^$]*\$\s*$/.test(l))return l;let t=tex2app(l);const tt=t.trim();if((/^=/.test(tt)&&!/^==/.test(tt))||/^-\s*\d/.test(tt))t='\u200b'+tt;return t}).join('\n');n++}
+  if(b.type==='hwpage')(b.items||[]).forEach(i=>{if(i.t&&TEXRE.test(i.t)){i.t=tex2app(i.t);n++}})})});return n}
+{const _rp2=renderPages;renderPages=async function(){try{if(texFixProject()){clearTimeout(saveT);saveNow()}}catch(e){}return _rp2.apply(this,arguments)}}
+
+/* ===================== 🗺️ خريطة المفاهيم ===================== */
+const CMC={black:['#1e293b','#f8fafc'],red:['#dc2626','#fef2f2'],blue:['#2563eb','#eff6ff'],green:['#16a34a','#f0fdf4'],purple:['#7c3aed','#f5f3ff'],orange:['#ea580c','#fff7ed'],pink:['#db2777','#fdf2f8'],brown:['#92400e','#fffbeb'],teal:['#0d9488','#f0fdfa']};
+const cmCol=c=>{c=String(c||'').toLowerCase();if(CMC[c])return CMC[c];if(/أحمر|احمر|red|crimson/.test(c))return CMC.red;if(/أزرق|ازرق|blue|navy/.test(c))return CMC.blue;if(/أخضر|اخضر|green/.test(c))return CMC.green;if(/بنفس|purple|violet/.test(c))return CMC.purple;if(/برتق|orange/.test(c))return CMC.orange;if(/وردي|pink|magenta/.test(c))return CMC.pink;return CMC.black};
+const HWMAPS={};
+function cmapCount(n){let k=0;(n||[]).forEach(x=>{k+=1+cmapCount(x.k)});return k}
+function cmapNorm(n){return (Array.isArray(n)?n:[]).filter(x=>x&&(x.t||(x.k&&x.k.length))).map(x=>({t:tex2app(String(x.t||'').trim()),c:x.c||'',e:x.e?String(x.e).trim():'',k:cmapNorm(x.k)}))}
+function cmapEl(b,color){const d=document.createElement('div');d.className='cmap keep';
+ const node=(x,lv)=>{const C=cmCol(x.c),kids=x.k||[];const leafy=kids.length>=3&&kids.every(k=>!(k.k&&k.k.length));
+  const nt=esc(x.t).replace(/\n/g,'<br>');
+  return `<li class="${x.e&&lv?'hasE':''}">${x.e&&lv?`<span class="cme">${esc(x.e)}</span>`:''}<div class="cmn l${Math.min(lv,3)}" style="--nc:${C[0]};--nb:${C[1]}">${nt}</div>${kids.length?`<ul class="${leafy?'v':''}${kids.length>=5?' many':''}">${kids.map(k=>node(k,lv+1)).join('')}</ul>`:''}</li>`};
+ const R=b.n||[];
+ d.innerHTML=`<div class="cm-in"><ul class="cmt${R.length>1?' multi':''}">${R.map(x=>node(x,0)).join('')}</ul></div>`;return d}
+function cmapFit(root){if(!root)return;root.querySelectorAll('.cmap').forEach(m=>{const inn=m.firstElementChild;if(!inn)return;inn.style.transform='';m.style.height='';
+  const W=m.clientWidth,w=inn.scrollWidth,h=inn.scrollHeight;if(!W||!w)return;const body=m.closest('.body,.pbody')||m.parentElement;const maxH=Math.max(300,(body&&body.clientHeight||1000)-20);
+  const k=Math.min(1,W/w,maxH/h);if(k<.995){inn.style.transform=`scale(${k.toFixed(3)})`;m.style.height=Math.ceil(h*k)+'px'}})}
+(function(){const st=document.createElement('style');st.textContent=`
+.cmap{position:relative;margin:10px 0 14px;overflow:visible;--cmL:#94a3b8;display:flex;justify-content:center;align-items:flex-start}
+.cmap .cm-in{transform-origin:top center;flex:0 0 auto;width:max-content}
+.cmt,.cmt ul{display:flex;justify-content:center;list-style:none;margin:0;padding:18px 0 0;position:relative}
+.cmt{padding-top:0}
+.cmt li{position:relative;display:flex;flex-direction:column;align-items:center;padding:20px 5px 0;flex:0 1 auto}
+.cmt>li{padding-top:0}
+.cmt li::before,.cmt li::after{content:'';position:absolute;top:0;height:20px;width:50%;border-top:2px solid var(--cmL)}
+.cmt li::before{left:0}.cmt li::after{left:50%;border-left:2px solid var(--cmL)}
+.cmt li:first-child::after{border-top:0;border-radius:0}.cmt li:first-child::before{border-right:2px solid var(--cmL);border-radius:0 9px 0 0;width:calc(50% + 1px)}
+.cmt li:first-child::after{border-left:0}
+.cmt li:last-child::before{border-top:0}.cmt li:last-child::after{border-radius:9px 0 0 0}
+.cmt li:only-child::before{display:none}.cmt li:only-child::after{border-top:0;border-radius:0}
+.cmt>li::before,.cmt>li::after{display:none}
+.cmt ul::before{content:'';position:absolute;top:0;left:50%;height:18px;border-left:2px solid var(--cmL)}
+.cmt ul.v{flex-direction:column;align-items:center;gap:8px;padding-top:18px}
+.cmt ul.v>li{padding:0}.cmt ul.v>li::before{display:none}.cmt ul.v>li::after{display:none}
+.cmt ul.v::after{content:'';position:absolute;top:18px;bottom:12px;left:50%;border-left:2px dashed var(--cmL);z-index:0}
+.cmn{position:relative;z-index:1;background:var(--nb);border:2px solid var(--nc);color:#0f172a;border-radius:12px;padding:6px 10px;font-weight:800;font-size:15px;line-height:1.55;text-align:center;max-width:170px;min-width:54px;box-shadow:0 2px 6px rgba(15,23,42,.08)}
+.cmn.l0{background:var(--c,#1d4ed8);border-color:var(--c,#1d4ed8);color:#fff;font-size:19px;padding:8px 18px;max-width:260px;border-radius:16px;box-shadow:0 6px 16px rgba(29,78,216,.25)}
+.cmn.l1{color:var(--nc);font-size:16px;border-width:2.5px}
+.cmn.l2,.cmn.l3{background:#fff;color:var(--nc)}
+.cmt li:not(.cmt>li)>.cmn::before{content:'';position:absolute;top:-7px;left:50%;margin-left:-5px;border:5px solid transparent;border-top:6px solid var(--cmL);border-bottom:0}
+.cmt ul.v>li>.cmn::before{display:none}
+.cmt li.hasE{padding-top:34px}.cmt li.hasE::before,.cmt li.hasE::after{height:34px}
+.cme{position:absolute;top:9px;left:50%;transform:translateX(-50%);z-index:2;font-size:11.5px;font-weight:800;color:#b45309;background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:0 6px;line-height:16px;white-space:nowrap}
+.cmt ul.many>li>.cmn{max-width:118px;font-size:14px;padding:5px 7px}
+.cmt.multi>li{padding:0 6px}
+body:not(.exporting) .cmap{cursor:pointer}`;document.head.appendChild(st)})();
+/* المحرر: مخطط كنص بالمسافات */
+function cmapOutline(n,plain){const out=[];const em={red:'🔴',blue:'🔵',green:'🟢',purple:'🟣',orange:'🟠',pink:'🩷',brown:'🟤'};
+ const w=(x,d)=>{const c=String(x.c||'').toLowerCase();out.push((plain?'':'    '.repeat(d))+(plain?'  '.repeat(d)+'- ':'')+(!plain&&em[c]?em[c]+' ':'')+(x.e?'«'+x.e+'» ':'')+String(x.t||'').replace(/\n/g,' '));(x.k||[]).forEach(k=>w(k,d+1))};
+ (n||[]).forEach(x=>w(x,0));return out.join('\n')}
+function cmapParse(txt){const em={'🔴':'red','🔵':'blue','🟢':'green','🟣':'purple','🟠':'orange','🩷':'pink','🟤':'brown'};const root=[];const st=[{d:-1,k:root}];
+ String(txt).split('\n').forEach(l=>{if(!l.trim())return;const sp=(l.match(/^[ \t]*/)[0]).replace(/\t/g,'    ').length;const d=Math.floor(sp/4+.25);let t=l.trim().replace(/^[-•]\s*/,'');let c='';
+  const m=t.match(/^(🔴|🔵|🟢|🟣|🟠|🩷|🟤)\s*/u);if(m){c=em[m[1]];t=t.slice(m[0].length)}let e='';const m2=t.match(/^«([^»]*)»\s*/);if(m2){e=m2[1];t=t.slice(m2[0].length)}
+  const nd={t,c,e,k:[]};while(st.length>1&&st[st.length-1].d>=d)st.pop();st[st.length-1].k.push(nd);st.push({d,k:nd.k})});return root}
+function cmapFind(id){for(const t of S.topics){const b=t.blocks.find(x=>x.id===id);if(b)return b}return null}
+function cmapEdit(id){const b=cmapFind(id);if(!b)return;const sh=document.createElement('div');sh.className='modal';sh.id='cmE';sh.style.cssText='position:fixed;inset:0;z-index:10050;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center';
+ sh.innerHTML=`<div class="box" style="max-width:560px;width:94%;background:#fff;border-radius:20px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.35);max-height:92vh;overflow:auto"><div style="font:900 18px Cairo;margin-bottom:4px">🗺️ تعديل خريطة المفاهيم</div>
+  <div class="muted" style="font-size:12.5px;line-height:1.7;margin-bottom:8px">كل سطر مربع. <b>الإزاحة للداخل (٤ مسافات)</b> تخليه فرع من اللي فوقه. لون: حط 🔴🔵🟢🟣🟠 أول السطر. كلمة على السهم: «لكي»</div>
+  <div class="row" style="gap:6px;margin-bottom:6px;flex-wrap:wrap"><button class="btn sm" data-i="in">➡️ فرع (إزاحة)</button><button class="btn sm" data-i="out">⬅️ رجّع</button>${['🔴','🔵','🟢','🟣','🟠'].map(x=>`<button class="btn sm" data-c="${x}">${x}</button>`).join('')}</div>
+  <textarea class="in" style="min-height:300px;font:600 15px/1.9 Cairo,sans-serif;white-space:pre;direction:rtl;tab-size:4" spellcheck="false">${esc(cmapOutline(b.n))}</textarea>
+  <div class="row" style="gap:8px;margin-top:10px"><button class="btn primary" style="flex:1" data-ok>✅ حفظ</button><button class="btn" data-x>إلغاء</button><button class="btn red sm" data-del>🗑 حذف</button></div></div>`;
+ document.body.appendChild(sh);const ta=sh.querySelector('textarea');
+ const lineOp=f=>{const v=ta.value,s=ta.selectionStart;const a=v.lastIndexOf('\n',s-1)+1;let e=v.indexOf('\n',s);if(e<0)e=v.length;const L=f(v.slice(a,e));ta.value=v.slice(0,a)+L+v.slice(e);ta.focus();ta.setSelectionRange(a+L.length,a+L.length)};
+ sh.querySelector('[data-i=in]').onclick=()=>lineOp(l=>'    '+l);sh.querySelector('[data-i=out]').onclick=()=>lineOp(l=>l.replace(/^ {1,4}|^\t/,''));
+ sh.querySelectorAll('[data-c]').forEach(x=>x.onclick=()=>lineOp(l=>{const sp=l.match(/^\s*/)[0];return sp+x.dataset.c+' '+l.trim().replace(/^(🔴|🔵|🟢|🟣|🟠|🩷|🟤)\s*/u,'')}));
+ const close=()=>sh.remove();sh.querySelector('[data-x]').onclick=close;sh.onclick=e=>{if(e.target===sh)close()};
+ sh.querySelector('[data-ok]').onclick=async()=>{b.n=cmapParse(ta.value);close();save();await renderPages();try{showPage(CURP)}catch(e){}toast('✅ انحفظت الخريطة')};
+ sh.querySelector('[data-del]').onclick=async()=>{if(!await ask('حذف الخريطة',{icon:'🗑',msg:'تريد تحذف خريطة المفاهيم؟',yes:'احذف',no:'لا'}))return;S.topics.forEach(t=>{const i=t.blocks.indexOf(b);if(i>=0)t.blocks.splice(i,1)});close();save();renderTopics();await renderPages()}}
+document.addEventListener('click',e=>{const m=e.target.closest&&e.target.closest('#pages .cmap');if(!m||document.body.classList.contains('exporting'))return;const t=+m.dataset.t,bi=+m.dataset.b;const b=S.topics[t]&&S.topics[t].blocks[bi];if(b&&b.type==='cmap'){e.stopPropagation();e.preventDefault();cmapEdit(b.id)}},true);
+/* ربط القراءة: Gemini يرجّع maps ← تنحفظ بالصفحة */
+{const _ha3=hwAsk;hwAsk=async function(p){const j=await _ha3.apply(this,arguments);try{if(j&&Array.isArray(j.maps)&&j.maps.length)p.maps=j.maps.map(m=>({box:m.box,n:cmapNorm(m.n||m.nodes||m.k||[])})).filter(m=>m.n.length&&Array.isArray(m.box));else delete p.maps}catch(e){}return j}}
+function hwMapMd(p){const md=String(p.md||''),B=p.blocks||[],M=p.maps||[];if(!M.length||!B.length)return md;
+ const parts=md.split(/\n?\s*─{3,}\s*\n?/);if(parts.length!==B.length)return md;
+ const inside=(bx,mb)=>{if(!bx||!mb)return false;const cy=(bx[0]+bx[2])/2,cx=(bx[1]+bx[3])/2,pd=12;return cy>=mb[0]-pd&&cy<=mb[2]+pd&&cx>=mb[1]-pd&&cx<=mb[3]+pd};
+ const out=parts.slice();M.forEach(m=>{const id='m'+uid();HWMAPS[id]=m;let first=-1;B.forEach((b,i)=>{if(b.k==='fig'||!inside(b.box,m.box))return;if(first<0){first=i;out[i]='[[خريطة '+id+']]'}else out[i]=null})
+  if(first<0){out.push('[[خريطة '+id+']]')}});
+ return out.filter(x=>x!==null).join('\n─────\n')}
+function cmapSplitBlocks(){let n=0;S.topics.forEach(t=>{const nb=[];t.blocks.forEach(b=>{if(b.type!=='text'||!/\[\[خريطة /.test(b.text)){nb.push(b);return}
+  let L=[];const fl=()=>{const s=L.join('\n').replace(/^(\s*\n)+|(\n\s*)+$/g,'');if(s.trim())nb.push({id:uid(),type:'text',text:s});L=[]};
+  b.text.split('\n').forEach(l=>{const m=l.replace(/[​\s]/g,' ').trim().match(/^(?:\[[^\]]*\]\s*)?\[\[خريطة (m[\w]+)\]\]$/);if(m&&HWMAPS[m[1]]){fl();nb.push({id:uid(),type:'cmap',n:HWMAPS[m[1]].n});n++}else if(m){}else L.push(l)});fl()});t.blocks=nb});return n}
+{const _hb4=hwBuild;hwBuild=async function(){const H=HW;if(!H||!H.pages)return _hb4.apply(this,arguments);
+ const saved=H.pages.map(p=>p.md);H.pages.forEach(p=>{p._md0=p.md;if(p.maps&&p.maps.length)p.md=hwMapMd(p)});
+ let r;try{r=await _hb4.apply(this,arguments)}finally{H.pages.forEach((p,i)=>{p.md=saved[i];delete p._md0})}
+ try{if(cmapSplitBlocks()){save();renderTopics();await renderPages();try{showPage(1)}catch(e){}}}catch(e){console.warn('cmap',e)}return r}}
+{const _hp2=hwPageBlock;hwPageBlock=function(p){const r=_hp2(p);try{if(p._md0)r.md=p._md0;if(p.maps&&p.maps.length){r.maps=p.maps;r.mb=(p.blocks||[]).map(b=>b.k==='fig'?null:b.box)}}catch(e){}return r}}
+/* تحويل صفحة «نفس الترتيب» لتصميم البرنامج: الخرائط تصير خرائط */
+{const _td=hwToDesign;hwToDesign=async function(b){if(b&&b.maps&&b.maps.length&&b.md&&!b.ed&&b.mb){const fake={md:b.md,maps:b.maps,blocks:b.mb.map(x=>x?{box:x}:{k:'fig'})};const md0=b.md;b.md=hwMapMd(fake);
+  try{await _td.call(this,b)}finally{b.md=md0}try{if(cmapSplitBlocks()){save();renderTopics();await renderPages()}}catch(e){}return}return _td.apply(this,arguments)}}
+
+/* ===== 🔄 تبديل شكل ملزمة خط اليد (نفس الورقة ⇄ تصميم البرنامج) بدون قراءة جديدة ولا دفع ===== */
+{const _hb5=hwBuild;hwBuild=async function(){const H=HW;if(!H||!H.pages||H.target||H._sw)return _hb5.apply(this,arguments);
+ let src=null;try{src=JSON.parse(JSON.stringify({name:H.name||'',title:H.title||'',pages:H.pages.map(p=>({md:p.md,blocks:p.blocks||null,maps:p.maps||null,figs:p.figs||[],marks:p.marks||[],paid:p.paid||0,paidBid:p.paidBid||''}))}))}catch(e){}
+ const before=S&&S.pid;const r=await _hb5.apply(this,arguments);
+ try{if(src&&S&&S.pid!==before&&S.hw){S.hwSrc=src;saveNow();hwModeBar()}}catch(e){console.warn(e)}return r}}
+async function hwSwitchMode(){const old=S;if(!old||!old.hwSrc)return;const toExact=!old.hwExact;
+ if(!await ask('تغيير شكل الملزمة',{icon:'🔄',msg:(toExact?'📐 تصير نفس ترتيب ورقة الأستاذ بالضبط':'📘 تصير بتصميم البرنامج: عناوين وصناديق وخرائط مرتبة')+'\n\nبدون قراءة جديدة وبدون أي خصم.\n⚠️ التعديلات اللي سويتها على الملزمة بعد التحويل راح تروح.',yes:'🔄 غيّر',no:'لا'}))return;
+ HW=JSON.parse(JSON.stringify(old.hwSrc));HW._sw=1;HW.pages.forEach(p=>p.ok=1);
+ const ask0=window.ask;window.ask=async(t,o)=>t==='شكل الملزمة'?toExact:t==='مراجعة الصفحات'?true:ask0(t,o);
+ let nw;try{await hwBuild();nw=S}finally{window.ask=ask0}
+ if(!nw||nw===old){toast('تعذّر التغيير');return}
+ const tmp=nw.pid;const M=Object.assign({},old,{topics:nw.topics,newPage:nw.newPage,showToc:nw.showToc,chapterPage:nw.chapterPage,hwSrc:old.hwSrc});
+ if(nw.hwExact)M.hwExact=1;else delete M.hwExact;
+ S=M;try{DB.del('p:'+tmp);PJ=PJ.filter(x=>x.id!==tmp);DB.set('projects',PJ)}catch(e){}
+ saveNow();bindInfo();renderTopics();renderProjects();
+ document.querySelectorAll('.modal:not(.hidden)').forEach(m=>{if(m.id==='popM')m.classList.add('hidden')});
+ await renderPages();showPage(1);liveSoon(300);hwModeBar();toast(nw.hwExact?'📐 صارت نفس ترتيب الورقة':'📘 صارت بتصميم البرنامج',3500)}
+function hwModeBar(){let b=document.getElementById('hwMode');const P=document.getElementById('pages');
+ if(!S||!S.hwSrc||!P){if(b)b.remove();return}
+ if(!b){b=document.createElement('button');b.id='hwMode';b.onclick=hwSwitchMode}
+ if(b.parentElement!==P.parentElement||b.nextElementSibling!==P)P.parentElement.insertBefore(b,P);
+ b.innerHTML=S.hwExact?'🔄 خليها <b>📘 بتصميم البرنامج</b>':'🔄 رجّعها <b>📐 نفس ترتيب الورقة</b>'}
+{const _rp3=renderPages;renderPages=async function(){const r=await _rp3.apply(this,arguments);try{hwModeBar()}catch(e){}return r}}
+(function(){const st=document.createElement('style');st.textContent=`#hwMode{display:block;margin:6px auto 10px;border:0;border-radius:999px;padding:9px 16px;background:linear-gradient(135deg,#fef3c7,#fde68a);color:#78350f;font:700 13.5px Cairo,sans-serif;box-shadow:0 4px 12px rgba(180,83,9,.18)}#hwMode b{color:#1e3a8a}body.fs #hwMode,body.exporting #hwMode{display:none}`;document.head.appendChild(st)})();
 
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
