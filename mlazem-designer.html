@@ -6558,7 +6558,7 @@ function cmapSplitBlocks(){let n=0;S.topics.forEach(t=>{const nb=[];t.blocks.for
 
 /* ===== 🔄 تبديل شكل ملزمة خط اليد (نفس الورقة ⇄ تصميم البرنامج) بدون قراءة جديدة ولا دفع ===== */
 {const _hb5=hwBuild;hwBuild=async function(){const H=HW;if(!H||!H.pages||H.target||H._sw)return _hb5.apply(this,arguments);
- let src=null;try{src=JSON.parse(JSON.stringify({name:H.name||'',title:H.title||'',pages:H.pages.map(p=>({md:p.md,blocks:p.blocks||null,maps:p.maps||null,figs:p.figs||[],marks:p.marks||[],paid:p.paid||0,paidBid:p.paidBid||''}))}))}catch(e){}
+ let src=null;try{src=JSON.parse(JSON.stringify({name:H.name||'',title:H.title||'',pages:H.pages.map(p=>({md:p.md,blocks:p.blocks||null,maps:p.maps||null,figs:p.figs||[],marks:p.marks||[],ink:p.ink||null,paid:p.paid||0,paidBid:p.paidBid||''}))}))}catch(e){}
  const before=S&&S.pid;const r=await _hb5.apply(this,arguments);
  try{if(src&&S&&S.pid!==before&&S.hw){S.hwSrc=src;saveNow();hwModeBar()}}catch(e){console.warn(e)}return r}}
 async function hwSwitchMode(){const old=S;if(!old||!old.hwSrc)return;const toExact=!old.hwExact;
@@ -6580,6 +6580,51 @@ function hwModeBar(){let b=document.getElementById('hwMode');const P=document.ge
  b.innerHTML=S.hwExact?'🔄 خليها <b>📘 بتصميم البرنامج</b>':'🔄 رجّعها <b>📐 نفس ترتيب الورقة</b>'}
 {const _rp3=renderPages;renderPages=async function(){const r=await _rp3.apply(this,arguments);try{hwModeBar()}catch(e){}return r}}
 (function(){const st=document.createElement('style');st.textContent=`#hwMode{display:block;margin:6px auto 10px;border:0;border-radius:999px;padding:9px 16px;background:linear-gradient(135deg,#fef3c7,#fde68a);color:#78350f;font:700 13.5px Cairo,sans-serif;box-shadow:0 4px 12px rgba(180,83,9,.18)}#hwMode b{color:#1e3a8a}body.fs #hwMode,body.exporting #hwMode{display:none}`;document.head.appendChild(st)})();
+
+/* ===== ✏️ رسومات الأستاذ نفسها (أسهم، مربعات، خطوط، جداول، تأشيرات) — تنسحب من الصورة وتنحط تحت الكتابة بنفس مكانها ===== */
+async function hwInk(src,blocks){if(!src||!blocks||!blocks.length)return null;
+ let x0=1000,y0=1000,x1=0,y1=0;blocks.forEach(b=>{const[a,bx,c,d]=b.box||[];if(a==null)return;y0=Math.min(y0,a);x0=Math.min(x0,bx);y1=Math.max(y1,c);x1=Math.max(x1,d)});
+ if(x1<=x0||y1<=y0){x0=y0=0;x1=y1=1000}const pad=8;x0=Math.max(0,x0-pad);y0=Math.max(0,y0-pad);x1=Math.min(1000,x1+pad);y1=Math.min(1000,y1+pad);
+ const im=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=src});
+ const IW=im.naturalWidth,IH=im.naturalHeight,sx=x0/1000*IW,sy=y0/1000*IH,sw=(x1-x0)/1000*IW,sh=(y1-y0)/1000*IH;
+ const k=Math.min(1,1300/Math.max(sw,sh)),W=Math.max(8,Math.round(sw*k)),H=Math.max(8,Math.round(sh*k));
+ const cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d',{willReadFrequently:true});g.drawImage(im,sx,sy,sw,sh,0,0,W,H);
+ const D=g.getImageData(0,0,W,H),px=D.data,N=W*H;const gr=new Float32Array(N);for(let i=0;i<N;i++)gr[i]=(px[i*4]+px[i*4+1]+px[i*4+2])/3;
+ // خلفية الورقة: أكبر قيمة بنافذة ثم تنعيم
+ const R=Math.max(5,Math.round(Math.min(W,H)/110)),mx=new Float32Array(N),tmp=new Float32Array(N);
+ for(let y=0;y<H;y++){const o=y*W;for(let x=0;x<W;x++){let m=0;for(let d=-R;d<=R;d++){const xx=x+d;if(xx>=0&&xx<W){const v=gr[o+xx];if(v>m)m=v}}tmp[o+x]=m}}
+ for(let x=0;x<W;x++){for(let y=0;y<H;y++){let m=0;for(let d=-R;d<=R;d++){const yy=y+d;if(yy>=0&&yy<H){const v=tmp[yy*W+x];if(v>m)m=v}}mx[y*W+x]=m}}
+ const S2=new Float64Array((W+1)*(H+1));for(let y=0;y<H;y++){let r=0;for(let x=0;x<W;x++){r+=mx[y*W+x];S2[(y+1)*(W+1)+x+1]=S2[y*(W+1)+x+1]+r}}
+ const B2=R*2,bg=(x,y)=>{const a=Math.max(0,x-B2),b=Math.max(0,y-B2),c=Math.min(W,x+B2+1),d=Math.min(H,y+B2+1);return (S2[d*(W+1)+c]-S2[b*(W+1)+c]-S2[d*(W+1)+a]+S2[b*(W+1)+a])/((c-a)*(d-b))};
+ const ink=new Uint8Array(N);
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=y*W+x,n=gr[i]/Math.max(1,bg(x,y));const r=px[i*4],gg=px[i*4+1],b=px[i*4+2],M=Math.max(r,gg,b),m=Math.min(r,gg,b),sat=(M-m)/Math.max(1,M);if(n<.72||(sat>.38&&n<.9))ink[i]=1}
+ // نشيل مكان الكتابة (Gemini رجّع مكانها) — حتى ما تتكرر
+ const sX=W/(x1-x0),sY=H/(y1-y0),pX=Math.round(W*.006),pY=Math.round(H*.004);
+ blocks.forEach(b=>{if(b.k==='fig'||!b.box)return;const[a,bx,c,d]=b.box;const X0=Math.max(0,Math.floor((bx-x0)*sX)-pX),X1=Math.min(W,Math.ceil((d-x0)*sX)+pX),Y0=Math.max(0,Math.floor((a-y0)*sY)-pY),Y1=Math.min(H,Math.ceil((c-y0)*sY)+pY);
+  for(let y=Y0;y<Y1;y++)ink.fill(0,y*W+X0,y*W+X1)});
+ // الصور الحقيقية (fig) تنرسم بروحها — نشيلها
+ blocks.forEach(b=>{if(b.k!=='fig'||!b.box)return;const[a,bx,c,d]=b.box;const X0=Math.max(0,Math.floor((bx-x0)*sX)),X1=Math.min(W,Math.ceil((d-x0)*sX)),Y0=Math.max(0,Math.floor((a-y0)*sY)),Y1=Math.min(H,Math.ceil((c-y0)*sY));for(let y=Y0;y<Y1;y++)ink.fill(0,y*W+X0,y*W+X1)});
+ // مجموعات متصلة: نخلي الخطوط والأسهم والمربعات، ونشيل بقايا الحروف والنقط
+ const lab=new Int32Array(N),par=[0];let nl=0;const find=a=>{while(par[a]!==a){par[a]=par[par[a]];a=par[a]}return a};
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=y*W+x;if(!ink[i])continue;let L=0;
+  const nb=[x>0?lab[i-1]:0,y>0?lab[i-W]:0,y>0&&x>0?lab[i-W-1]:0,y>0&&x<W-1?lab[i-W+1]:0];
+  for(const q of nb)if(q){const r=find(q);if(!L)L=r;else if(r!==L){if(r<L){par[L]=r;L=r}else par[r]=L}}
+  if(!L){L=++nl;par.push(L)}lab[i]=L}
+ const bb=new Map();for(let i=0;i<N;i++){if(!lab[i])continue;const r=find(lab[i]);lab[i]=r;let o=bb.get(r);const x=i%W,y=(i/W)|0;if(!o){o={a:x,b:y,c:x,d:y,n:0};bb.set(r,o)}if(x<o.a)o.a=x;if(x>o.c)o.c=x;if(y<o.b)o.b=y;if(y>o.d)o.d=y;o.n++}
+ const minL=Math.max(W,H)*.035,keep=new Set();bb.forEach((o,r)=>{const w=o.c-o.a+1,h=o.d-o.b+1,L=Math.max(w,h),fill=o.n/(w*h);
+  const tl=o.a<=2,tt=o.b<=2,tr=o.c>=W-3,tb=o.d>=H-3;const edge=(tl+tt+tr+tb)>=2||((tl||tr)&&h>H*.3)||((tt||tb)&&w>W*.3);if(L>=minL&&fill<.42&&!edge)keep.add(r)});
+ if(!keep.size)return null;
+ const col=(r,gg,b)=>{const M=Math.max(r,gg,b),m=Math.min(r,gg,b),s=(M-m)/Math.max(1,M);if(s<.28||M<60)return[30,41,59];let h;const d=M-m;
+  if(M===r)h=((gg-b)/d)%6;else if(M===gg)h=(b-r)/d+2;else h=(r-gg)/d+4;h*=60;if(h<0)h+=360;
+  if(h<20||h>=335)return[220,38,38];if(h<50)return[194,65,12];if(h<170)return[22,163,74];if(h<255)return[29,78,216];return[124,58,237]};
+ const out=g.createImageData(W,H),o=out.data;for(let i=0;i<N;i++){if(!lab[i]||!keep.has(lab[i]))continue;const c=col(px[i*4],px[i*4+1],px[i*4+2]);o[i*4]=c[0];o[i*4+1]=c[1];o[i*4+2]=c[2];o[i*4+3]=255}
+ g.putImageData(out,0,0);const url=cv.toDataURL('image/png');cv.width=cv.height=0;return url}
+{const _ha4=hwAsk;hwAsk=async function(p){const j=await _ha4.apply(this,arguments);try{if(j&&Array.isArray(j.blocks)&&j.blocks.length&&p.src){p.ink=await hwInk(p.src,j.blocks)}}catch(e){console.warn('ink',e)}return j}}
+{const _hp3=hwPageBlock;hwPageBlock=function(p){const r=_hp3(p);try{if(p.ink){r.ink=p.ink;const T=(r.items||[]).filter(i=>i.k==='t');const inT=q=>T.some(i=>q[0]>=i.x-.01&&q[0]<=i.x+i.w+.01&&q[1]>=i.y-.01&&q[1]<=i.y+i.h+.01);
+   /* الرسومات اللي برا الكتابة تجي من الصورة نفسها؛ اللي فوق الكتابة (أسهم مقوسة، تأشيرات) نخليها من Gemini */
+   r.marks=(r.marks||[]).filter(m=>m.p.filter(inT).length>=m.p.length/2)}}catch(e){}return r}}
+{const _pe=hwPageEl;hwPageEl=function(b){const d=_pe.apply(this,arguments);try{if(b.ink){const i=document.createElement('img');i.className='hwink';i.src=b.ink;i.draggable=false;d.insertBefore(i,d.firstChild)}}catch(e){}return d}}
+(function(){const st=document.createElement('style');st.textContent='.hwp .hwink{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0;image-rendering:auto}.hwp .hwi{z-index:1}';document.head.appendChild(st)})();
 
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
