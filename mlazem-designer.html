@@ -2613,7 +2613,7 @@ function initAuth(){
   if(unsubMe){unsubMe();unsubMe=null}
   if(!u){ME=null;IS_ADMIN=false;PREV_BAL=null;document.body.classList.remove('adm');$('#auth').classList.remove('hidden');authView();updChip();return}
   IS_ADMIN=!!ADMIN_EMAIL&&u.email===ADMIN_EMAIL.trim().toLowerCase();
-  try{const s=await FB.db.doc('settings/main').get();const v=s.exists?s.data():{};if(v.pricePerPage)PRICE=+v.pricePerPage;if(v.trialPages!=null)TRIAL=+v.trialPages;READY_PP=+v.readyPagePrice||0;COVER_P=(v.coverPrice!=null&&v.coverPrice!=='')?+v.coverPrice:PRICE;R2URL=(v.r2Url||'').trim();$('#trialTxt').textContent=TRIAL}catch(e){}
+  try{const s=await FB.db.doc('settings/main').get();const v=s.exists?s.data():{};if(v.pricePerPage!=null&&v.pricePerPage!=='')PRICE=+v.pricePerPage;const _n=x=>x!=null&&x!==''&&!isNaN(+x)?+x:null;HW_P=_n(v.hwPagePrice);KIDS_P=_n(v.kidsPrice);READY_P=_n(v.readyPrice);if(v.trialPages!=null)TRIAL=+v.trialPages;READY_PP=+v.readyPagePrice||0;COVER_P=(v.coverPrice!=null&&v.coverPrice!=='')?+v.coverPrice:PRICE;R2URL=(v.r2Url||'').trim();$('#trialTxt').textContent=TRIAL}catch(e){}
   if(IS_ADMIN){ME={id:u.uid,name:'المدير',phone:'',balance:0};document.body.classList.add('adm');$('#auth').classList.add('hidden');updChip();liveSoon(300);showTab('vPreview');return}
   unsubMe=FB.db.doc('designers/'+u.uid).onSnapshot(async s=>{if(!s.exists){let info=null;try{info=JSON.parse(localStorage.getItem('mlz_pending')||'null')}catch(e){}
      try{await ensureProfile(u,info);try{localStorage.removeItem('mlz_pending')}catch(e){}}catch(e){const a=$('#aErr');if(a)a.textContent='تعذّر إكمال الحساب: '+(e.code||e.message)}return}
@@ -3078,7 +3078,7 @@ async function openReady(){$('#obM').classList.add('hidden');if(!FB||(!ME&&!IS_A
  $('#rdF').innerHTML=`<button data-f="all" class="${RDF==='all'?'on':''}">الكل (${R.length})</button>`+subs.map(x=>`<button data-f="${esc(x)}" class="${RDF===x?'on':''}">${esc(x)}</button>`).join('');
  const draw=()=>{const q=normD($('#rdQ').value||'').trim();const L=$('#rdL');L.innerHTML='';
   R.filter(r=>(RDF==='all'||r.subject===RDF)&&(!q||[r.title,r.subject,r.grade].join(' ').includes(q))).forEach(r=>{const c=document.createElement('div');c.className='rdc';
-   c.innerHTML=`<div class="th5">${r.thumb?`<img src="${r.thumb}">`:''}</div><div class="inf3"><b>${esc(r.title)}</b><small>📘 ${esc(r.subject||'')}${r.grade?' • 🎓 '+esc(r.grade):''}</small><small>📄 ${r.pages} صفحة</small>${owned.has(r.id)?'<span class="own">✅ اشتريتها — تگدر تفتحها من ملازمي</span><br>':''}<span class="pr">💰 ${fmt(r.total)} دينار</span></div>`;
+   c.innerHTML=`<div class="th5">${r.thumb?`<img src="${r.thumb}">`:''}</div><div class="inf3"><b>${esc(r.title)}</b><small>📘 ${esc(r.subject||'')}${r.grade?' • 🎓 '+esc(r.grade):''}</small><small>📄 ${r.pages} صفحة</small>${owned.has(r.id)?'<span class="own">✅ اشتريتها — تگدر تفتحها من ملازمي</span><br>':''}<span class="pr">💰 ${fmt(READY_P!=null?READY_P:r.total)} دينار</span></div>`;
    if(!r.thumb){const keep=S;try{S=Object.assign(sample(),{title:r.title,subject:r.subject,grade:r.grade,coverColor:r.coverColor,coverTpl:r.coverTpl,headFont:r.headFont,lang:r.lang,teacher:'',phone:'',extra:''});const pg=coverPage('front',null,true);pg.dir=r.lang==='en'?'ltr':'rtl';pg.style.setProperty('--hf',fontCss(r.headFont));c.firstChild.appendChild(pg);requestAnimationFrame(()=>{pg.style.transform=`scale(${82/794})`})}catch(e){}finally{S=keep}}
    c.onclick=()=>readyOpen(r);L.appendChild(c)})};
  $('#rdQ').oninput=draw;$('#rdF').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{RDF=b.dataset.f;$('#rdF').querySelectorAll('[data-f]').forEach(x=>x.classList.toggle('on',x===b));draw()});draw()}
@@ -3088,11 +3088,11 @@ async function readyOpen(r){$('#obM').classList.add('hidden');
  try{let data=null;const ck=await DB.get('r:'+r.id);if(ck){try{const c=JSON.parse(ck);if(c.v===r.updatedAt)data=c.d}catch(e){}}
   if(!data){data=await rdLoad(r);DB.set('r:'+r.id,JSON.stringify({v:r.updatedAt,d:data}))}
   clearTimeout(saveT);saveNow();const d=JSON.parse(data);S=Object.assign(sample(),d);S.pid=uid();S.teacher='';S.phone='';delete S.lock;delete S.bid;delete S.demo;delete S.rid;
-  S.ready={rid:r.id,total:r.total,pages:r.pages,title:r.title,paid:false};saveNow();bindInfo();renderTopics();renderProjects();o.remove();showTab('vPreview');await renderPages();showPage(0);statusBar();
-  popup('📦',esc(r.title),`${r.pages} صفحة • السعر <b>${fmt(r.total)}</b> دينار<br><br>1️⃣ تصفّح الصفحات<br>2️⃣ اضغط على الغلاف واكتب <b>اسم الأستاذ ورقمه</b><br>3️⃣ اضغط <b>📕 تصدير PDF</b> — ينخصم السعر وتتحمّل الملزمة<br><span style="color:#64748b;font-size:13px">تگدر تعدّل عليها قبل وبعد الشراء</span>`)}
+  S.ready={rid:r.id,total:READY_P!=null?READY_P:r.total,pages:r.pages,title:r.title,paid:false};saveNow();bindInfo();renderTopics();renderProjects();o.remove();showTab('vPreview');await renderPages();showPage(0);statusBar();
+  popup('📦',esc(r.title),`${r.pages} صفحة • السعر <b>${fmt(READY_P!=null?READY_P:r.total)}</b> دينار<br><br>1️⃣ تصفّح الصفحات<br>2️⃣ اضغط على الغلاف واكتب <b>اسم الأستاذ ورقمه</b><br>3️⃣ اضغط <b>📕 تصدير PDF</b> — ينخصم السعر وتتحمّل الملزمة<br><span style="color:#64748b;font-size:13px">تگدر تعدّل عليها قبل وبعد الشراء</span>`)}
  catch(e){try{o.remove()}catch(_){}popup('⚠️','تعذّر تحميل الملزمة',esc(e.message||String(e)))}}
 async function readyBuy(teacher){const o=overlay('💰 جاري التأكد من السعر...');let r;
- try{const x=await FB.db.doc('ready/'+S.ready.rid).get();if(!x.exists||!x.data().published){o.remove();popup('⚠️','الملزمة غير متوفرة','هاي الملزمة انشالت من الملازم الجاهزة.');return false}r=x.data()}catch(e){o.remove();toast('تعذّر الاتصال — تأكد من الإنترنت');return false}
+ try{const x=await FB.db.doc('ready/'+S.ready.rid).get();if(!x.exists||!x.data().published){o.remove();popup('⚠️','الملزمة غير متوفرة','هاي الملزمة انشالت من الملازم الجاهزة.');return false}r=x.data();if(READY_P!=null)r.total=READY_P}catch(e){o.remove();toast('تعذّر الاتصال — تأكد من الإنترنت');return false}
  o.remove();S.ready.total=r.total;S.ready.pages=r.pages;saveNow();statusBar();
  if((ME.balance||0)<r.total){popup('💳','رصيدك لا يكفي',`سعر الملزمة <b>${fmt(r.total)}</b> دينار — رصيدك <b>${fmt(ME.balance)}</b> دينار.<br><a class="btn wa" style="width:100%;margin-top:12px" target="_blank" href="${waLink('أريد إضافة رصيد لشراء ملزمة '+(r.title||''))}">💬 اضغط هنا لمراسلتنا وإضافة رصيد</a>`);return false}
  if(!await ask('شراء الملزمة الجاهزة',{icon:'📦',msg:`${esc(r.title)} — ${r.pages} صفحة\n👨‍🏫 باسم الأستاذ: ${esc(teacher)}\n\n💰 سينخصم ${fmt(r.total)} دينار من رصيدك\n🔒 الملزمة تنقفل على هذا الأستاذ`,yes:'شراء وتحميل',no:'إلغاء'}))return false;
@@ -3100,7 +3100,7 @@ async function readyBuy(teacher){const o=overlay('💰 جاري التأكد م�
  try{const id=ME.id+'_'+Date.now().toString(36)+uid();const phone=(S.phone||'').trim();
   await FB.db.doc('booklets/'+id).set({uid:ME.id,designer:ME.name||'',designerPhone:ME.phone||'',teacher:'',teacherPhone:'',title:S.title||'',subject:S.subject||'',price:PRICE,charged:0,exported:0,amountPaid:0,freePages:0,exports:0,createdAt:TS(),lastAt:TS()});
   const dref=FB.db.doc('designers/'+ME.id),bref=FB.db.doc('booklets/'+id),rref=FB.db.doc('ready/'+S.ready.rid);SELF_T=Date.now();
-  await FB.db.runTransaction(async tx=>{const d=(await tx.get(dref)).data(),rr=(await tx.get(rref)).data();await tx.get(bref);
+  await FB.db.runTransaction(async tx=>{const d=(await tx.get(dref)).data(),rr=(await tx.get(rref)).data();await tx.get(bref);if(rr&&READY_P!=null)rr.total=READY_P;
    if(!rr||!rr.published)throw new Error('الملزمة غير متوفرة');if((d.balance||0)<rr.total)throw new Error('الرصيد لا يكفي');const nb=(d.balance||0)-rr.total;
    tx.update(dref,{balance:nb,totalSpent:(d.totalSpent||0)+rr.total,totalPages:(d.totalPages||0)+rr.pages,lastBooklet:id,updatedAt:TS()});
    tx.update(bref,{ready:S.ready.rid,readyPaid:rr.total,readyPages:rr.pages,charged:rr.pages,exported:rr.pages,amountPaid:rr.total,teacher,teacherPhone:phone,title:S.title||'',subject:S.subject||'',lastAt:TS()});
@@ -3677,7 +3677,7 @@ async function importPdf(file,mode){
   popup('✅','تم رفع الملزمة',mode!=='img'?`صارت ملزمة جديدة باسم <b>${esc(name)}</b> (${N} صفحة PDF).<br>الكتابة والجداول والإطارات والصور صارت بأدوات البرنامج — اضغط على أي شي وعدّله.${S.pdfOcr?'<br><span style="color:#b45309;font-size:13px">الكتابة انقرت من شكل الصفحة — راجعها، ممكن كلمة أو كلمتين تحتاج تصحيح.</span>':''}`:`صارت ملزمة جديدة باسم <b>${esc(name)}</b> — ${N} صفحة بنفس شكلها.<br>أضف <b>🔤 كتابة حرة</b> أو صور أو علامة مائية فوق أي صفحة.`)
  }catch(e){console.warn(e);try{o.remove()}catch(_){}popup('⚠️','تعذّر فتح الملف','تأكد من الإنترنت (أول مرة يحتاج يحمّل قارئ PDF) وإن الملف PDF سليم.<br>إذا انقطع بالنص، ارفع <b>نفس الملف</b> مرة ثانية ويكمّل من مكان ما وقف.<br><small style="color:#94a3b8">'+esc(String(e&&e.message||e).slice(0,120))+'</small>')}}
 /* ================= ملزمة خط يد ← ملزمة قابلة للتعديل (Gemini عبر الـ Worker) ================= */
-const HWPRICE=()=>READY_PP||PRICE;let HW=null;
+let HW_P=null,KIDS_P=null,READY_P=null;const HWPRICE=()=>HW_P!=null?HW_P:(READY_PP||PRICE);let HW=null;
 async function hwPick(){if(!R2URL){popup('☁️','الخدمة غير مفعّلة','تحويل خط اليد يحتاج ربط الـ Worker من برنامج الإدارة ← الإعدادات.');return}
  const sv=await DB.get('hw:cur');if(sv&&sv.pages&&sv.pages.length){if(await ask('ملزمة خط يد بالمراجعة',{icon:'✍️',msg:`عندك ملزمة خط يد ما كمّلتها (${sv.pages.length} صفحة).\nتريد تفتحها وتكمّل؟`,yes:'▶️ أفتحها',no:'🆕 ملزمة جديدة'})){HW=sv;HW.pages.forEach(p=>p.busy=0);hwReview();hwRun();return}DB.del('hw:cur')}
  const i=document.createElement('input');i.type='file';i.multiple=true;i.accept='image/*,application/pdf,.pdf';i.onchange=()=>{const f=[...i.files];if(f.length)hwStart(f)};i.click()}
@@ -6760,6 +6760,37 @@ cleanupZW=function(){let ch=0;S.topics.forEach(t=>t.blocks.forEach(b=>{if(b.type
   const c=raw.replace(/^\s*(#{1,3}\s*|[-•]\s*|[0-9٠-٩]+[.)\-]\s*|(هـ|[ء-ي]|[a-zA-Z])\)\s*|\[[^\]]+\]\s*)/,'').trim();return !!c});
  const nt=L.map(l=>l.replace(/​/g,'').trim()===''&&l.includes(ZW)?ZW:l).join('\n');if(nt!==b.text){b.text=nt;ch=1}}));if(ch)save()};
 (function(){const st=document.createElement('style');st.textContent='body:not(.fs) .etx.emp::before,body.fs.pv .etx.emp::before{content:""}body.fs:not(.pv) .etx.emp:not(:focus)::before{opacity:.45}';document.head.appendChild(st)})();
+
+/* ===== 💰 سعر ثابت للكراسات الجاهزة والملازم الجاهزة (يدفع مرة وحدة باسم الأستاذ) ===== */
+const isFlat=()=>!!(S&&((S.ready&&S.ready.paid)||(S.kids&&S.kidsPaid&&S.bid)));
+async function kidsBuy(teacher){const price=KIDS_P||0;
+ if((ME.balance||0)<price){popup('💳','رصيدك لا يكفي',`سعر الكراسة <b>${fmt(price)}</b> دينار — رصيدك <b>${fmt(ME.balance||0)}</b> دينار.<br><a class="btn wa" style="width:100%;margin-top:12px" target="_blank" href="${waLink('أريد إضافة رصيد لشراء كراسة '+(S.title||''))}">💬 اضغط هنا لمراسلتنا وإضافة رصيد</a>`);return false}
+ if(!await ask('شراء الكراسة',{icon:'🧒',msg:`${esc(S.title||'كراسة')}\n👨‍🏫 باسم: ${esc(teacher)}\n\n💰 ${price?'سينخصم '+fmt(price)+' دينار مرة وحدة':'مجانية'}\n✅ تگدر تعدّلها وتنزّلها مرات بنفس الاسم بدون خصم\n⚠️ إذا غيّرت الاسم تنحسب كراسة جديدة`,yes:price?'شراء وتحميل':'تحميل',no:'إلغاء'}))return false;
+ const o=overlay('💰 جاري الشراء...');
+ try{const n=Math.max(1,pagesList().length||LIVE.n||1);const id=ME.id+'_'+Date.now().toString(36)+uid();const phone=(S.phone||'').trim();
+  await FB.db.doc('booklets/'+id).set({uid:ME.id,designer:ME.name||'',designerPhone:ME.phone||'',teacher:'',teacherPhone:'',title:S.title||'',subject:S.subject||'',price:PRICE,charged:0,exported:0,amountPaid:0,freePages:0,exports:0,createdAt:TS(),lastAt:TS()});
+  const dref=FB.db.doc('designers/'+ME.id),bref=FB.db.doc('booklets/'+id);SELF_T=Date.now();
+  await FB.db.runTransaction(async tx=>{const d=(await tx.get(dref)).data();await tx.get(bref);if((d.balance||0)<price)throw new Error('LOW:'+price);const nb=(d.balance||0)-price;
+   tx.update(dref,{balance:nb,totalSpent:(d.totalSpent||0)+price,totalPages:(d.totalPages||0)+n,lastBooklet:id,updatedAt:TS()});
+   tx.update(bref,{kids:true,kidsPaid:price,charged:n,amountPaid:price,teacher,teacherPhone:phone,title:S.title||'',subject:S.subject||'',lastAt:TS()});
+   tx.set(txDoc(),{uid:ME.id,name:ME.name||'',type:'kids',pages:n,amount:-price,title:S.title||'',teacher,booklet:id,balanceAfter:nb,at:TS()})});
+  S.bid=id;S.kidsPaid=price;S.lock={id,uid:ME.id,teacher,phone,at:Date.now()};saveNow();bindInfo();Object.assign(LIVE,{bid:id,charged:n,unpaid:0,cvDue:0});o.remove();if(price)toast(`✅ تم الشراء — انخصم ${fmt(price)} دينار`,3000);return true}
+ catch(e){o.remove();if(String(e.message||'').startsWith('LOW:')){lowBalance(+e.message.slice(4));return false}console.warn(e);toast('تعذّر الشراء — تأكد من الإنترنت',4000);return false}}
+{const _ep2=exportPDF;exportPDF=async function(){
+ if(S&&S.kids&&KIDS_P!=null&&!IS_ADMIN&&!S.demo&&!DEMO&&FB&&ME&&!(S.kidsPaid!=null&&S.bid&&S.lock)){
+  const teacher=(S.lock?S.lock.teacher:S.teacher||'').trim();if(!teacher){toast('اكتب اسم الأستاذ أولاً (تبويب الملزمة)',3500);showTab('vInfo');return}
+  if(!await kidsBuy(teacher))return}
+ return _ep2.apply(this,arguments)}}
+{const _dc=dueCost;dueCost=function(){if(isFlat())return 0;return _dc.apply(this,arguments)}}
+{const _pe2=payExport;payExport=async function(bid,pages,cv){if(!isFlat())return _pe2.apply(this,arguments);
+ const tot=(pages||0)+(cv||0),bref=FB.db.doc('booklets/'+bid);let ch=0;
+ await FB.db.runTransaction(async tx=>{const b=(await tx.get(bref)).data();ch=Math.max(b.charged||0,tot,b.exported||0);if(ch!==(b.charged||0))tx.update(bref,{charged:ch,lastAt:TS()})});
+ return {charged:ch,coverN:cv||0,pay:0}}}
+/* تغيير اسم الأستاذ بكراسة مشتراة = كراسة جديدة تندفع */
+{const _ct=changeTeacher;changeTeacher=async function(){if(!(S&&S.kids&&S.kidsPaid!=null&&S.lock&&KIDS_P!=null))return _ct.apply(this,arguments);
+ const nt=await ask('🔁 تغيير الاسم',{icon:'👨‍🏫',msg:`هاي كراسة مدفوعة باسم ${esc(S.lock.teacher)} — تغيير الاسم يعتبرها كراسة جديدة وتدفع سعرها (${fmt(KIDS_P)} دينار) عند التحميل.\nالقديمة تبقى بـ «ملازمي».`,input:'',ph:'الاسم الجديد',yes:'التالي',no:'إلغاء'});if(nt==null||!nt.trim())return;
+ clearTimeout(saveT);saveNow();const d=JSON.parse(JSON.stringify(S));delete d.lock;delete d.bid;delete d.kidsPaid;d.pid=uid();d.teacher=nt.trim();d.phone='';S=Object.assign(sample(),d);saveNow();bindInfo();renderTopics();renderProjects();await renderPages();
+ popup('✅','تم','صارت نسخة جديدة باسم <b>'+esc(nt.trim())+'</b> — اضغط تنزيل حتى تشتريها وتحمّلها.')}}
 
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');

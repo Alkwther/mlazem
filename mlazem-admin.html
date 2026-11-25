@@ -185,8 +185,17 @@ pre{background:#1d2430;color:#d6e2ff;border-radius:10px;padding:10px;font-size:1
   <div id="r2s" class="muted" style="margin-top:6px"></div>
  </div>
  <div class="card">
-  <h2>💵 سعر الصفحة</h2>
+  <h2>💵 الأسعار</h2>
+  <div class="muted" style="line-height:1.7;margin-bottom:4px">كل سعر بالدينار — اكتب <b>0</b> إذا تريده مجاني.</div>
+  <label class="f">🎨 سعر تصميم الصفحة</label>
   <input class="in" id="price" inputmode="numeric">
+  <label class="f">📦 سعر الملزمة الجاهزة (سعر ثابت للملزمة كلها)</label>
+  <input class="in" id="rdp" inputmode="numeric" placeholder="فارغ = كل ملزمة بسعرها الخاص">
+  <label class="f">🧒 سعر الكراسة الجاهزة (سعر ثابت للكراسة كلها)</label>
+  <input class="in" id="kdp" inputmode="numeric" placeholder="فارغ = تنحسب بسعر الصفحة">
+  <label class="f">✍️ سعر الصفحة لتحويل خط اليد</label>
+  <input class="in" id="hwp" inputmode="numeric" placeholder="فارغ = نفس سعر الصفحة الجاهزة">
+  <div class="muted" style="margin-top:6px;line-height:1.8">• <b>الملزمة والكراسة الجاهزة:</b> الأستاذ يدفع سعرها مرة وحدة، ويعدّل وينزّل بنفس الاسم قد ما يريد. إذا غيّر الاسم يدفع من جديد.<br>• ⚠️ بعد تغيير الأسعار انسخ <b>قواعد الحماية</b> الجديدة (تحت) والصقها بـ Firebase مرة وحدة.</div>
   <div class="muted" style="margin-top:6px;line-height:1.8">• المشترك يصمم ويعدّل ببلاش — الخصم يصير فقط عند حفظ PDF.<br>• يدفع على الصفحات اللي ما دفعها قبل، وإعادة الحفظ بنفس اسم الأستاذ ببلاش.<br>• السعر الجديد يُطبّق على الملازم الجديدة فقط.</div>
   <label class="f">💵 سعر الغلاف (دينار) — غلاف الملزمة والكراسة وغلاف مصمم الأغلفة</label>
   <input class="in" id="cvp" inputmode="numeric" placeholder="مثلاً 500 — اكتب 0 إذا مجاني">
@@ -303,7 +312,7 @@ service cloud.firestore {
         && request.resource.data.charged == 0 && request.resource.data.exported == 0
         && request.resource.data.amountPaid == 0 && request.resource.data.freePages == 0
         && request.resource.data.teacher == '' && (request.resource.data.price == cfg().pricePerPage
-          || (request.resource.data.get('hw', false) == true && request.resource.data.price == cfg().get('readyPagePrice', -1))
+          || (request.resource.data.get('hw', false) == true && (request.resource.data.price == cfg().get('hwPagePrice', -1) || request.resource.data.price == cfg().get('readyPagePrice', -1)))
           || (request.resource.data.get('cover', false) == true && request.resource.data.price == cfg().get('coverPrice', -1)));
       allow delete: if isAdmin();
       allow update: if isAdmin() || (signed() && resource.data.uid == request.auth.uid
@@ -315,17 +324,23 @@ service cloud.firestore {
         && request.resource.data.amountPaid >= 0
         && request.resource.data.freePages >= resource.data.freePages
         && ((!('ready' in request.resource.data) && !('ready' in resource.data)
+              && !('kids' in request.resource.data) && !('kids' in resource.data)
               && request.resource.data.amountPaid >= (request.resource.data.charged - request.resource.data.freePages) * request.resource.data.price)
+          || ('kids' in request.resource.data && !('ready' in request.resource.data)
+              && (('kids' in resource.data && request.resource.data.kids == resource.data.kids && request.resource.data.kidsPaid == resource.data.kidsPaid)
+                || (!('kids' in resource.data) && resource.data.exported == 0 && cfg().get('kidsPrice', -1) >= 0
+                    && request.resource.data.kidsPaid == cfg().get('kidsPrice', -1)))
+              && request.resource.data.amountPaid >= request.resource.data.kidsPaid)
           || ('ready' in request.resource.data
               && (('ready' in resource.data && request.resource.data.ready == resource.data.ready
                     && request.resource.data.readyPaid == resource.data.readyPaid && request.resource.data.readyPages == resource.data.readyPages)
                 || (!('ready' in resource.data) && resource.data.exported == 0
                     && get(rd(request.resource.data.ready)).data.published == true
-                    && request.resource.data.readyPaid == get(rd(request.resource.data.ready)).data.total
+                    && ((cfg().get('readyPrice', -1) >= 0 && request.resource.data.readyPaid == cfg().get('readyPrice', -1))
+                      || (cfg().get('readyPrice', -1) < 0 && request.resource.data.readyPaid == get(rd(request.resource.data.ready)).data.total))
                     && request.resource.data.readyPages == get(rd(request.resource.data.ready)).data.pages))
               && request.resource.data.exported >= request.resource.data.readyPages
-              && request.resource.data.amountPaid >= request.resource.data.readyPaid
-              && request.resource.data.amountPaid >= request.resource.data.readyPaid + (request.resource.data.charged - request.resource.data.readyPages - request.resource.data.freePages) * request.resource.data.price))
+              && request.resource.data.amountPaid >= request.resource.data.readyPaid))
         && request.resource.data.amountPaid - resource.data.amountPaid == get(me()).data.balance - getAfter(me()).data.balance
         && request.resource.data.freePages - resource.data.freePages == uf(getAfter(me()).data) - uf(get(me()).data));
     }
@@ -425,8 +440,8 @@ function startData(){
  unsubs.push(FB.db.collection('designers').onSnapshot(q=>{DES=q.docs.map(d=>({id:d.id,...d.data()}));renderDes();renderHome()},e=>toast('خطأ بالصلاحيات — تأكد من نشر القواعد')));
  unsubs.push(FB.db.collection('codes').orderBy('createdAt','desc').limit(500).onSnapshot(q=>{CODES=q.docs.map(d=>({id:d.id,...d.data()}));renderCodes();renderHome()}));
  FB.db.doc('settings/main').get().then(async s=>{let v=s.exists?s.data():{};
-  if(!s.exists||v.pricePerPage==null||v.trialPages==null){v={pricePerPage:v.pricePerPage||150,trialPages:v.trialPages!=null?v.trialPages:3};await FB.db.doc('settings/main').set(v,{merge:true})}
-  PRICE=+v.pricePerPage;$('#price').value=PRICE;$('#trial').value=v.trialPages;$('#cvp').value=v.coverPrice!=null?v.coverPrice:'';RPP=+v.readyPagePrice||0;$('#rpp').value=RPP||'';R2U=v.r2Url||'';$('#r2u').value=R2U;renderReady();hwLoad()});
+  if(!s.exists||v.pricePerPage==null||v.trialPages==null){v={pricePerPage:v.pricePerPage!=null?v.pricePerPage:150,trialPages:v.trialPages!=null?v.trialPages:3};await FB.db.doc('settings/main').set(v,{merge:true})}
+  PRICE=+v.pricePerPage;$('#price').value=PRICE;['rdp:readyPrice','kdp:kidsPrice','hwp:hwPagePrice'].forEach(x=>{const[a,b]=x.split(':');const e=$('#'+a);if(e)e.value=v[b]!=null?v[b]:''});$('#trial').value=v.trialPages;$('#cvp').value=v.coverPrice!=null?v.coverPrice:'';RPP=+v.readyPagePrice||0;$('#rpp').value=RPP||'';R2U=v.r2Url||'';$('#r2u').value=R2U;renderReady();hwLoad()});
  unsubs.push(FB.db.collection('ready').onSnapshot(q=>{RD=q.docs.map(d=>({id:d.id,...d.data()}));RD.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));renderReady()},e=>{$('#rdList').innerHTML='<div class="muted" style="padding:16px;color:#c62828">⚠️ حدّث قواعد Firebase من الإعدادات حتى تشتغل الملازم الجاهزة</div>'}));
  unsubs.push(FB.db.collection('secrets').onSnapshot(q=>{SECRETS={};q.docs.forEach(d=>SECRETS[d.id]=d.data());renderDes()}));
  unsubs.push(FB.db.collection('booklets').orderBy('lastAt','desc').limit(500).onSnapshot(q=>{BK=q.docs.map(d=>({id:d.id,...d.data()}));renderBk();renderReady()}));
@@ -564,15 +579,15 @@ function renderCodes(){
 async function delCode(id){if(!confirm('حذف الكود '+id+'؟'))return;await FB.db.doc('codes/'+id).delete();toast('تم الحذف')}
 
 /* ---- transactions ---- */
-const TN={hw:'✍️ تحويل خط يد',hwrefund:'↩️ إرجاع تحويل خط يد',ready:'شراء ملزمة جاهزة',page:'إضافة صفحات',refund:'إرجاع صفحات',export:'حفظ PDF',code:'شحن بكود',admin:'شحن من الإدارة',deduct:'خصم من الإدارة'},KN={pdf:'PDF',word:'Word',print:'طباعة'};
+const TN={kids:'🧒 شراء كراسة',hw:'✍️ تحويل خط يد',hwrefund:'↩️ إرجاع تحويل خط يد',ready:'شراء ملزمة جاهزة',page:'إضافة صفحات',refund:'إرجاع صفحات',export:'حفظ PDF',code:'شحن بكود',admin:'شحن من الإدارة',deduct:'خصم من الإدارة'},KN={pdf:'PDF',word:'Word',print:'طباعة'};
 function txRow(t){return `<div class="item" style="cursor:default"><div class="mid"><b>${TN[t.type]||t.type}${t.kind?' '+KN[t.kind]:''}${t.pages?' — '+t.pages+' صفحة':''}${t.free?' (🎁 '+t.free+' مجانية)':''}</b>${t.teacher?'<span class="muted"> 👨‍🏫 '+esc(t.teacher)+'</span>':''}
  <span class="muted">${esc(t.name||'')} ${t.title?'• '+esc(t.title):''}${t.note?' • '+esc(t.note):''}${t.code?' • '+t.code:''} • ${dstr(t.at)}</span></div><span class="amt ${t.amount>0?'p':'n'}">${t.amount>0?'+':''}${fmt(t.amount)}</span></div>`}
 function renderTx(){const l=TX.filter(t=>TXTYPE==='all'||t.type===TXTYPE);
  $('#txList').innerHTML=l.length?l.map(txRow).join(''):'<div class="muted" style="padding:14px">لا توجد حركات بهذه الفترة</div>'}
 
 /* ---- settings ---- */
-async function savePrice(){const p=Math.round(+normD($('#price').value)),t=Math.max(0,Math.round(+normD($('#trial').value)||0)),cr=normD($('#cvp').value).trim(),cv=cr===''?p:Math.max(0,Math.round(+cr||0));if(!p){toast('اكتب السعر');return}
- await FB.db.doc('settings/main').set({pricePerPage:p,trialPages:t,coverPrice:cv},{merge:true});$('#cvp').value=cv;PRICE=p;toast('تم حفظ الإعدادات ✓')}
+async function savePrice(){const _o=id=>{const r=normD($('#'+id).value).trim();return r===''?null:Math.max(0,Math.round(+r||0))};const rdp=_o('rdp'),kdp=_o('kdp'),hwp=_o('hwp');const p=Math.max(0,Math.round(+normD($('#price').value)||0)),pr=normD($('#price').value).trim(),t=Math.max(0,Math.round(+normD($('#trial').value)||0)),cr=normD($('#cvp').value).trim(),cv=cr===''?p:Math.max(0,Math.round(+cr||0));if(pr===''){toast('اكتب سعر تصميم الصفحة');return}
+ const del=firebase.firestore.FieldValue.delete();await FB.db.doc('settings/main').set({pricePerPage:p,trialPages:t,coverPrice:cv,readyPrice:rdp==null?del:rdp,kidsPrice:kdp==null?del:kdp,hwPagePrice:hwp==null?del:hwp},{merge:true});$('#cvp').value=cv;PRICE=p;toast('تم حفظ الإعدادات ✓')}
 
 /* ---- init ---- */
 (function(){
