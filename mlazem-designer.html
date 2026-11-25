@@ -6718,6 +6718,42 @@ function hwFitFid(root){if(!root)return;root.querySelectorAll('.hwp.fid').forEac
  #hwAdd{font-size:12.5px!important;padding:8px 14px!important;bottom:calc(118px + env(safe-area-inset-bottom))!important}#hwAdd small{display:none}
 }`;document.head.appendChild(st)})();
 
+/* ===== 🎨 رسومات خط اليد تنرسم من جديد بالذكاء الاصطناعي ويه نفس التأشيرات — تلقائياً ===== */
+let HWDRAW=0;
+async function hwAutoRedraw(){if(HWDRAW||!R2URL||!S||!S.hw)return;const pid=S.pid;
+ const Q=[];S.topics.forEach(t=>t.blocks.forEach(b=>{if(b.type==='image'&&b.src&&!b.ai&&!b.aiSkip&&!b.noAi)Q.push({b,color:t.color})}));if(!Q.length)return;
+ HWDRAW=1;let c=document.getElementById('hwDrC');if(!c){c=document.createElement('div');c.id='hwDrC';document.body.appendChild(c)}
+ let done=0;const upd=()=>{c.innerHTML=`<span class="sp"></span> 🎨 جاري رسم الرسومات بالذكاء الاصطناعي ${done}/${Q.length}`};upd();
+ for(const q of Q){if(!S||S.pid!==pid)break;const b=q.b;
+  try{const r=await aiDrawReq(b.orig?b.orig.src:b.src,b.aiInfo||null);b.orig=b.orig||{src:b.src,w:b.w,h:b.h,ann:b.ann||[]};b.src=r.src;b.w=r.w;b.h=r.h;b.ann=r.ann;b.aiInfo=r.info;b.ai=1;b.annStyle=b.annStyle||'box';b.annSize=b.annSize||'m';if((b.width||65)<85)b.width=92;
+   save();await renderPages();try{showPage(CURP)}catch(e){}}
+  catch(e){b.aiSkip=1;console.warn('redraw',e)}done++;upd()}
+ c.remove();HWDRAW=0;if(done)toast('✅ انرسمت الرسومات من جديد — اضغط على أي رسم حتى تعدّل التأشيرات أو ترجّع الأصلي',5000)}
+{const _hb8=hwBuild;hwBuild=async function(){const r=await _hb8.apply(this,arguments);try{if(S&&S.hw&&!S.hwExact)setTimeout(hwAutoRedraw,800)}catch(e){}return r}}
+{const _ip2=insertPagesAt;insertPagesAt=async function(){const r=await _ip2.apply(this,arguments);try{if(S&&S.hw&&!S.hwExact)setTimeout(hwAutoRedraw,800)}catch(e){}return r}}
+(function(){const st=document.createElement('style');st.textContent=`#hwDrC{position:fixed;left:50%;transform:translateX(-50%);top:calc(70px + env(safe-area-inset-top));z-index:9001;background:#7c3aed;color:#fff;border-radius:999px;padding:9px 16px;font:700 13px Cairo,sans-serif;box-shadow:0 10px 26px rgba(124,58,237,.35);display:flex;align-items:center;gap:8px;white-space:nowrap}
+#hwDrC .sp{width:13px;height:13px;border-radius:50%;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;animation:hwBgS .8s linear infinite}body.exporting #hwDrC{display:none}`;document.head.appendChild(st)})();
+
+/* ===== وضع التعديل (ملء الشاشة): أشرطة الأدوات فوق وتحت أصغر وبسطر واحد ===== */
+(function(){const st=document.createElement('style');st.textContent=`
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@media (max-width:760px){
+ #fbar{padding:5px 6px calc(5px)!important;gap:5px!important}
+ #fbar #fbTypes{gap:5px!important;padding:0!important;min-height:0!important;height:auto!important}
+ #fbar #fbTypes button{height:28px!important;min-height:0!important;padding:0 11px!important;font-size:12.5px!important;border-radius:999px!important;line-height:28px!important}
+ #fbar .fbbtns{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;gap:5px!important;padding:0 0 1px!important;scrollbar-width:none;grid-template-columns:none!important}
+ #fbar .fbbtns::-webkit-scrollbar{display:none}
+ #fbar .fbbtns button{flex:0 0 auto!important;width:auto!important;min-width:34px!important;height:32px!important;min-height:0!important;padding:0 9px!important;font-size:12.5px!important;border-radius:10px!important;display:inline-flex!important;flex-direction:row!important;align-items:center!important;gap:3px!important;line-height:1!important;grid-column:auto!important}
+ #fbar .fbbtns button *{font-size:13px!important;margin:0!important}
+ #fbar .fbbtns button.ok{order:-1;padding:0 14px!important;min-width:64px!important}
+ body.fs:not(.pv):not(.kids) #fsBar,body.fs.kids:not(.pv) #fsBar{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;overflow-x:auto!important;gap:4px!important;padding:5px 6px calc(5px + env(safe-area-inset-bottom))!important;border-radius:16px 16px 0 0!important;grid-template-columns:none!important;scrollbar-width:none;left:0!important;right:0!important;bottom:0!important;margin:0!important;width:auto!important}
+ body.fs #fsBar::-webkit-scrollbar{display:none}
+ body:not(.kids) #fsBar>button.konly,body.kids #fsBar>button.nok{display:none!important}
+ #fsBar>button:not(.konly){flex:0 0 auto!important;width:auto!important;min-width:50px!important;height:46px!important;min-height:0!important;padding:2px 6px!important;font-size:10px!important;border-radius:11px!important;display:inline-flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:1px!important;line-height:1.1!important;white-space:nowrap!important}
+ #fsBar>button i{font-size:17px!important;font-style:normal!important;line-height:1!important;margin:0!important}
+ #fsBar>button.pdfb,#fsBar>button[onclick*="exportPDF"]{min-width:56px!important}
+}`;document.head.appendChild(st)})();
+
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
  const n=dv.getUint16(e+10,true);let p=dv.getUint32(e+16,true);const files={};const td=new TextDecoder();
