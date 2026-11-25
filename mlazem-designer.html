@@ -6994,7 +6994,7 @@ function mselStart(h){try{if(ACT){commitEl(ACT);ACT.blur&&ACT.blur()}}catch(e){}
  toast('☑️ اضغط على الأسطر اللي تريدها — وبعدين اختار الأداة')}
 function mselEnd(){document.body.classList.remove('msel');clearTimeout(idleT);idleT=setTimeout(idleRender,400);MS=new Set();msHosts().forEach(h=>{h.classList.remove('msl');const k=h.querySelector(':scope>.mslk');if(k)k.remove();h.querySelectorAll('.etx[data-mce]').forEach(e=>{e.contentEditable='true';delete e.dataset.mce})})}
 document.addEventListener('pointerdown',e=>{if(!document.body.classList.contains('msel'))return;const h=e.target.closest&&e.target.closest('#pages [data-ed="line"]');if(h)e.preventDefault()},true);
-document.addEventListener('click',e=>{if(!document.body.classList.contains('msel'))return;const h=e.target.closest&&e.target.closest('#pages [data-ed="line"]');if(!h)return;e.preventDefault();e.stopPropagation();
+document.addEventListener('click',e=>{if(!document.body.classList.contains('msel'))return;if(Date.now()-MS_SKIPCLICK<450&&e.target.closest&&e.target.closest('#pages [data-ed="line"]')){e.preventDefault();e.stopPropagation();return}const h=e.target.closest&&e.target.closest('#pages [data-ed="line"]');if(!h)return;e.preventDefault();e.stopPropagation();
  const k=msKey(h);if(MS_R&&MS_LAST&&MS_LAST!==k){const H=msHosts(),ks=H.map(msKey),a=ks.indexOf(MS_LAST),b=ks.indexOf(k);if(a>=0&&b>=0){const[x,y]=a<b?[a,b]:[b,a];for(let i=x;i<=y;i++)MS.add(ks[i])}}
  else if(MS.has(k))MS.delete(k);else MS.add(k);MS_LAST=k;msDom()},true);
 {const _rpM=renderPages;renderPages=async function(){const r=await _rpM.apply(this,arguments);if(document.body.classList.contains('msel'))msDom();return r}}
@@ -7042,6 +7042,41 @@ async function msAction(x){const a=x.dataset.a,ty=x.dataset.k,al=x.dataset.al;
 {const _ctN=changeType;changeType=function(host,ty){if(ty==='nl'&&host&&host.dataset.ty==='nl'){const d=host.dataset,ti=+d.t,bi=+d.b,ln=+d.ln;const tx=host.querySelector('.etx');const md=cleanMd(toMarkup(tx));
   ask('🔢 رقم هذا السطر',{icon:'🔢',msg:'اكتب الرقم اللي تريده (1 أو ١ أو أ أو a)',input:d.n||'',yes:'✅',no:'إلغاء'}).then(async v=>{if(v==null||!String(v).trim())return;const b=S.topics[ti]&&S.topics[ti].blocks[bi];if(!b)return;const L=b.text.split('\n');L[ln]=buildLine('nl',md||ZW,String(v).trim());b.text=L.join('\n');save();await renderPages();toast('🔢 تم')});return}
  return _ctN.apply(this,arguments)}}
+
+/* ================= ✋ ضغطة مطوّلة + سحب = تحديد كل الأسطر اللي يمر عليها الإصبع ================= */
+let MSD=null;// {startKey, base:Set, lastY}
+const msLineAt=(x,y)=>{const e=document.elementFromPoint(x,y);return e&&e.closest?e.closest('#pages [data-ed="line"]'):null};
+function msDragTo(h){if(!MSD||!h)return;const H=msHosts(),ks=H.map(msKey),a=ks.indexOf(MSD.start),b=ks.indexOf(msKey(h));if(a<0||b<0)return;
+ const S2=new Set(MSD.base);const[x,y]=a<b?[a,b]:[b,a];for(let i=x;i<=y;i++)S2.add(ks[i]);MS=S2;MS_LAST=msKey(h);msDom()}
+function msScroller(){let el=document.getElementById('pages');while(el&&el!==document.body){const o=getComputedStyle(el).overflowY;if((o==='auto'||o==='scroll')&&el.scrollHeight>el.clientHeight+4)return el;el=el.parentElement}return document.scrollingElement||document.documentElement}
+let MSA=null;function msAuto(y){cancelAnimationFrame(MSA);if(!MSD)return;const top=110,bot=innerHeight-130;const v=y<top?-(top-y)/5:y>bot?(y-bot)/5:0;if(!v)return;
+ const sc=msScroller();const step=()=>{if(!MSD)return;sc.scrollTop+=v;const h=msLineAt(MSD.x,MSD.y);if(h)msDragTo(h);MSA=requestAnimationFrame(step)};MSA=requestAnimationFrame(step)}
+function msBeginDrag(h,x,y){if(!document.body.classList.contains('msel'))mselStart(null);try{getSelection().removeAllRanges()}catch(e){}
+ const k=msKey(h);MSD={start:k,base:new Set(MS),x,y};MS.add(k);MS_LAST=k;msDom();try{navigator.vibrate&&navigator.vibrate(25)}catch(e){}}
+function msEndDrag(){if(!MSD)return;MSD=null;cancelAnimationFrame(MSA);const n=MS.size;if(n>1)toast(`✅ ${n} سطر محدد — اختار الأداة من فوق`)}
+// لمس (موبايل)
+(function(){let lp=null;
+ document.addEventListener('touchstart',e=>{if(e.touches.length!==1||document.body.classList.contains('pv'))return;const t=e.touches[0];const h=msLineAt(t.clientX,t.clientY);if(!h||document.body.classList.contains('kids'))return;if(!document.body.classList.contains('msel')&&ACT&&h.contains(ACT))return;
+  clearTimeout(lp&&lp.tm);lp={x:t.clientX,y:t.clientY,h,tm:setTimeout(()=>{if(!lp)return;msBeginDrag(lp.h,lp.x,lp.y);lp=null},420)}},{passive:true,capture:true});
+ document.addEventListener('touchmove',e=>{const t=e.touches[0];if(lp){if(Math.hypot(t.clientX-lp.x,t.clientY-lp.y)>9){clearTimeout(lp.tm);lp=null}return}
+  if(!MSD)return;if(e.cancelable)e.preventDefault();MSD.x=t.clientX;MSD.y=t.clientY;const h=msLineAt(t.clientX,t.clientY);if(h)msDragTo(h);msAuto(t.clientY)},{passive:false,capture:true});
+ const end=()=>{if(lp){clearTimeout(lp.tm);lp=null}if(MSD){msEndDrag();MS_SKIPCLICK=Date.now()}};
+ document.addEventListener('touchend',end,true);document.addEventListener('touchcancel',end,true);
+ document.addEventListener('contextmenu',e=>{if(MSD||document.body.classList.contains('msel')){const h=e.target.closest&&e.target.closest('#pages [data-ed="line"]');if(h)e.preventDefault()}},true)})();
+let MS_SKIPCLICK=0;
+document.addEventListener('click',e=>{if(Date.now()-MS_SKIPCLICK<450&&e.target.closest&&e.target.closest('#pages [data-ed="line"]')){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation()}},true);
+// ماوس (لابتوب): داخل وضع التحديد اسحب بالماوس
+(function(){let md=null;
+ document.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||!document.body.classList.contains('msel'))return;const h=msLineAt(e.clientX,e.clientY);if(!h)return;md={x:e.clientX,y:e.clientY,h}},true);
+ document.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;if(md&&!MSD&&Math.hypot(e.clientX-md.x,e.clientY-md.y)>8){msBeginDrag(md.h,md.x,md.y)}
+  if(MSD){MSD.x=e.clientX;MSD.y=e.clientY;const h=msLineAt(e.clientX,e.clientY);if(h)msDragTo(h);msAuto(e.clientY)}},true);
+ document.addEventListener('pointerup',e=>{if(e.pointerType!=='mouse')return;if(MSD){msEndDrag();MS_SKIPCLICK=Date.now()}md=null},true)})();
+// زر «كل النقاط/الترقيم»: يكمّل تحديد القائمة كاملة
+function msExpandLists(){const H=msHosts();const ks=H.map(msKey);const add=new Set(MS);
+ H.forEach((h,i)=>{if(!MS.has(ks[i]))return;const ty=h.dataset.ty;if(!/^(li|nl)$/.test(ty))return;
+  for(let j=i-1;j>=0&&H[j].dataset.ty===ty&&H[j].dataset.t===h.dataset.t;j--)add.add(ks[j]);for(let j=i+1;j<H.length&&H[j].dataset.ty===ty&&H[j].dataset.t===h.dataset.t;j++)add.add(ks[j])});
+ MS=add;msDom()}
+{const _mb=msBar;msBar=function(){_mb.apply(this,arguments);const r=document.querySelector('#mselBar .mr');if(r&&!r.querySelector('[data-a="lst"]')){const b=document.createElement('button');b.dataset.a='lst';b.textContent='• القائمة كاملة';b.onpointerdown=e=>e.preventDefault();b.onclick=()=>{msExpandLists();toast('• تحددت كل النقاط/الأرقام اللي ويا السطر')};const ref=r.querySelector('[data-a="all"]');ref?ref.after(b):r.appendChild(b)}}}
 
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
