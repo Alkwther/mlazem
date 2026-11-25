@@ -6792,6 +6792,50 @@ async function kidsBuy(teacher){const price=KIDS_P||0;
  clearTimeout(saveT);saveNow();const d=JSON.parse(JSON.stringify(S));delete d.lock;delete d.bid;delete d.kidsPaid;d.pid=uid();d.teacher=nt.trim();d.phone='';S=Object.assign(sample(),d);saveNow();bindInfo();renderTopics();renderProjects();await renderPages();
  popup('✅','تم','صارت نسخة جديدة باسم <b>'+esc(nt.trim())+'</b> — اضغط تنزيل حتى تشتريها وتحمّلها.')}}
 
+/* ---------- ✂️ حذف صفحات PDF ---------- */
+let PD=null;
+(function(){const nav=document.getElementById('bnav');if(!nav||nav.querySelector('[data-n="del"]'))return;const n=nav.querySelector('[data-n="num"]');const b=document.createElement('button');b.dataset.n='del';b.setAttribute('onclick','openPdfDel()');b.innerHTML='<i>✂️</i>حذف صفحات';if(n)n.after(b);else nav.appendChild(b)})();
+(function(){const st=document.createElement('style');st.textContent=`
+#bnav button[data-n="del"]{white-space:nowrap!important;flex:1.25!important}
+#pdG{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-top:12px}
+@media(max-width:760px){#pdG{grid-template-columns:repeat(2,1fr)}}
+.pdC{position:relative;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(11,31,69,.15);padding:6px;text-align:center;transition:.2s}
+.pdC canvas{width:100%;height:auto;display:block;border-radius:6px;background:#f1f5f9;min-height:120px}
+.pdC .pdN{font-weight:900;color:#0b1f45;font-size:13px;margin-top:4px}
+.pdC .pdX{position:absolute;top:-8px;left:-8px;width:36px;height:36px;border-radius:50%;border:3px solid #fff;background:#ef4444;color:#fff;font:900 18px/1 Cairo,sans-serif;box-shadow:0 2px 8px rgba(239,68,68,.5);cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center}
+.pdC.del{opacity:.35;filter:grayscale(1)}.pdC.del::after{content:'محذوفة';position:absolute;inset:40% 10% auto;background:#ef4444;color:#fff;font-weight:900;border-radius:8px;padding:4px;transform:rotate(-12deg)}
+.pdC.del .pdX{background:#22c55e;box-shadow:0 2px 8px rgba(34,197,94,.5)}`;document.head.appendChild(st)})();
+function openPdfDel(){PD=null;ptOpen('✂️','حذف صفحات من PDF','حمّل الملف، اضغط ✕ على أي صفحة تريد تحذفها، وبعدين احفظ');pdRender()}
+function pdRender(){const B=$('#ptB'),F=$('#ptF');
+ if(!PD){B.innerHTML=`<label class="pdrop"><i>📥</i>اضغط واختار ملف PDF<span>راح تظهر كل صفحات الملف وعلى كل صفحة علامة ✕ حمرة</span><input type="file" accept="application/pdf,.pdf" hidden id="pdIn"></label>`;F.innerHTML='';
+  $('#pdIn').onchange=async e=>{const fl=e.target.files[0];e.target.value='';if(!fl)return;const o=overlay('📄 جاري فتح الملف...');
+   try{const bytes=new Uint8Array(await fl.arrayBuffer());const lib=await pdfLib();const doc=await lib.getDocument({data:bytes.slice(0)}).promise;PD={name:fl.name,bytes,doc,n:doc.numPages,del:new Set()};o.remove();pdRender()}
+   catch(er){o.remove();toast('ما گدرت أفتح الملف — تأكد إنه PDF وما عليه رمز')}};return}
+ const keep=PD.n-PD.del.size;
+ B.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:900;color:#0b1f45;flex-wrap:wrap"><span>📕 <bdi>${esc(PD.name)}</bdi></span><span>${PD.n} صفحة${PD.del.size?` — <b style="color:#ef4444">تنحذف ${PD.del.size}</b>`:''}</span></div>
+  <div style="display:flex;gap:8px;margin-top:8px"><button class="btn sm" id="pdNew">📂 ملف ثاني</button>${PD.del.size?'<button class="btn sm" id="pdUndo">↩️ رجّع كل الصفحات</button>':''}</div><div id="pdG"></div>`;
+ F.innerHTML=PD.del.size?`<button class="btn green" id="pdSave">💾 حفظ الملف (${keep} صفحة)</button>`:'<div class="muted" style="text-align:center">اضغط ✕ الحمرة على الصفحة اللي تريد تحذفها</div>';
+ $('#pdNew').onclick=()=>{PD=null;pdRender()};if($('#pdUndo'))$('#pdUndo').onclick=()=>{PD.del.clear();pdRender()};
+ if($('#pdSave'))$('#pdSave').onclick=pdSave;
+ const G=$('#pdG');const cards=[];
+ for(let i=1;i<=PD.n;i++){const c=document.createElement('div');c.className='pdC'+(PD.del.has(i)?' del':'');c.innerHTML=`<button class="pdX" title="حذف">${PD.del.has(i)?'↩':'✕'}</button><canvas></canvas><div class="pdN">صفحة ${i}</div>`;
+  c.querySelector('.pdX').onclick=async()=>{if(PD.del.has(i)){PD.del.delete(i);pdRender();return}
+   if(PD.del.size>=PD.n-1){toast('لازم تبقى صفحة وحدة على الأقل');return}
+   const ok=await ask('حذف الصفحة',{msg:`هل تريد حذف الصفحة ${i}؟`,yes:'نعم احذف',no:'لا',danger:1});if(ok){PD.del.add(i);pdRender()}};
+  G.appendChild(c);cards.push([i,c.querySelector('canvas')])}
+ pdThumbs(cards)}
+async function pdThumbs(cards){const doc=PD&&PD.doc;if(!doc)return;PD.th=PD.th||{};
+ for(const [i,cv] of cards){if(!PD||PD.doc!==doc||!cv.isConnected)return;
+  try{let im=PD.th[i];if(!im){const pg=await doc.getPage(i);const v1=pg.getViewport({scale:1});const vp=pg.getViewport({scale:260/v1.width});const t=document.createElement('canvas');t.width=Math.round(vp.width);t.height=Math.round(vp.height);await pg.render({canvasContext:t.getContext('2d'),viewport:vp}).promise;im=PD.th[i]=t}
+   cv.width=im.width;cv.height=im.height;cv.getContext('2d').drawImage(im,0,0)}catch(e){}}}
+async function pdSave(){if(!PD||!PD.del.size)return;const o=overlay('💾 جاري حفظ الملف...');
+ try{const L=await pdfLibW();const src=await L.PDFDocument.load(PD.bytes,{ignoreEncryption:true});const out=await L.PDFDocument.create();
+  const idx=[];for(let i=0;i<src.getPageCount();i++)if(!PD.del.has(i+1))idx.push(i);
+  const pgs=await out.copyPages(src,idx);pgs.forEach(p=>out.addPage(p));const bytes=await out.save();o.remove();
+  const nm=pdfBaseName(PD.name)+' - بعد الحذف.pdf',d=PD.del.size;PD=null;$('#ptF').innerHTML='';
+  pdfResult(bytes,nm,`تم حذف ${d} صفحة — بقت ${idx.length} صفحة`,`<button class="btn primary" style="width:100%;margin-top:10px;padding:14px" onclick="openPdfDel()">✂️ حذف من ملف ثاني</button>`)}
+ catch(er){o.remove();toast('صار خطأ بالحفظ: '+(er&&er.message||er))}}
+
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
  const n=dv.getUint16(e+10,true);let p=dv.getUint32(e+16,true);const files={};const td=new TextDecoder();
