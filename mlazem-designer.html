@@ -1971,18 +1971,18 @@ async function _render(){
   cur=newPageFn();const h=document.createElement('div');h.className='toc-h keep';h.textContent=LG().contents;add(h);
   S.topics.forEach((t,i)=>{const pl=plan[i];
    if(pl.chStart){const r=document.createElement('div');r.className='toc-ch';r.style.background=t.color;r.innerHTML=`<span>${esc(unitLabel(pl.ch))}${t.unit?' — '+esc(t.unit):''}</span><span class="n">-</span>`;add(r);tocNums.push({el:r,ch:pl.ch})}
-   const r=document.createElement('div');r.className='toc-r'+(pl.ch>=0?' sub':'');r.innerHTML=`<span class="d" style="background:${t.color}">${pl.num+1}</span><span>${esc(t.title)}</span><span class="l"></span><span class="n">-</span>`;add(r);tocNums.push({el:r,t:t.id});
+   if(t.cont)return;const r=document.createElement('div');r.className='toc-r'+(pl.ch>=0?' sub':'');r.innerHTML=`<span class="d" style="background:${t.color}">${pl.num+1}</span><span>${esc(t.title)}</span><span class="l"></span><span class="n">-</span>`;add(r);tocNums.push({el:r,t:t.id});
   });
   cur=null;
  }
  newPageFn=()=>{n++;const p=makePage(n,curT.color,curT.title);root.appendChild(p.pw);return p};
  S.topics.forEach((t,ti)=>{
   curT=t;const pl=plan[ti];
-  if(pl.chStart&&S.chapterPage){n++;const cp=makeChapterPage(n,pl.ch,t,plan.filter(x=>x.ch===pl.ch).map(x=>S.topics[x.i]));Object.assign(cp.firstChild.dataset,{ed:'ch',t:ti});root.appendChild(cp);chEls[pl.ch]=n;cur=null}
-  if(!cur||S.newPage||pl.chStart)cur=newPageFn();else if(cur.body.clientHeight-cur.body.scrollHeight<170)cur=newPageFn();
+  if(pl.chStart&&S.chapterPage){n++;const cp=makeChapterPage(n,pl.ch,t,plan.filter(x=>x.ch===pl.ch&&!x.cont).map(x=>S.topics[x.i]));Object.assign(cp.firstChild.dataset,{ed:'ch',t:ti});root.appendChild(cp);chEls[pl.ch]=n;cur=null}
+  if(!cur||(S.newPage&&!t.cont)||pl.chStart)cur=newPageFn();else if(cur.body.clientHeight-cur.body.scrollHeight<170)cur=newPageFn();
   if(pl.chStart&&!S.chapterPage&&!S.kids){const cb=document.createElement('div');cb.className='chb keep';setVars(cb,t.color);Object.assign(cb.dataset,{ed:'ch',t:ti});cb.innerHTML=`<span class="k">${esc(unitLabel(pl.ch))}</span><span>${esc(t.unit||'')}</span>`;add(cb);chEls[pl.ch]=cb}
   let full=false;
-  if(!S.hwExact&&!S.kids){const th=document.createElement('div');th.className='th keep';setVars(th,t.color);
+  if(!S.hwExact&&!S.kids&&!t.cont){const th=document.createElement('div');th.className='th keep';setVars(th,t.color);
   th.innerHTML=`<span class="tn">${pl.num+1}</span><div><div class="tk">${esc(lessonLabel(pl.num))}</div><div class="tt">${esc(t.title)}</div></div>`;
   Object.assign(th.dataset,{ed:'th',t:ti});heads[t.id]=th;add(th);}else heads[t.id]=cur.body;
   t.blocks.forEach((b,bi)=>{
@@ -1991,7 +1991,7 @@ async function _render(){
     if(cur.body.clientHeight&&hwBad(el)){el.remove();rows=hwFlowRows(b,ti,bi,HH,true);if(rows){rows.forEach(add);full=true;return}cur.body.appendChild(el)}full=true;return}
    if(b.type==='kid'){if(cur.body.children.length)cur=newPageFn();const bh=cur.body.clientHeight,HH=bh>200?bh:(PH-(S.frame&&S.frame!=='none'?194:170));const el=kidEl(b,HH);Object.assign(el.dataset,{ed:'kid',t:ti,b:bi});cur.body.appendChild(el);full=true;return}
    if(b.type==='cmap'){const el=cmapEl(b,t.color);setVars(el,t.color);Object.assign(el.dataset,{ed:'cmap',t:ti,b:bi});try{cur.body.appendChild(el);cmapFit1(el,cur.body);el.remove()}catch(e){}add(el);return}
-   if(b.type==='text'){parseItemsLn(b.text).forEach(it=>{if(it.k==='pb'){if(cur.body.children.length)cur=newPageFn();return}const el=itemEl(it,t.color);if((it.k==='p'||it.k==='nl'||it.k==='li')&&!/[ء-ي]/.test(it.t||'')&&/[0-9√∛=+×÷]/.test(it.t||'')){el.dir='ltr';el.style.textAlign='left'}setVars(el,t.color);Object.assign(el.dataset,{ed:'line',t:ti,b:bi,ln:it.ln,ln2:it.ln2,ty:itemType(it),n:it.n||'',lab:it.lab||''});add(el)})}
+   if(b.type==='text'){parseItemsLn(b.text).forEach(it=>{if(it.k==='pb'){if(cur.body.children.length||cur._pb){const mk=document.createElement('i');mk.className='pbm';mk.style.display='none';Object.assign(mk.dataset,{pbm:1,t:ti,b:bi,ln:it.ln-1});cur.body.appendChild(mk);cur=newPageFn()}cur._pb=1;return}const el=itemEl(it,t.color);if((it.k==='p'||it.k==='nl'||it.k==='li')&&!/[ء-ي]/.test(it.t||'')&&/[0-9√∛=+×÷]/.test(it.t||'')){el.dir='ltr';el.style.textAlign='left'}setVars(el,t.color);Object.assign(el.dataset,{ed:'line',t:ti,b:bi,ln:it.ln,ln2:it.ln2,ty:itemType(it),n:it.n||'',lab:it.lab||''});add(el)})}
    else{const el=figEl(figs[b.id],b);setVars(el,t.color);Object.assign(el.dataset,{ed:'img',t:ti,b:bi});add(el)}
   });
  });
@@ -3527,7 +3527,7 @@ function pageLayout(P,useOcr,ocr,noExp){
    LT.forEach(it=>{np.push(it);nw.push(it)});pieces=np;words=nw}}
  else{pieces=P.its;words=P.its}
  if(P.deco){const DS=P.deco.filter(d=>area(d)<PA*.06);pieces=pieces.filter(p=>!DS.some(d=>inB(p,d,3)))}
- pieces=pieces.filter(p=>{const y=p.bl!=null?p.bl:p.y1;return !((y<PH*.09||y>PH*.93)&&p.s.replace(/\s/g,'').length<14)});
+ pieces=(()=>{const yy=p=>p.bl!=null?p.bl:p.y1,z=p=>{const y=yy(p);return y<PH*.09||y>PH*.93},kk=p=>Math.round(yy(p)/4),ln={};pieces.forEach(p=>{if(z(p))(ln[kk(p)]=ln[kk(p)]||[]).push(p)});const R=/الفص|فصل\s|الوحد|وحدة\s|الموضو|موضوع\s|الدرس|درس\s|المحاضر|الباب|chapter|lesson|unit/i;const ok={};const chk=k=>{if(k in ok)return ok[k];const A=[].concat(ln[k-1]||[],ln[k]||[],ln[k+1]||[]);const f=d=>{let t=A.slice().sort((a,b)=>d*((a.x0||0)-(b.x0||0))).map(p=>p.s).join('');try{t=t.normalize('NFKC')}catch(e){}return t};return ok[k]=R.test(f(1))||R.test(f(-1))};return pieces.filter(p=>{if(!z(p))return true;return p.s.replace(/\s/g,'').length>=14||chk(kk(p))})})();
  const used=new Set();const EL=[];const _all=pieces.map(p=>p.s).join(' ');const CX={rtl:(_all.match(/[؀-ۿ]/g)||[]).length>(_all.match(/[A-Za-z]/g)||[]).length};
  // كتابة صغيرة ملتصقة بالرسم (مثل 1S2 تحت الصناديق) تنضم للصورة حتى ما تنقص
  const L0=noExp?[]:buildLines(pieces.filter(p=>!figs.some(f=>inB(p,f,2))),{rtl:true}).map(l=>({...l,s:l.t}));
@@ -3664,7 +3664,7 @@ async function importPdf(file,mode){
   if(mode==='txt'||mode==='ocr'){const res=await smartImport(pdf,lib,N,o,mode==='ocr',name,file.name+'|'+file.size+'|'+mode);
    if(res.empty){o.remove();popup('📷','ما لگينا كتابة','الملف ما بيه كتابة نگدر نقراها.<br>جرّب خيار <b>«صفحات كصور + الكتابة فوقها»</b>.<br><button class="btn primary" style="width:100%;margin-top:12px" onclick="$(\'#popM\').classList.add(\'hidden\');openPdfImport()">📥 رجوع</button>');return}
    if(res.bodyFont)NS.bodyFont=res.bodyFont;if(res.headFont)NS.headFont=res.headFont;NS.fontSize=res.fs;
-   NS.topics=[{id:uid(),unit:'',title:res.title,color:res.col||NS.topics[0].color,blocks:res.blocks}];NS.pdfOcr=res.ocr?1:0;
+   if(res.struct&&res.struct.topics&&res.struct.topics.length){NS.topics=res.struct.topics;NS.newPage=true;NS.title=res.struct.title||NS.title;if(res.struct.topics.length>1)NS.showToc=true;NS.pdfStruct={ch:res.struct.nCh,tp:res.struct.topics.length,q:res.struct.nQ}}else NS.topics=[{id:uid(),unit:'',title:res.title,color:res.col||NS.topics[0].color,blocks:res.blocks}];NS.pdfOcr=res.ocr?1:0;
   }else{NS.pageBg={};const segs=[];
    for(let i=1;i<=N;i++){o=overlay(`🖼️ جاري تجهيز الصفحة ${i} من ${N}...`);const pg=await pdf.getPage(i);const v1=pg.getViewport({scale:1});const sc=1240/v1.width;const vp=pg.getViewport({scale:sc});
     const cv=document.createElement('canvas');cv.width=Math.round(vp.width);cv.height=Math.round(vp.height);const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);
@@ -5437,7 +5437,7 @@ cvNew=cvUpNew;
 
 /* ---- غلاف الملزمة + صفحات الملزمة: كتابة بصورتها الأصلية كعناصر حرة ---- */
 function upxFloat(l,f){const gx=l.g.x0*f,gy=l.g.y0*f,gw=Math.max(4,l.g.w*f),gh=Math.max(4,l.g.h*f);const fl={id:uid(),src:l.g.src,iw:l.g.w,ih:l.g.h,x:Math.round(gx),y:Math.round(gy),w:Math.round(gw),h:Math.round(gh),z:1,ox:0,oy:0,r:0,tx:[],
-  gt:{t:l.t,s:Math.max(10,Math.round(l.sz*f)),c:l.c,b:l.bold?1:0}};if(l.er)fl.er={x0:Math.round(l.er.x0),y0:Math.round(l.er.y0),x1:Math.round(l.er.x1),y1:Math.round(l.er.y1),c:l.er.c};return fl}
+  gt:{t:arLam(l.t),s:Math.max(10,Math.round(l.sz*f)),c:l.c,b:l.bold?1:0}};if(l.er)fl.er={x0:Math.round(l.er.x0),y0:Math.round(l.er.y0),x1:Math.round(l.er.x1),y1:Math.round(l.er.y1),c:l.er.c};return fl}
 cbUpEditable=async function(kind,fl){const B=kind==='back';const o=overlay('📥 جاري التجهيز...');const say=m=>{o.innerHTML='<div class="spin"></div><div>'+m+'</div>'};
  try{const r=await upxLoad(fl,say,794/1123);const img={src:upxBg(r),w:r.W,h:r.H};if(B){S.back.bg=img;S.back.on=true;S.back.text=false}else{S.coverBg=img;S.coverText=false}
   await renderPages();const L=pagesList();const pi=B?L.length-1:0;const key=FLKEY(pi);S.floats=S.floats||{};S.floats[key]=(S.floats[key]||[]).filter(f=>!f.cvx&&!f.gt);const f=794/r.W;
@@ -6835,6 +6835,213 @@ async function pdSave(){if(!PD||!PD.del.size)return;const o=overlay('💾 جار
   const nm=pdfBaseName(PD.name)+' - بعد الحذف.pdf',d=PD.del.size;PD=null;$('#ptF').innerHTML='';
   pdfResult(bytes,nm,`تم حذف ${d} صفحة — بقت ${idx.length} صفحة`,`<button class="btn primary" style="width:100%;margin-top:10px;padding:14px" onclick="openPdfDel()">✂️ حذف من ملف ثاني</button>`)}
  catch(er){o.remove();toast('صار خطأ بالحفظ: '+(er&&er.message||er))}}
+
+/* ================= 🔤 تصحيح «لا» المقلوبة من PDF (األول ← الأول) ================= */
+const AR_LAM_DICT=[['مالحظ','ملاحظ'],['عالق','علاق'],['تالميذ','تلاميذ'],['إسالم','إسلام'],['صالحي','صلاحي'],['أفالم','أفلام'],['إعالن','إعلان'],['إعالم','إعلام'],['أخالق','أخلاق'],['نطالق','نطلاق'],['إطالق','إطلاق'],['ختالف','ختلاف'],['ستالم','ستلام'],['ستهالك','ستهلاك'],['متالك','متلاك'],['متالء','متلاء'],['غالف','غلاف'],['خاليا','خلايا'],['فالتر','فلاتر'],['بالستيك','بلاستيك'],['تالزم','تلازم']];
+function arLamW(w){if(!/ل/.test(w))return w;
+ if(w==='ال')return'لا';if(w==='وال')return'ولا';if(w==='فال')return'فلا';w=w.replace(/^([وف]?)ألن/,'$1لأن').replace(/^([وف]?)ألجل/,'$1لأجل');if(w==='إال')return'إلا';if(w==='أال')return'ألا';if(w==='وال'&&0)return w;
+ w=w.replace(/ا([أإآ])ل/g,'ال$1').replace(/اال/g,'الا');
+ const m=w.match(/^([وف]?[بك]?)(ال)(.*)$/);let pre='',body=w;if(m){pre=m[1]+m[2];body=m[3]}
+ if(m&&/^ال/.test(body)&&!/^الك/.test(body))body='لا'+body.slice(2);
+ body=body.replace(/([^\s])الل/g,'$1لال');
+ if(w.length>=6)body=body.replace(/^(.{2,})الت(ها|هم|هما|كم|ه|ي)?$/,'$1لات$2');
+ for(const [a,b] of AR_LAM_DICT)if(body.includes(a))body=body.split(a).join(b);
+ return pre+body}
+function arLam(s){if(!s||!/[ء-ي]/.test(s))return s;return String(s).replace(/[؀-ۿ]+/g,arLamW).replace(/([ء-ي])\[(?=[\s.،,؛:]|$)/g,'$1ً')}
+
+/* ================= 🧠 ترتيب PDF: فصول، مواضيع، أسئلة، تمارين، تعاريف، نقاط ================= */
+const PS_ORD='(?:الأول|الاول|الأولى|الاولى|الثاني|الثانية|الثالث|الثالثة|الرابع|الرابعة|الخامس|الخامسة|السادس|السادسة|السابع|السابعة|الثامن|الثامنة|التاسع|التاسعة|العاشر|العاشرة|الحادي عشر|الثاني عشر|[0-9٠-٩]+)';
+const PS_CH=new RegExp('^(?:ال)?(?:فصل|وحدة|وحده|باب)\\s+'+PS_ORD+'(?:\\s*[:\\-–—/.]\\s*(.*))?$'),PS_CHE=/^(?:chapter|unit)\s+([0-9]+|[a-z]+)(?:\s*[:\-–—.]\s*(.*))?$/i;
+const PS_TP=new RegExp('^(?:ال)?(?:موضوع|درس|محاضرة|محاضره)\\s+'+PS_ORD+'(?:\\s*[:\\-–—/.]\\s*(.*))?$'),PS_TPE=/^lesson\s+([0-9]+|[a-z]+)(?:\s*[:\-–—.]\s*(.*))?$/i;
+const PS_BOX={'تعريف':'تعريف','التعريف':'تعريف','definition':'تعريف','قانون':'قانون','القانون':'قانون','العلاقة':'قانون','formula':'قانون','law':'قانون','ملاحظة':'ملاحظة','ملاحظه':'ملاحظة','note':'ملاحظة','مثال':'مثال','example':'مثال','مهم':'مهم','هام':'مهم','انتبه':'مهم','important':'مهم','تذكر':'تذكر','remember':'تذكر','سؤال':'سؤال','question':'سؤال','الجواب':'الجواب','جواب':'الجواب','الحل':'الجواب','الإجابة':'الجواب','الاجابة':'الجواب','answer':'الجواب','solution':'الجواب'};
+const psPlain=l=>String(l).replace(/^​+/,'').replace(/^#{1,3}\s+/,'').replace(/^\*\*(.*)\*\*$/,'$1').replace(/\*\*/g,'').trim();
+const psBoxKey=t=>{const k=t.replace(/[\s:：.\-–—]+$/,'').replace(/^[\s]+/,'').replace(/\s*[0-9٠-٩]+$/,'').toLowerCase();return PS_BOX[k]||null};
+function psLine(l){// تحويل سطر واحد لأدوات البرنامج
+ const raw=String(l).replace(/^​+/,'');if(!raw.trim()||/^\||^!\[|^\[/.test(raw))return raw;
+ const t=psPlain(raw);let m;
+ if(m=t.match(/^(?:س|سؤال|السؤال|Q)\s*([0-9٠-٩]{0,3})\s*[\/:：)\-–.]\s*(.+)$/i))return'[سؤال] '+(m[1]?m[1]+'- ':'')+m[2];
+ if(m=t.match(/^(?:ج|جواب|الجواب|الحل|الإجابة|الاجابة|A|Ans)\s*([0-9٠-٩]{0,3})\s*[\/:：)\-–]\s*(.+)$/i))return'[الجواب] '+m[2];
+ if(m=t.match(/^(تمرين|نشاط|exercise)\s*([0-9٠-٩]{0,3})\s*[\/:：)\-–.]\s*(.+)$/i))return'[سؤال] '+m[1]+(m[2]?' '+m[2]:'')+': '+m[3];
+ if(m=t.match(/^(تعريف|التعريف|قانون|القانون|ملاحظة|ملاحظه|مثال|مهم|هام|انتبه|تذكر|definition|formula|note|example|important|remember)\s*([0-9٠-٩]{0,3})\s*[\/:：)\-–!]\s*(.+)$/i)){const k=PS_BOX[m[1].toLowerCase()];return'['+k+'] '+m[3]}
+ if(/^(?:أولاً|أولا|ثانياً|ثانيا|ثالثاً|ثالثا|رابعاً|رابعا|خامساً|خامسا|سادساً|سادسا|سابعاً|سابعا|ثامناً|ثامنا|تاسعاً|تاسعا|عاشراً|عاشرا)\s*[:\-–/]/.test(t)&&t.length<90)return'## '+t;
+ if(/^(?:تمارين|تمرينات|التمارين|الأسئلة|الاسئلة|أسئلة|اسئلة|exercises|questions)(?:\s|$|:)/i.test(t)&&t.length<60)return'## '+t;
+ if(/^(?:القانون|قانون|العلاقة|المعادلة)\s[^:：]{1,40}[:：]\s*\S/.test(t)&&/[=×÷+−\-\/]/.test(t))return'[قانون] '+t;
+ if(m=t.match(/^[○◘◄»→➔⇐⇦□☐♦◇★☆✦✧◉⦿⚫🔹🔸➜➝⬅◀◁▷»«·]\s*(.+)$/))return'- '+m[1];
+ return raw}
+function pdfStruct(res){const PAL=['#1e88e5','#e53935','#43a047','#8e24aa','#fb8c00','#00897b','#3949ab','#d81b60','#6d4c41','#0097a7'];
+ // 1) كل البلوكات ← سطور (مع الصور بمكانها)
+ const SPL=/\s+(?=(?:أولاً|أولا|ثانياً|ثانيا|ثالثاً|ثالثا|رابعاً|رابعا|خامساً|خامسا|سادساً|سادسا)\s*[:\-–]|س\s*[0-9٠-٩]{1,3}\s*[\/:]|ج\s*[0-9٠-٩]{0,3}\s*\/)/;
+ const items=[];res.blocks.forEach(b=>{if(b.type==='text')b.text.split('\n').forEach(l=>arLam(l).split(SPL).forEach(x=>items.push({l:x})));else items.push({b})});
+ // تصحيح العنوان
+ const title=arLam(res.title||'');
+ // 2) حذف الفهرس الأصلي (البرنامج يسوي فهرس جديد)
+ let hadToc=false;for(let i=0;i<items.length;i++){const it=items[i];if(it.l==null)continue;const t=psPlain(it.l);
+  if(/^(فهرس المحتويات|الفهرس|المحتويات|فهرس|contents|table of contents)$/i.test(t)){hadToc=true;let j=i;while(j<items.length&&items[j].l!=='---')j++;items.splice(i,j-i);i--}}
+ const isToc=t=>/(\.{4,}|…{2,}|_{4,})\s*[0-9٠-٩]*\s*$/.test(t);
+ const isCh=t=>!isToc(t)&&(PS_CH.test(t)||PS_CHE.test(t)),isTp=t=>!isToc(t)&&(PS_TP.test(t)||PS_TPE.test(t));
+ for(let i=items.length-1;i>=0;i--)if(items[i].l!=null&&isToc(psPlain(items[i].l))){hadToc=true;items.splice(i,1)}
+ const LS=items.filter(x=>x.l!=null).map(x=>psPlain(x.l));const nCh=LS.filter(isCh).length,nTp=LS.filter(isTp).length;
+ const h1s=items.filter(x=>x.l!=null&&/^# /.test(x.l)).length;
+ const mode=(nCh||nTp)?'mark':(h1s>=2&&h1s<=80?'h1':'one');
+ // 3) الغلاف: الصفحة الأولى القصيرة قبل أول فصل/موضوع
+ if(mode!=='one'){const pb=items.findIndex(x=>x.l==='---');const fm=items.findIndex(x=>x.l!=null&&(mode==='mark'?(isCh(psPlain(x.l))||isTp(psPlain(x.l))):/^# /.test(x.l)));
+  if(pb>0&&fm>pb&&items.slice(0,pb).filter(x=>x.l!=null&&x.l.trim()).length<=8)items.splice(0,pb+1)}
+ // 4) البناء
+ const topics=[];let T=null,unit,pendUnit=null,awaitTitle=0,awaitUnit=0;
+ const blk=()=>{let b=T.blocks[T.blocks.length-1];if(!b||b.type!=='text'){b={id:uid(),type:'text',text:''};T.blocks.push(b)}return b};
+ const push=l=>{if(!T)newT('');const b=blk();b.text=b.text?b.text+'\n'+l:l};
+ const empty=()=>!T||T.blocks.every(b=>b.type==='text'&&!b.text.replace(/[\s​]/g,''));
+ const newT=(tt)=>{if(T&&empty()){T.title=tt||T.title;if(pendUnit!=null){T.unit=pendUnit;pendUnit=null}return}
+  T={id:uid(),title:tt,color:PAL[topics.length%PAL.length],blocks:[]};if(pendUnit!=null){T.unit=pendUnit;pendUnit=null}else if(!topics.length)T.unit='';topics.push(T)};
+ const clean=t=>t.replace(/^[0-9٠-٩]+\s*[-.)]?\s+/,'').replace(/[\s:：\-–—]+$/,'').trim();
+ for(let i=0;i<items.length;i++){const it=items[i];
+  if(it.b){if(!T)newT(title);T.blocks.push(it.b);awaitTitle=awaitUnit=0;continue}
+  let l=it.l;if(l==='---'||l==null)continue;const t=psPlain(l);if(!t.replace(/​/g,'')){if(T)push(l);continue}
+  let m;
+  if(mode==='mark'&&(m=t.match(PS_CH)||t.match(PS_CHE))&&t.length<90){const nm=(m[1]&&isNaN(m[1])&&PS_CHE.test(t)?'':'')||(m[m.length-1]||'').trim();
+   if(T&&!empty())T=null;pendUnit=clean(nm);if(T){T.unit=pendUnit;pendUnit=null}awaitUnit=nm?0:1;awaitTitle=0;continue}
+  if(mode==='mark'&&(m=t.match(PS_TP)||t.match(PS_TPE))&&t.length<120){const nm=clean((m[m.length-1]||'').trim());newT(nm);awaitTitle=nm?0:1;awaitUnit=0;continue}
+  if(mode==='h1'&&/^# /.test(l)){newT(clean(t));continue}
+  const head=/^#{1,2} /.test(l)||(/^\*\*.*\*\*$/.test(l)&&t.length<70);
+  if(awaitUnit&&head&&!isTp(t)){const nm=clean(t);if(T&&empty()){T.unit=nm;T.title=T.title||nm}else pendUnit=nm;awaitUnit=0;continue}
+  if(awaitTitle&&head){T.title=clean(t);awaitTitle=0;continue}
+  awaitTitle=awaitUnit=0;
+  if(!T)newT(title);
+  // عنوان مربع لوحده (تعريف / مثال / الجواب ...) + السطر اللي بعده = مربع
+  const bk=psBoxKey(t);
+  if(bk&&t.length<20){let j=i+1;while(j<items.length&&items[j].l==='---')j++;const nx=items[j];
+   const nxH=nx&&nx.l!=null&&/^#{1,3} /.test(nx.l)&&bk!=='قانون'&&psPlain(nx.l).length<30;
+   if(nx&&nx.l!=null&&nx.l.trim()&&!nxH&&!/^\|/.test(nx.l)&&!psBoxKey(psPlain(nx.l))&&!isCh(psPlain(nx.l))&&!isTp(psPlain(nx.l))){
+    let txt=psPlain(nx.l).replace(/^[-•]\s*/,'');i=j;
+    while(i+1<items.length&&items[i+1].l!=null&&/^[0-9٠-٩]+\.\s[0-9٠-٩]/.test(items[i+1].l)){i++;txt=txt.replace(/\s+$/,'')+' '+items[i].l.replace(/^([0-9٠-٩]+)\.\s/,'$1.')}
+    while(i+1<items.length&&items[i+1].l!=null&&items[i+1].l.trim()&&!/^(#|-|\||\[|​\[|[0-9٠-٩]+\. )/.test(items[i+1].l)&&bk!=='قانون'&&psLine(items[i+1].l)===items[i+1].l&&!psBoxKey(psPlain(items[i+1].l))&&items[i+1].l!=='---'&&txt.length<600&&!/[.؟?!:]$/.test(txt)){i++;txt+=' '+psPlain(items[i].l)}
+    push('['+bk+'] '+txt);continue}
+   push('## '+t);continue}
+  if(/^## /.test(l)&&T){const b=blk(),L=b.text.split('\n'),pv=L[L.length-1]||'';if(/^## /.test(pv)&&/\s(في|من|على|إلى|الى|عن|مع|بين|و|التي|الذي|ذات|حول)$/.test(pv)){L[L.length-1]=pv+' '+t;b.text=L.join('\n');continue}}
+  push(psLine(l))}
+ if(!topics.length)return null;
+ topics.forEach((t,k)=>{if(!t.title)t.title=k?(t.unit||('الموضوع '+(k+1))):title;if(!t.blocks.length)t.blocks.push({id:uid(),type:'text',text:''});
+  t.blocks.forEach(b=>{if(b.type==='text')b.text=b.text.replace(/^\n+|\n+$/g,'').replace(/\n{3,}/g,'\n\n')})});
+ const nQ=topics.reduce((a,t)=>a+t.blocks.reduce((x,b)=>x+(b.type==='text'?(b.text.match(/^\[(سؤال|الجواب|تعريف|قانون|مثال|ملاحظة|مهم|تذكر)\]/gm)||[]).length:0),0),0);
+ return{topics,title,mode,hadToc,nQ,nCh:topics.filter(t=>typeof t.unit==='string').length}}
+{const _si=smartImport;smartImport=async function(){const r=await _si.apply(this,arguments);try{if(!r.empty){const st=pdfStruct(r);if(st){r.struct=st;r.title=st.title||r.title}}}catch(e){console.warn('pdfStruct',e)}return r}}
+
+/* ================= 📄 صفحة فارغة / 📑 فصل جديد بين الصفحات (+ ملازم الـ PDF المصوّرة) ================= */
+function bgShift(from,d){if(!d)return;const sh=o=>{if(!o)return o;const n={};Object.keys(o).forEach(k=>{const i=+k.slice(1)-1;n[(i>from?'p'+(i+1+d):k)]=o[k]});return n};
+ if(S.pageBg&&Object.keys(S.pageBg).length)S.pageBg=sh(S.pageBg);if(S.floats&&Object.keys(S.floats).length)S.floats=sh(S.floats)}
+async function withBgShift(fn){const has=(S.pageBg&&Object.keys(S.pageBg).length)||(S.floats&&Object.keys(S.floats).length);const P0=CURP,n0=pagesList().length;
+ const r=await fn();if(has){const d=pagesList().length-n0;if(d>0){bgShift(P0,d);save();try{renderFloats()}catch(e){}try{await renderPages()}catch(e){}try{showPage(P0+1)}catch(e){}}}return r}
+{const _np=newPageHere;newPageHere=function(){return withBgShift(()=>_np.apply(this,arguments))}}
+{const _ip=insertPagesAt;insertPagesAt=function(){const a=arguments;return withBgShift(()=>_ip.apply(this,a))}}
+async function newChapterHere(){
+ const nm=await ask('📑 فصل جديد',{icon:'📑',msg:'اكتب اسم الفصل (مثلاً: الحركة الدورانية)',input:'',ph:'اسم الفصل',yes:'التالي',no:'إلغاء'});if(nm===false||nm==null)return;
+ const tt=await ask('📘 اسم الموضوع',{icon:'📘',msg:'اسم أول موضوع بهذا الفصل (تگدر تتركه فارغ)',input:'',ph:'اسم الموضوع',yes:'✅ إضافة',no:'إلغاء'});if(tt===false||tt==null)return;
+ const a0=pageAnchor();const PAL0=['#1e88e5','#e53935','#43a047','#8e24aa','#fb8c00','#00897b','#3949ab','#d81b60'];
+ if(a0.ln<0&&a0.bi===0){S.topics.splice(a0.ti,0,{id:uid(),unit:String(nm).trim(),title:String(tt).trim()||String(nm).trim(),color:PAL0[(a0.ti+3)%PAL0.length],blocks:[{id:uid(),type:'text',text:ZW}]});save();try{renderTopics()}catch(e){}await renderPages()}
+ else await withBgShift(async()=>{const a=pageAnchor();const t=S.topics[a.ti];const b=t.blocks[a.bi];
+  const L=b.text===''?[]:b.text.split('\n');const at=a.ln<0?0:a.ln+1;const tail=L.splice(at);b.text=L.join('\n');
+  const rest=[];if(tail.length)rest.push({id:uid(),type:'text',text:tail.join('\n').replace(/^(---\n)+/,'')});rest.push(...t.blocks.splice(a.bi+1));
+  const PAL=['#1e88e5','#e53935','#43a047','#8e24aa','#fb8c00','#00897b','#3949ab','#d81b60'];
+  const N={id:uid(),unit:String(nm).trim(),title:String(tt).trim()||String(nm).trim(),color:PAL[(a.ti+1)%PAL.length],blocks:[{id:uid(),type:'text',text:ZW}]};
+  const add=[N];if(rest.length){N.blocks[0].text=ZW+'\n---';add.push({id:uid(),title:t.title,color:t.color,cont:1,blocks:rest})}
+  S.topics.splice(a.ti+1,0,...add);if(!b.text&&t.blocks.length===1&&!rest.length){}
+  save();try{renderTopics()}catch(e){}await renderPages()});
+ const nti=S.topics.findIndex(t=>t.unit===String(nm).trim()&&!t.cont);const el=document.querySelector(`#pages [data-ed="line"][data-t="${nti}"]`)||document.querySelector(`#pages [data-ed="th"][data-t="${nti}"]`);
+ if(el){const pi=pagesList().indexOf(el.closest('.pw'));if(pi>=0)showPage(pi);const ex=el.querySelector('.etx');if(ex)try{caret(ex,true)}catch(e){}}toast('📑 انضاف الفصل — اكتب بالصفحة الجديدة بكل الأدوات')}
+{const _tp=toolPage;toolPage=function(){_tp.apply(this,arguments);const B=$('#obBody');if(!B||B.querySelector('#npCh'))return;const d=document.createElement('div');d.className='pimp';d.id='npCh';d.style.cssText='border-color:#7c3aed;background:#f5f3ff';
+ d.innerHTML='<b>📑 فصل جديد</b><span>صفحة فارغة تبدأ بفصل جديد باسمه، وتكتب عليها بكل أدوات البرنامج</span>';const bl=B.querySelector('#npBlank');(bl?bl.after(d):B.appendChild(d));
+ d.onclick=()=>{$('#obM').classList.add('hidden');if(!document.body.classList.contains('fs'))try{enterFS()}catch(e){}setTimeout(newChapterHere,80)}}}
+chapterPlan=function(){let ch=-1,num=0,k=0;const hasCh=S.topics.some(t=>typeof t.unit==='string');
+ return S.topics.map((t,i)=>{if(t.cont&&i)return{i,ch:hasCh?ch:-1,chStart:false,num:Math.max(0,(hasCh?num:k)-1),cont:1};const st=typeof t.unit==='string';if(st){ch++;num=0}const r={i,ch:hasCh?ch:-1,chStart:st,num:hasCh?num:k};num++;k++;return r})};
+
+{const _pa=pageAnchor;pageAnchor=function(){const pg=pagesList()[CURP];if(pg){const all=[...pg.querySelectorAll('[data-ed],[data-pbm]')];const last=all[all.length-1];
+ if(last&&last.dataset.pbm){const ti=+last.dataset.t,bi=+last.dataset.b;if(S.topics[ti]&&S.topics[ti].blocks[bi]&&S.topics[ti].blocks[bi].type==='text')return{ti,bi,ln:+last.dataset.ln}}}return _pa.apply(this,arguments)}}
+{const _ipS=importPdf;importPdf=async function(){const r=await _ipS.apply(this,arguments);try{const p=S&&S.pdfStruct;if(p&&!p.shown){p.shown=1;save();setTimeout(()=>toast(`🧠 تعرّفت على ${p.ch} فصل و ${p.tp} موضوع و ${p.q} (سؤال/تعريف/قانون/مثال...) — كلها بأدوات البرنامج`),1600)}}catch(e){}return r}}
+
+/* ================= ☑️ تحديد عدة أسطر + محاذاة (يمين/وسط/يسار) ================= */
+const AL_RE=/[⁡⁢⁤]/g,AL_CH={c:'⁡',l:'⁢',r:'⁤'};
+const alOf=s=>{const m=String(s||'').match(/[⁡⁢⁤]/);return m?({'⁡':'c','⁢':'l','⁤':'r'})[m[0]]:''};
+{const _ie=itemEl;itemEl=function(it){const el=_ie.apply(this,arguments);try{const a=alOf(it&&it.t);if(a&&el&&el.dataset)el.dataset.al=a}catch(e){}return el}}
+(function(){const st=document.createElement('style');st.textContent=`
+[data-al=c],[data-al=c] .etx,[data-al=c] .sbl,[data-al=c] h1,[data-al=c] h2{text-align:center!important}
+[data-al=l],[data-al=l] .etx,[data-al=l] .sbl{text-align:left!important}
+[data-al=r],[data-al=r] .etx,[data-al=r] .sbl{text-align:right!important}
+body.msel #pages [data-ed="line"]{cursor:pointer;-webkit-user-select:none;user-select:none}
+body.msel #pages [data-ed="line"].msl{outline:2.5px solid #2563eb!important;outline-offset:2px;background-color:rgba(37,99,235,.10)!important;border-radius:6px}
+body.msel #pages [data-ed="line"]{position:relative}
+.mslk{position:absolute;right:-10px;top:-9px;width:20px;height:20px;border-radius:50%;background:#2563eb;color:#fff;font:900 12px/20px Cairo,sans-serif;text-align:center;z-index:5;font-style:normal;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+#mselBar{position:fixed;top:0;left:0;right:0;z-index:9000;background:#0b1f45;padding:6px 6px 7px;display:none;box-shadow:0 3px 12px rgba(0,0,0,.35);direction:rtl}
+body.msel #mselBar{display:block}body.msel #fbar{display:none!important}
+#mselBar .mr{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding:2px 0;align-items:center}#mselBar .mr::-webkit-scrollbar{display:none}
+#mselBar button{flex:0 0 auto;border:0;border-radius:999px;padding:0 11px;height:30px;font:800 12.5px Cairo,sans-serif;background:#fff;color:#0b1f45;white-space:nowrap}
+#mselBar button.on{background:#ffd54f}#mselBar button.x{background:#22c55e;color:#fff}#mselBar button.dl{background:#fee2e2;color:#b91c1c}
+#mselBar button.bx{background:#ede9fe;color:#5b21b6}
+#mselBar b{color:#ffd54f;font:900 13px Cairo,sans-serif;white-space:nowrap;padding:0 4px}`;document.head.appendChild(st)})();
+let MS=new Set(),MS_R=false,MS_LAST=null;
+const msKey=h=>h.dataset.t+'|'+h.dataset.b+'|'+h.dataset.ln;
+const msHosts=()=>[...document.querySelectorAll('#pages [data-ed="line"]')];
+function msBar(){let b=document.getElementById('mselBar');if(!b){b=document.createElement('div');b.id='mselBar';b.className='ui';document.body.appendChild(b)}
+ const T=LTYPES.filter(([k])=>k!=='p');
+ b.innerHTML=`<div class="mr"><button class="x" data-a="end">✓ تم</button><b id="msN"></b><button data-a="page">📄 كل الصفحة</button><button data-a="all">📚 الكل</button><button data-a="rng" class="${MS_R?'on':''}">↕️ من — إلى</button><button data-a="none">⬜ إلغاء التحديد</button></div>
+ <div class="mr">${T.map(([k,l])=>`<button data-k="${k}" class="${KIDX[k]!=null?'bx':''}">${l}</button>`).join('')}<button data-k="p">فقرة عادية</button></div>
+ <div class="mr"><button data-al="r">➡️ يمين</button><button data-al="c">↔️ وسط</button><button data-al="l">⬅️ يسار</button><button data-al="">↩️ المحاذاة الأصلية</button><button class="dl" data-a="del">🗑 حذف المحدد</button></div>`;
+ b.querySelectorAll('button').forEach(x=>{x.onpointerdown=e=>e.preventDefault();x.onclick=()=>msAction(x)});msCount()}
+function msCount(){const n=document.getElementById('msN');if(n)n.textContent=MS.size?`✅ ${MS.size} محدد`:'اضغط على الأسطر'}
+function msDom(){msHosts().forEach(h=>{const on=MS.has(msKey(h));h.classList.toggle('msl',on);let k=h.querySelector(':scope>.mslk');if(on&&!k){k=document.createElement('i');k.className='mslk';k.textContent='✓';h.appendChild(k)}else if(!on&&k)k.remove();
+ h.querySelectorAll('.etx').forEach(e=>{if(e.contentEditable==='true'){e.dataset.mce=1;e.contentEditable='false'}})});msCount()}
+function mselStart(h){try{if(ACT){commitEl(ACT);ACT.blur&&ACT.blur()}}catch(e){}try{endEditing()}catch(e){}clearTimeout(idleT);setTimeout(()=>clearTimeout(idleT),250);
+ MS=new Set();MS_LAST=null;if(h){MS.add(msKey(h));MS_LAST=msKey(h)}document.body.classList.add('msel');msBar();msDom();
+ toast('☑️ اضغط على الأسطر اللي تريدها — وبعدين اختار الأداة')}
+function mselEnd(){document.body.classList.remove('msel');clearTimeout(idleT);idleT=setTimeout(idleRender,400);MS=new Set();msHosts().forEach(h=>{h.classList.remove('msl');const k=h.querySelector(':scope>.mslk');if(k)k.remove();h.querySelectorAll('.etx[data-mce]').forEach(e=>{e.contentEditable='true';delete e.dataset.mce})})}
+document.addEventListener('pointerdown',e=>{if(!document.body.classList.contains('msel'))return;const h=e.target.closest&&e.target.closest('#pages [data-ed="line"]');if(h)e.preventDefault()},true);
+document.addEventListener('click',e=>{if(!document.body.classList.contains('msel'))return;const h=e.target.closest&&e.target.closest('#pages [data-ed="line"]');if(!h)return;e.preventDefault();e.stopPropagation();
+ const k=msKey(h);if(MS_R&&MS_LAST&&MS_LAST!==k){const H=msHosts(),ks=H.map(msKey),a=ks.indexOf(MS_LAST),b=ks.indexOf(k);if(a>=0&&b>=0){const[x,y]=a<b?[a,b]:[b,a];for(let i=x;i<=y;i++)MS.add(ks[i])}}
+ else if(MS.has(k))MS.delete(k);else MS.add(k);MS_LAST=k;msDom()},true);
+{const _rpM=renderPages;renderPages=async function(){const r=await _rpM.apply(this,arguments);if(document.body.classList.contains('msel'))msDom();return r}}
+// تحويل السطر لأجزاء
+function msPieces(raw){const it=parseItems(raw)[0];if(!it||it.k==='tbl'||it.k==='pb')return null;const t=String(it.t||'').replace(AL_RE,'');
+ const parts=t.split(SBR).map(x=>x.trim()).filter(x=>x.replace(/​/g,'').trim());return{it,parts:parts.length?parts:[ZW],al:alOf(raw)}}
+const msStrip=p=>p.replace(/^\s*(?:[-•▪●]\s+|[0-9٠-٩]+[.)\-]\s+|(?:هـ|[ء-ي])\)\s+)/,'');
+async function msRewrite(fn){const H=msHosts().filter(h=>MS.has(msKey(h)));if(!H.length){toast('حدّد سطر واحد على الأقل');return false}
+ const groups=new Map();H.forEach(h=>{const g=h.dataset.t+'|'+h.dataset.b;if(!groups.has(g))groups.set(g,[]);groups.get(g).push({ln:+h.dataset.ln,ln2:+h.dataset.ln2})});
+ const nk=new Set();let first=true;
+ for(const [g,sel] of groups){const [ti,bi]=g.split('|').map(Number);const b=S.topics[ti]&&S.topics[ti].blocks[bi];if(!b||b.type!=='text')continue;
+  sel.sort((a,b)=>a.ln-b.ln);const L=b.text.split('\n');const rep=fn(sel.map(s=>({raw:L.slice(s.ln,s.ln2+1).join('\n'),ln:s.ln})),first);first=false;
+  const out=[];let k=0;for(let i=0;i<L.length;i++){const s=sel[k];if(s&&i===s.ln){const r=rep[k]||[];r.forEach(x=>{nk.add(ti+'|'+bi+'|'+out.length);out.push(x)});i=s.ln2;k++;continue}out.push(L[i])}
+  b.text=out.join('\n')}
+ MS=nk;save();await renderPages();return true}
+async function msAction(x){const a=x.dataset.a,ty=x.dataset.k,al=x.dataset.al;
+ if(a==='end'){mselEnd();return}
+ if(a==='none'){MS=new Set();msDom();return}
+ if(a==='rng'){MS_R=!MS_R;x.classList.toggle('on',MS_R);toast(MS_R?'↕️ اضغط أول سطر وآخر سطر — يتحدد كل اللي بينهم':'تحديد سطر سطر');return}
+ if(a==='all'){msHosts().forEach(h=>MS.add(msKey(h)));msDom();return}
+ if(a==='page'){const pg=pagesList()[CURP];(pg?[...pg.querySelectorAll('[data-ed="line"]')]:[]).forEach(h=>MS.add(msKey(h)));msDom();return}
+ if(a==='del'){if(!MS.size)return;if(!await ask('حذف المحدد',{msg:`تحذف ${MS.size} سطر؟`,yes:'نعم احذف',no:'لا',danger:1}))return;await msRewrite(sel=>sel.map(()=>[]));MS=new Set();msDom();toast('🗑 انحذف');return}
+ if(al!=null){await msRewrite(sel=>sel.map(s=>s.raw.split('\n').map((l,i,A)=>{l=l.replace(AL_RE,'');return al&&i===A.length-1&&l.trim()?l+AL_CH[al]:l})));toast(al?'✅ تمت المحاذاة':'↩️ رجعت المحاذاة الأصلية');return}
+ if(!ty)return;
+ const isBox=KIDX[ty]!=null;
+ if(isBox){const lab=LG().boxes[KIDX[ty]];
+  await msRewrite(sel=>{const P=[];let al0='';sel.forEach(s=>{const p=msPieces(s.raw);if(!p)return;al0=al0||p.al;const it=p.it;
+    p.parts.forEach((t,i)=>{if(!t.replace(/\u200b/g,'').trim())return;if(it.k==='li')P.push('- '+t);else if(it.k==='nl')P.push(it.n+(/^[0-9٠-٩]+$/.test(it.n)?'. ':') ')+t);else if(it.k==='h1'||it.k==='h2')P.push('**'+t.replace(/^\*\*|\*\*$/g,'')+'**');else P.push(t)})});
+   if(!P.length)return sel.map(s=>[s.raw]);
+   // إذا سطر واحد بنفس النوع ← بس يغيّر النوع
+   return sel.map((s,i)=>i?[]:['['+lab+'] '+P.join(SBR)+(al0?AL_CH[al0]:'')])});
+  toast(MS.size?`✅ صارت داخل «${lab}»`:'✅');return}
+ let n0='';if(ty==='nl'){const v=await ask('🔢 الترقيم',{icon:'🔢',msg:'يبدأ من أي رقم؟ (تگدر تكتب 1 أو ١ أو أ أو a)',input:isEN()?'1':'١',yes:'✅ رقّم',no:'إلغاء'});if(v==null||!String(v).trim())return;n0=String(v).trim()}
+ let n=null;
+ await msRewrite(sel=>sel.map(s=>{const p=msPieces(s.raw);if(!p)return[s.raw];const tail=p.al?AL_CH[p.al]:'';
+  return p.parts.map(t=>{let c=(ty==='li'||ty==='nl'||p.it.k==='box'||p.it.k==='law')?msStrip(t):t;if(ty!=='p')c=c.replace(/^\*\*(.*)\*\*$/,'$1');
+   if(ty==='nl'){n=n==null?n0:nextN(n);return buildLine('nl',c,n)+tail}return buildLine(ty,c,'')+tail})}));
+ toast('✅ تم')}
+// زر التحديد بشريط التعديل وبالشريط الجوه
+(function(){const f=document.querySelector('#fbar .fbbtns');if(f&&!f.querySelector('[data-c="msel"]')){const b=document.createElement('button');b.dataset.c='msel';b.textContent='☑️ تحديد';b.style.cssText='background:#dbeafe;color:#1e40af;font-weight:900';
+  b.onpointerdown=e=>e.preventDefault();b.addEventListener('click',e=>{e.stopPropagation();mselStart(hostOf(ACT))},true);const ok=f.querySelector('[data-c="ok"]');ok?ok.after(b):f.appendChild(b)}
+ const fs=document.getElementById('fsBar');if(fs&&!fs.querySelector('.mselB')){const b=document.createElement('button');b.className='mselB';b.innerHTML='<i>☑️</i>تحديد';b.onclick=()=>{if(!document.body.classList.contains('fs'))try{enterFS()}catch(e){}mselStart(null)};
+  const ref=[...fs.querySelectorAll('button:not(.konly)')].find(x=>/addHere/.test(x.getAttribute('onclick')||''));ref?ref.after(b):fs.appendChild(b)}})();
+// ترقيم سطر واحد برقم تختاره
+{const _ctN=changeType;changeType=function(host,ty){if(ty==='nl'&&host&&host.dataset.ty==='nl'){const d=host.dataset,ti=+d.t,bi=+d.b,ln=+d.ln;const tx=host.querySelector('.etx');const md=cleanMd(toMarkup(tx));
+  ask('🔢 رقم هذا السطر',{icon:'🔢',msg:'اكتب الرقم اللي تريده (1 أو ١ أو أ أو a)',input:d.n||'',yes:'✅',no:'إلغاء'}).then(async v=>{if(v==null||!String(v).trim())return;const b=S.topics[ti]&&S.topics[ti].blocks[bi];if(!b)return;const L=b.text.split('\n');L[ln]=buildLine('nl',md||ZW,String(v).trim());b.text=L.join('\n');save();await renderPages();toast('🔢 تم')});return}
+ return _ctN.apply(this,arguments)}}
 
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
