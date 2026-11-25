@@ -6677,6 +6677,47 @@ function hwFitFid(root){if(!root)return;root.querySelectorAll('.hwp.fid').forEac
   e.style.fontSize=(lo*(it.z||1)).toFixed(1)+'px';e.dataset.fit=e.style.fontSize;e.dataset.ff=e.style.left+e.style.top+e.style.width+'|'+(e.textContent||'').length})})}
 (function(){const st=document.createElement('style');st.textContent='.hwp.fid .hwi .hl{white-space:nowrap}.hwp.fid .hwi{line-height:1.25}';document.head.appendChild(st)})();
 
+/* ===== الهاتف: أيقونات أصغر والورقة أكبر ===== */
+(function(){const st=document.createElement('style');st.textContent=`
+@media (max-width:760px){
+ .top{padding-top:4px!important;padding-bottom:6px!important;border-radius:0 0 18px 18px!important}
+ .top .brand{gap:6px!important;min-height:0!important}
+ .top .logo,.top .logo img{width:34px!important;height:34px!important;border-radius:10px!important}
+ .top .bt b{font-size:15px!important}.top .bt small,.top .bt span,.top .bt div{font-size:10px!important}
+ .top .hb,.top .chip{height:34px!important;min-width:34px!important;padding:0 8px!important;font-size:11px!important;border-radius:11px!important;line-height:1.1!important}
+ .top .hb.sq{width:34px!important;padding:0!important}
+ .top .hb *,.top .chip *{font-size:11px!important}
+ .r1{height:auto!important;min-height:0!important;margin-top:6px!important;gap:6px!important}.r1>*{min-height:34px!important;height:auto!important;padding:4px 10px!important;border-radius:12px!important;font-size:13px!important}
+ .r1 *{font-size:12.5px!important}.r1 .svs i,.r1 .svs .ok{width:22px!important;height:22px!important;font-size:12px!important}
+ .pnav{margin-top:6px!important;gap:6px!important}.pnav .btn,.pnav select{height:32px!important;min-height:32px!important;font-size:12.5px!important;padding:0 10px!important;border-radius:11px!important}
+ .work{gap:6px!important;margin-top:6px!important}
+ .work>.tpanel{width:86px!important;min-width:86px!important;max-width:86px!important;flex:0 0 86px!important;gap:6px!important;padding:0!important}
+ .work>.stage{min-width:0!important;padding:6px!important}
+ .tpanel .tcard{padding:4px!important;border-radius:14px!important}
+ .tpanel .tcard>:not(.tgrid):not(.tps){font-size:10.5px!important;padding:4px 2px!important;min-height:0!important;line-height:1.2!important}
+ .tpanel .tgrid{grid-template-columns:1fr!important;gap:4px!important;padding:2px!important}
+ .tpanel .tg{min-height:0!important;height:auto!important;padding:5px 2px!important;font-size:10px!important;border-radius:10px!important;gap:1px!important;line-height:1.15!important}
+ .tpanel .tg i{font-size:17px!important;margin:0!important}
+ .tpanel .tban{min-height:0!important;height:auto!important;padding:6px 4px!important;border-radius:14px!important;flex-direction:column!important;gap:2px!important;justify-content:center!important;align-items:center!important;text-align:center!important}
+ .tpanel .tban svg,.tpanel .tban .tbi{width:34px!important;height:26px!important;position:static!important;margin:0!important}
+ .tpanel .tban span,.tpanel .tban b{font-size:10.5px!important;line-height:1.2!important;position:static!important;text-align:center!important;width:auto!important}
+ .tpanel .tban::after,.tpanel .tban::before,.tpanel .tban>em{display:none!important}
+ .tpanel .tban span{order:2}.tpanel .tban svg{order:1}
+ .tpanel .tban small,.tpanel .tban span>i{font-size:9.5px!important}
+ .tpanel .tcard.tpl .tps{gap:3px!important}.tpanel .tcard.tpl .tps>*{max-height:44px!important}
+ .tpanel .tmore{height:30px!important;padding:0 4px!important;font-size:10.5px!important;border-radius:10px!important}
+ .stage .stb{padding:2px 4px!important;min-height:0!important;gap:2px!important}.stage .stb button,.stage .stb .btn{height:30px!important;min-width:30px!important;padding:0 6px!important;font-size:13px!important}
+ .stage .stb *{font-size:13px!important}
+ #hwMode{font-size:12px!important;padding:6px 12px!important;margin:4px auto 6px!important}
+ .abar{gap:6px!important;padding:6px!important;display:flex!important;flex-wrap:nowrap!important}
+ .abar>*{flex:1 1 0!important;min-width:0!important;height:38px!important;min-height:0!important;padding:0 6px!important;font-size:12.5px!important;border-radius:12px!important;white-space:nowrap!important}
+ .abar>* *{font-size:12.5px!important}
+ .bnav{padding-top:4px!important;padding-bottom:calc(4px + env(safe-area-inset-bottom))!important;min-height:0!important;border-radius:16px 16px 0 0!important}
+ .bnav button,.bnav a{padding:3px 2px!important;font-size:10.5px!important;min-height:0!important;gap:1px!important}
+ .bnav button *,.bnav a *{font-size:10.5px!important}.bnav i,.bnav .ic,.bnav img,.bnav svg{font-size:19px!important;width:auto!important;height:22px!important;line-height:22px!important}
+ #hwAdd{font-size:12.5px!important;padding:8px 14px!important;bottom:calc(118px + env(safe-area-inset-bottom))!important}#hwAdd small{display:none}
+}`;document.head.appendChild(st)})();
+
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
  const n=dv.getUint16(e+10,true);let p=dv.getUint32(e+16,true);const files={};const td=new TextDecoder();
