@@ -7078,6 +7078,20 @@ function msExpandLists(){const H=msHosts();const ks=H.map(msKey);const add=new S
  MS=add;msDom()}
 {const _mb=msBar;msBar=function(){_mb.apply(this,arguments);const r=document.querySelector('#mselBar .mr');if(r&&!r.querySelector('[data-a="lst"]')){const b=document.createElement('button');b.dataset.a='lst';b.textContent='• القائمة كاملة';b.onpointerdown=e=>e.preventDefault();b.onclick=()=>{msExpandLists();toast('• تحددت كل النقاط/الأرقام اللي ويا السطر')};const ref=r.querySelector('[data-a="all"]');ref?ref.after(b):r.appendChild(b)}}}
 
+/* ===== يبقى بنفس الصفحة بعد التحديد والأدوات ===== */
+function msFirstVisible(){const H=msHosts();return H.find(h=>{const r=h.getBoundingClientRect();return r.bottom>120&&r.top<innerHeight-120&&r.height>0})||null}
+async function msKeepView(fn,prefer){const sc=msScroller();let ref=null;
+ if(prefer&&prefer.size){ref=msHosts().find(h=>prefer.has(msKey(h))&&h.getBoundingClientRect().height>0)}
+ if(!ref)ref=msFirstVisible();const k=ref?msKey(ref):null,y0=ref?ref.getBoundingClientRect().top:0,st=sc.scrollTop,pi0=ref?pagesList().indexOf(ref.closest('.pw')):CURP;
+ if(pi0>=0)CURP=pi0;
+ const r=await fn();
+ const fix=()=>{let h=null;if(MS&&MS.size)h=msHosts().find(x=>MS.has(msKey(x))&&x.getBoundingClientRect().height>0);if(!h&&k)h=msHosts().find(x=>msKey(x)===k);
+  if(h){const pi=pagesList().indexOf(h.closest('.pw'));if(pi>=0&&pi!==CURP){try{PSCR_LOCK=1}catch(e){}try{showPage(pi)}catch(e){}try{PSCR_LOCK=0}catch(e){}}sc.scrollTop+=h.getBoundingClientRect().top-y0}else sc.scrollTop=st};
+ fix();requestAnimationFrame(fix);setTimeout(fix,120);setTimeout(fix,400);return r}
+{const _rw=msRewrite;msRewrite=function(fn){const pre=new Set(MS);return msKeepView(()=>_rw.call(this,fn),pre)}}
+{const _me=mselEnd;mselEnd=function(){const pre=new Set(MS);_me.apply(this,arguments);clearTimeout(idleT);
+ msKeepView(async()=>{try{cleanupZW()}catch(e){}await renderPages()},pre).then(()=>{try{liveSoon(800)}catch(e){}})}}
+
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
  const n=dv.getUint16(e+10,true);let p=dv.getUint32(e+16,true);const files={};const td=new TextDecoder();
