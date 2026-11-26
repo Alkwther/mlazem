@@ -2050,7 +2050,7 @@ async function exportPDF(){
    await new Promise(r=>setTimeout(r,30));
    const cv=await capturePage(pages[i],q);
    if(i>0)pdf.addPage('a4','portrait');
-   pdf.addImage(cv.toDataURL('image/jpeg',.94),'JPEG',0,0,210,297,undefined,'FAST');
+   pdf.addImage(cv.toDataURL('image/jpeg',EXQ()),'JPEG',0,0,210,297,undefined,'FAST');
    try{const tw=900,sc=document.createElement('canvas');sc.width=tw;sc.height=Math.round(cv.height*tw/cv.width);sc.getContext('2d').drawImage(cv,0,0,sc.width,sc.height);PREV.push(sc.toDataURL('image/jpeg',.82));sc.width=sc.height=0}catch(e){}
    cv.width=cv.height=0;
   }
@@ -2980,8 +2980,8 @@ async function cvExport(){if(DEMO){toast('حفظ PDF يعمل بعد تسجيل 
   if(CV.ready&&!CV.ready.paid){if(!await cvBuy(teacher))return}
   else if(!CV.ready&&COVER_P>0&&CV.paidT!==teacher){if(!await cvPayCustom(teacher))return}}
  const o=overlay('📕 جاري تجهيز الغلاف بدقة عالية...');
- try{const Z=CSZ[CV.size]||CSZ.a3l;const cv=await cvCanvas(Z.w>1200?2.1:3);const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:'mm',format:Z.f,orientation:Z.o,compress:true});
-  const pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight();pdf.addImage(cv.toDataURL('image/jpeg',.93),'JPEG',0,0,pw,ph,undefined,'FAST');
+ try{const Z=CSZ[CV.size]||CSZ.a3l;const cv=await cvCanvas(Z.w>1200?(EXMAX()<=4?2.5:3.2):Math.min(4,EXMAX()));const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:'mm',format:Z.f,orientation:Z.o,compress:true});
+  const pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight();pdf.addImage(cv.toDataURL('image/jpeg',.96),'JPEG',0,0,pw,ph,undefined,'FAST');
   const sc=document.createElement('canvas');sc.width=900;sc.height=Math.round(cv.height*900/cv.width);sc.getContext('2d').drawImage(cv,0,0,sc.width,sc.height);PREV=[sc.toDataURL('image/jpeg',.82)];
   const th=document.createElement('canvas');th.width=240;th.height=Math.round(cv.height*240/cv.width);th.getContext('2d').drawImage(cv,0,0,th.width,th.height);CV.thumb=th.toDataURL('image/jpeg',.7);cvSave();cv.width=cv.height=0;
   const nm=('غلاف - '+[teacher,(CV.layers.find(l=>l.role==='subject')||{}).text||CV.title].filter(Boolean).join(' - ')).replace(/[\\/:*?"<>|\n]/g,' ').replace(/\s+/g,' ').trim()+'.pdf';
@@ -6283,7 +6283,7 @@ function hwCleanMarks(marks,blocks){const B=(blocks||[]).filter(b=>b.k!=='fig').
   if(CAPQ&&CAPQ<q&&document.body.classList.contains('exporting'))q=CAPQ;
   const pw=p.closest('.pw');let fixd=0;
   if(pw&&getComputedStyle(pw).display==='none'){pw.style.setProperty('display','block','important');fixd=1}
-  const qs=[...new Set([q,Math.min(q,2),1.5,1].filter(x=>x>0&&x<=q))];let last;
+  q=Math.min(q,EXMAX());const qs=[...new Set([q,q-1,4,3,2,1.5,1].filter(x=>x>0&&x<=q))];let last;
   try{for(const s of qs){try{const cv=await _cp(p,s);if(!cv||!cv.width||!cv.height)throw new Error('canvas-empty');
      cv.getContext('2d').getImageData(0,0,1,1);if(s!==q){CAPQ=s;console.warn('export: lower scale',s)}return cv}
     catch(e){last=e;console.warn('capture fail @'+s,e)}}
@@ -7091,6 +7091,15 @@ async function msKeepView(fn,prefer){const sc=msScroller();let ref=null;
 {const _rw=msRewrite;msRewrite=function(fn){const pre=new Set(MS);return msKeepView(()=>_rw.call(this,fn),pre)}}
 {const _me=mselEnd;mselEnd=function(){const pre=new Set(MS);_me.apply(this,arguments);clearTimeout(idleT);
  msKeepView(async()=>{try{cleanupZW()}catch(e){}await renderPages()},pre).then(()=>{try{liveSoon(800)}catch(e){}})}}
+
+/* ===== 🖨️ دقة عالية جداً بالحفظ ===== */
+function EXMAX(){const ua=navigator.userAgent||'';const ios=/iPad|iPhone|iPod/.test(ua)||(/Macintosh/.test(ua)&&'ontouchend' in document);if(ios)return 4;
+ const m=navigator.deviceMemory||4;return m<=2?4:m<=4?5:6}
+function EXQ(){const q=+(document.getElementById('q')||{}).value||5;return q>=5?.97:.95}
+(function(){const sel=document.getElementById('q');if(!sel)return;const mx=EXMAX();
+ sel.innerHTML=`<option value="3">عادية (حجم صغير)</option><option value="4">عالية</option><option value="5">عالية جداً — كلمات واضحة بالتكبير (موصى بها)</option>${mx>=6?'<option value="6">فائقة جداً — للطباعة الكبيرة</option>':''}`;
+ let v='5';try{v=localStorage.getItem('mlz_q')||'5'}catch(e){}if(+v>mx)v=String(Math.min(5,mx));sel.value=v;if(!sel.value)sel.value=String(Math.min(5,mx));
+ sel.addEventListener('change',()=>{try{localStorage.setItem('mlz_q',sel.value)}catch(e){}})})();
 
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
