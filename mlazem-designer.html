@@ -7056,9 +7056,9 @@ function msBeginDrag(h,x,y){if(!document.body.classList.contains('msel'))mselSta
 function msEndDrag(){if(!MSD)return;MSD=null;cancelAnimationFrame(MSA);const n=MS.size;if(n>1)toast(`✅ ${n} سطر محدد — اختار الأداة من فوق`)}
 // لمس (موبايل)
 (function(){let lp=null;
- document.addEventListener('touchstart',e=>{if(e.touches.length!==1||document.body.classList.contains('pv'))return;const t=e.touches[0];const h=msLineAt(t.clientX,t.clientY);if(!h||document.body.classList.contains('kids'))return;if(!document.body.classList.contains('msel')&&ACT&&h.contains(ACT))return;
-  clearTimeout(lp&&lp.tm);lp={x:t.clientX,y:t.clientY,h,tm:setTimeout(()=>{if(!lp)return;msBeginDrag(lp.h,lp.x,lp.y);lp=null},420)}},{passive:true,capture:true});
- document.addEventListener('touchmove',e=>{const t=e.touches[0];if(lp){if(Math.hypot(t.clientX-lp.x,t.clientY-lp.y)>9){clearTimeout(lp.tm);lp=null}return}
+ document.addEventListener('touchstart',e=>{if(e.touches.length!==1||document.body.classList.contains('pv'))return;const t=e.touches[0];const h=msLineAt(t.clientX,t.clientY);const B=document.body.classList;if(!h||B.contains('kids')||B.contains('pv'))return;if(!B.contains('msel')){if(!B.contains('fs')||B.contains('editing')||(ACT&&h.contains(ACT)))return}
+  clearTimeout(lp&&lp.tm);lp={x:t.clientX,y:t.clientY,h,tm:setTimeout(()=>{if(!lp)return;msBeginDrag(lp.h,lp.x,lp.y);lp=null},650)}},{passive:true,capture:true});
+ document.addEventListener('touchmove',e=>{const t=e.touches[0];if(lp){if(Math.hypot(t.clientX-lp.x,t.clientY-lp.y)>6){clearTimeout(lp.tm);lp=null}return}
   if(!MSD)return;if(e.cancelable)e.preventDefault();MSD.x=t.clientX;MSD.y=t.clientY;const h=msLineAt(t.clientX,t.clientY);if(h)msDragTo(h);msAuto(t.clientY)},{passive:false,capture:true});
  const end=()=>{if(lp){clearTimeout(lp.tm);lp=null}if(MSD){msEndDrag();MS_SKIPCLICK=Date.now()}};
  document.addEventListener('touchend',end,true);document.addEventListener('touchcancel',end,true);
