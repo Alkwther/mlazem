@@ -7101,6 +7101,111 @@ function EXQ(){const q=+(document.getElementById('q')||{}).value||5;return q>=5?
  let v='5';try{v=localStorage.getItem('mlz_q')||'5'}catch(e){}if(+v>mx)v=String(Math.min(5,mx));sel.value=v;if(!sel.value)sel.value=String(Math.min(5,mx));
  sel.addEventListener('change',()=>{try{localStorage.setItem('mlz_q',sel.value)}catch(e){}})})();
 
+/* ================= 🔍 ملازم PDF المرفوعة: عند الحفظ نرسم الصفحة من الملف الأصلي بدقة عالية جداً ================= */
+const hiH=s=>s?(s.length+':'+s.slice(-64)):'';
+{const _uf=upxFloat;upxFloat=function(l){const r=_uf.apply(this,arguments);try{if(r&&l&&l.g)r.o={x0:l.g.x0,y0:l.g.y0,w:l.g.w,h:l.g.h}}catch(e){}return r}}
+async function hiKeep(file,mode){try{if(!S||!(S.pageBg&&Object.keys(S.pageBg).length||S.coverBg))return;
+ const bytes=new Uint8Array(await file.arrayBuffer());const k='pdf:'+uid();DB.set(k,bytes);
+ const P={k,mode,AW:1240,AH:1754,pg:{},flat:{}};Object.keys(S.pageBg||{}).forEach(key=>{P.pg[hiH(S.pageBg[key])]=+key.slice(1)});if(S.coverBg&&S.coverBg.src)P.pg[hiH(S.coverBg.src)]=1;
+ if(mode==='exact'){const np=Math.max(1,...Object.values(P.pg));for(let i=1;i<=np;i++){const L=(S.floats||{})['p'+i]||[];if(!L.some(f=>f.o))P.flat[i]=1;L.forEach(f=>{if(f.o&&f.src){f.o.pg=i;f.o.n=f.src.length}})}}
+ S.pdfSrc=P;saveNow()}catch(e){console.warn('hiKeep',e)}}
+{const _ix=importPdfExact;importPdfExact=async function(file){const r=await _ix.apply(this,arguments);await hiKeep(file,'exact');return r}}
+{const _ii=importPdf;importPdf=async function(file,mode){const r=await _ii.apply(this,arguments);if(mode==='img')await hiKeep(file,'img');return r}}
+let HID=null;async function hiDoc(){const P=S.pdfSrc;if(!P)return null;if(HID&&HID.k===P.k)return HID.doc;const b=await DB.get(P.k);if(!b)return null;const lib=await pdfLib();const doc=await lib.getDocument({data:new Uint8Array(b)}).promise;HID={k:P.k,doc,lib};return doc}
+async function hiRender(n,k){const P=S.pdfSrc,doc=await hiDoc();if(!doc||n>doc.numPages)return null;const pg=await doc.getPage(n);const v1=pg.getViewport({scale:1});
+ if(P.mode==='img'){const vp=pg.getViewport({scale:P.AW/v1.width*k});const c=upxCanvas(vp.width,vp.height),g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);await pg.render({canvasContext:g,viewport:vp}).promise;pg.cleanup();return{A:c}}
+ const s0=Math.min(P.AW/v1.width,P.AH/v1.height);const vp=pg.getViewport({scale:s0*k});const R=await upxPdfPage(HID.lib,pg,vp);pg.cleanup();
+ const TW=Math.round(P.AW*k),TH=Math.round(P.AH*k);const ox=Math.round((TW-R.W)/2),oy=Math.round((TH-R.H)/2);
+ const A=upxCanvas(TW,TH),ag=A.getContext('2d');ag.fillStyle='#fff';ag.fillRect(0,0,TW,TH);ag.drawImage(R.bg,ox,oy);if(P.flat[n])ag.drawImage(R.tx,ox,oy);R.bg.width=R.bg.height=0;
+ return{A,T:R.tx,ox,oy}}
+const hiBlob=(c,t,q)=>new Promise(r=>c.toBlob(b=>r(b?URL.createObjectURL(b):null),t,q));
+const hiLoad=u=>new Promise(r=>{const im=new Image();im.onload=()=>r(1);im.onerror=()=>r(0);im.src=u});
+async function hiPrep(p,q){const P=S.pdfSrc;if(!P)return[];const pw=p.closest('.pw');const i=pagesList().indexOf(pw);if(i<0)return[];const key=FLKEY(i);
+ const low=i===0?(S.coverBg&&S.coverBg.src):(S.pageBg&&S.pageBg[key]);const pgNo=low?P.pg[hiH(low)]:null;
+ const fl=((S.floats||{})[key]||[]).filter(f=>f.o&&f.o.pg&&f.src&&f.src.length===f.o.n);
+ const need=new Set();if(pgNo)need.add(pgNo);fl.forEach(f=>need.add(f.o.pg));if(!need.size)return[];
+ const TW=Math.min(3000,Math.round(794*Math.max(2,q))),k=TW/P.AW;const undo=[],wait=[];
+ for(const n of need){const R=await hiRender(n,k);if(!R)continue;
+  if(R.T){fl.filter(f=>f.o.pg===n).forEach(f=>{const im=p.querySelector(`.flt[data-fid="${f.id}"] img.fi`);if(!im)return;
+    // إحداثيات الإطار الأصلي كانت على لوحة AW×AH ونفس الإزاحة، نحولها لإحداثيات T
+    const x=Math.round(f.o.x0*k)-R.ox,y=Math.round(f.o.y0*k)-R.oy,w=Math.max(1,Math.round(f.o.w*k)),h=Math.max(1,Math.round(f.o.h*k));
+    const c=upxCanvas(w,h);c.getContext('2d').drawImage(R.T,x,y,w,h,0,0,w,h);const u=c.toDataURL('image/png');c.width=c.height=0;const o=im.src;im.src=u;undo.push(()=>{im.src=o});wait.push(hiLoad(u))});
+   R.T.width=R.T.height=0}
+  if(n===pgNo){const u=await hiBlob(R.A,'image/jpeg',.95);R.A.width=R.A.height=0;if(!u)continue;await hiLoad(u);const tail=low.slice(-80);
+   [p,...p.querySelectorAll('*')].forEach(el=>{if(el.tagName==='IMG'&&el.src===low){el.src=u;undo.push(()=>{el.src=low})}else{const b=el.style&&el.style.backgroundImage;if(b&&b.includes(tail)){el.style.backgroundImage=`url("${u}")`;undo.push(()=>{el.style.backgroundImage=b})}}});undo.push(()=>URL.revokeObjectURL(u))}
+  else if(R.A){R.A.width=R.A.height=0}}
+ await Promise.all(wait);return undo}
+{const _cpH=capturePage;capturePage=async function(p,q){let undo=[];try{if(S.pdfSrc&&document.body.classList.contains('exporting'))undo=await hiPrep(p,q)}catch(e){console.warn('hiPrep',e)}
+ try{return await _cpH.apply(this,arguments)}finally{undo.forEach(f=>{try{f()}catch(e){}})}}}
+
+/* ================= 📥 قائمة الرفع الجديدة (مرتبة) ================= */
+(function(){const st=document.createElement('style');st.textContent=`
+.upH{display:flex;align-items:center;gap:8px;margin-bottom:4px}.upH b{flex:1;font:900 18px Cairo,sans-serif;color:#0b1f45}
+.upS{color:#64748b;font-size:13px;margin:0 2px 12px}
+.upC{display:flex;align-items:center;gap:12px;width:100%;text-align:right;background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:12px 12px;margin-bottom:10px;cursor:pointer;font-family:Cairo,sans-serif;box-shadow:0 1px 3px rgba(15,23,42,.06);transition:.15s}
+.upC:active{transform:scale(.985);background:#f8fafc}
+.upC .ui0{flex:0 0 46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.upC .ut{flex:1;min-width:0}.upC .ut b{display:block;font:900 15.5px Cairo,sans-serif;color:#0b1f45;line-height:1.5}.upC .ut span{display:block;font-size:12.5px;color:#64748b;line-height:1.6}
+.upC .ua{flex:0 0 auto;color:#94a3b8;font-size:20px;font-weight:900}
+.upC .rec{display:inline-block;background:#16a34a;color:#fff;border-radius:999px;font-size:10.5px;padding:0 8px;margin-inline-start:6px;vertical-align:middle;font-weight:800}
+.upN{display:inline-flex;width:22px;height:22px;border-radius:50%;background:#0b1f45;color:#fff;font:900 12px/22px Cairo;justify-content:center;margin-inline-end:6px}
+.upBk{border:0;background:#eef2ff;color:#3730a3;font:900 13px Cairo,sans-serif;border-radius:999px;padding:6px 14px;cursor:pointer}
+.upC .ut b .upN{display:inline-flex!important;align-items:center;color:#fff;font-size:12px;line-height:1;vertical-align:2px}.upC .ut b .rec{display:inline-block!important;color:#fff;font-size:10.5px;line-height:1.7}
+.upHold{display:none!important}`;document.head.appendChild(st)})();
+const UPI={w:['#dbeafe','📘'],p:['#fee2e2','📕'],h:['#fef3c7','✍️'],o:['#ede9fe','🔎'],i:['#dcfce7','🖼️'],n:['#e0f2fe','🎨'],s:['#dcfce7','🎯'],d:['#f1f5f9','📄']};
+const upCard=(k,t,s,act,num,rec)=>`<button class="upC" data-act="${act}"><span class="ui0" style="background:${UPI[k][0]}">${UPI[k][1]}</span><span class="ut"><b>${num?`<span class="upN">${num}</span>`:''}${t}${rec?'<span class="rec">الأفضل</span>':''}</b><span>${s}</span></span><span class="ua">‹</span></button>`;
+setTimeout(()=>{const _op0=openPdfImport;openPdfImport=function(){_op0.apply(this,arguments);const B=$('#obBody');if(!B)return;
+ const hold=document.createElement('div');hold.className='upHold';[...B.children].forEach(c=>hold.appendChild(c));
+ const warn=hold.querySelector('.warn');const view=document.createElement('div');B.appendChild(view);B.appendChild(hold);
+ const close=()=>$('#obM').classList.add('hidden');
+ const main=()=>{view.innerHTML=`<div class="upH"><b>📥 رفع ملزمة</b><button class="btn sm" data-act="x">✕</button></div><div class="upS">اختار نوع الملف — تنفتح كملزمة جديدة بـ «ملازمي» والملزمة الحالية تبقى مثل ما هي</div>
+  ${upCard('w','رفع ملزمة Word','ملف .docx — تختار تصميم جديد أو يبقى نفس تصميم الملف','word',1)}
+  ${upCard('p','رفع ملزمة PDF','تختار تصميم جديد أو يبقى نفس تصميم الملف','pdf',2)}
+  ${upCard('h','تحويل ملزمة خط يد إلى تصميم','صوّر الصفحات أو ارفعها PDF — الذكاء الاصطناعي يقراها ويصممها','hw',3)}
+  ${upCard('o','تحويل بقراءة شكل الصفحة','إذا الكتابة طلعت مخربطة بالتحويل العادي — يقرا الكلمات من شكلها (أبطأ ويحتاج إنترنت)','ocr',4)}
+  ${upCard('i','تحويل الصور إلى صفحات والكتابة عليها','صور أو PDF مصوّر — كل صورة تصير صفحة بنفس شكلها وتكتب فوقها','img',5)}`;if(warn)view.appendChild(warn.cloneNode(true));bind()};
+ const sub=(kind)=>{const W=kind==='word';view.innerHTML=`<div class="upH"><button class="upBk" data-act="back">→ رجوع</button><b>${W?'📘 ملزمة Word':'📕 ملزمة PDF'}</b><button class="btn sm" data-act="x">✕</button></div><div class="upS">شلون تريد الملزمة تطلع؟</div>
+  ${upCard('n','تصميم جديد بأدوات البرنامج',W?'العناوين تصير مواضيع، والقوائم والجداول والصور والأسئلة (س/ ج/) تتصمم بشكل احترافي وكلشي قابل للتعديل':'يتعرف على الفصول والمواضيع والأسئلة والتمارين والتعاريف والنقاط ويصممها بأدوات البرنامج',W?'docxNew':'pdfNew',0)}
+  ${upCard('s','يبقى نفس تصميم الملف',W?'كل صفحة تطلع مثل ملف الورد بالضبط، وتگدر تكتب وتضيف صور فوقها':'كل صفحة مثل ما هي 100% — وكل سطر كتابة تگدر تعدّله أو تحرّكه أو تحذفه',W?'docxSame':'pdfSame',0,!W)}`;bind()};
+ const bind=()=>view.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{const a=b.dataset.act;const clk=id=>{const i=hold.querySelector('#'+id);if(i)i.click()};
+  if(a==='x')close();else if(a==='back')main();else if(a==='word')sub('word');else if(a==='pdf')sub('pdf');
+  else if(a==='docxNew'){close();pickDocx()}else if(a==='docxSame'){close();pickDocxSame()}
+  else if(a==='pdfNew')clk('piTxt');else if(a==='pdfSame')clk('piExact');else if(a==='hw'){close();hwPick()}else if(a==='ocr')clk('piOcr');else if(a==='img'){close();pickImgPages()}});
+ main()}},0);
+// 🖼️ صور أو PDF مصوّر ← صفحات
+function pickImgPages(){const i=document.createElement('input');i.type='file';i.multiple=true;i.accept='image/*,application/pdf,.pdf';
+ i.onchange=()=>{const F=[...i.files];if(!F.length)return;const pdf=F.find(f=>/pdf$/i.test(f.type)||/\.pdf$/i.test(f.name));if(pdf)importPdf(pdf,'img');else importImgPages(F)};i.click()}
+async function upPagesProject(name,srcs){clearTimeout(saveT);saveNow();const NS=blankProject();NS.title=name;NS.showToc=false;NS.chapterPage=false;NS.pageBg={};NS.floats={};const segs=[];
+ srcs.forEach((s,k)=>{const i=k+1;if(i===1){NS.coverBg={src:s.src,w:s.w,h:s.h};NS.coverText=false}else{NS.pageBg['p'+i]=s.src;segs.push(' ')}});
+ if(!segs.length)segs.push(' ');NS.topics=[{id:uid(),unit:'',title:'',color:NS.topics[0].color,blocks:[{id:uid(),type:'text',text:segs.join('\n---\n')}]}];
+ S=NS;saveNow();bindInfo();renderTopics();renderProjects();showTab('vPreview');await renderPages();showPage(0);try{liveSoon(300)}catch(e){}}
+async function importImgPages(files){let o=overlay('🖼️ جاري تجهيز الصور...');try{files.sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));const out=[];
+ for(let k=0;k<files.length;k++){o.remove();o=overlay(`🖼️ جاري تجهيز الصورة ${k+1} من ${files.length}...`);
+  const u=URL.createObjectURL(files[k]);const im=new Image();await new Promise((r,j)=>{im.onload=r;im.onerror=j;im.src=u});
+  const TW=Math.min(2000,Math.max(im.naturalWidth,1240));const TH=Math.round(TW*1123/794);const c=upxCanvas(TW,TH),g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,TW,TH);
+  const sc=Math.min(TW/im.naturalWidth,TH/im.naturalHeight);const w=im.naturalWidth*sc,h=im.naturalHeight*sc;g.imageSmoothingQuality='high';g.drawImage(im,(TW-w)/2,(TH-h)/2,w,h);URL.revokeObjectURL(u);
+  out.push({src:c.toDataURL('image/jpeg',.9),w:TW,h:TH});c.width=c.height=0}
+ const name=(files[0].name||'').replace(/\.[^.]+$/,'').trim()||'ملزمة صور';await upPagesProject(name,out);o.remove();
+ popup('✅','صارت الصور صفحات',`${files.length} صورة صارت ملزمة باسم <b>${esc(name)}</b> — كل صورة صفحة بنفس شكلها.<br>اضغط على أي صفحة وأضف <b>🔤 كتابة حرة</b> أو صور فوقها.`)}
+ catch(e){try{o.remove()}catch(_){}popup('⚠️','تعذّر فتح الصور',esc(e.message||String(e)))}}
+// 📘 Word بنفس تصميمه
+function pickDocxSame(){const i=document.createElement('input');i.type='file';i.accept='.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document';i.onchange=()=>{const f=i.files[0];if(f)importDocxSame(f)};i.click()}
+async function upLoadJS(urls,ok){if(ok())return;for(const u of urls){try{await new Promise((r,j)=>{const s=document.createElement('script');s.src=u;s.onload=r;s.onerror=j;document.head.appendChild(s)});if(ok())return}catch(e){}}if(!ok())throw new Error('ما گدرت أحمّل أداة قراءة الورد — تأكد من الإنترنت')}
+async function importDocxSame(file){let o=overlay('📘 جاري فتح ملف الورد بنفس تصميمه...');const box=document.createElement('div');
+ try{await upLoadJS(['https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js','https://unpkg.com/jszip@3.10.1/dist/jszip.min.js'],()=>window.JSZip);
+  await upLoadJS(['https://cdn.jsdelivr.net/npm/docx-preview@0.3.6/dist/docx-preview.min.js','https://unpkg.com/docx-preview@0.3.6/dist/docx-preview.min.js'],()=>window.docx&&window.docx.renderAsync);
+  box.style.cssText='position:fixed;left:-20000px;top:0;width:1000px;background:#fff;z-index:-1';document.body.appendChild(box);
+  await window.docx.renderAsync(file,box,null,{inWrapper:true,ignoreWidth:false,ignoreHeight:false,breakPages:true,renderHeaders:true,renderFooters:true,renderFootnotes:true,experimental:true,useBase64URL:true});
+  try{await document.fonts.ready}catch(e){}await new Promise(r=>setTimeout(r,400));
+  const secs=[...box.querySelectorAll('section.docx')];if(!secs.length)throw new Error('الملف فارغ أو ما انقرا');
+  const out=[];for(let k=0;k<secs.length;k++){o.remove();o=overlay(`📘 جاري تجهيز الصفحة ${k+1} من ${secs.length}...`);const s=secs[k];const w=s.offsetWidth||794;
+   const cv=await html2canvas(s,{scale:Math.min(3,1654/w),backgroundColor:'#ffffff',useCORS:true,logging:false});const TW=1654,TH=Math.round(TW*1123/794);
+   const c=upxCanvas(TW,TH),g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,TW,TH);const sc=Math.min(TW/cv.width,TH/cv.height);g.drawImage(cv,(TW-cv.width*sc)/2,0,cv.width*sc,cv.height*sc);
+   out.push({src:c.toDataURL('image/jpeg',.92),w:TW,h:TH});c.width=c.height=cv.width=cv.height=0}
+  box.remove();const name=file.name.replace(/\.docx$/i,'').trim()||'ملزمة Word';await upPagesProject(name,out);o.remove();
+  popup('✅','انفتح ملف الورد بنفس تصميمه',`${out.length} صفحة باسم <b>${esc(name)}</b>.<br>اضغط على أي صفحة وأضف كتابة أو صور فوقها.<br><small>💡 إذا طلع خط أو شكل مختلف عن الورد: من الورد احفظ الملف PDF وارفعه من «ملزمة PDF ← يبقى نفس تصميم الملف» — يطلع مطابق 100% وكل سطر قابل للتعديل.</small>`)}
+ catch(e){try{o.remove()}catch(_){}box.remove();popup('⚠️','ما انفتح ملف الورد بنفس تصميمه',`${esc(e.message||String(e))}<br><br>الحل الأكيد: افتح الملف بالورد ← <b>حفظ باسم / مشاركة ← PDF</b>، وبعدين ارفعه من <b>«رفع ملزمة PDF ← يبقى نفس تصميم الملف»</b>.`)}}
+
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
  const n=dv.getUint16(e+10,true);let p=dv.getUint32(e+16,true);const files={};const td=new TextDecoder();
