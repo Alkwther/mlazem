@@ -1315,7 +1315,7 @@ body:has(.modal:not(.hidden)) #vPreview .abar,body:has(#ptool) #vPreview .abar,b
 const $=s=>document.querySelector(s);
 const uid=()=>Math.random().toString(36).slice(2,9);
 const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const PALETTE=['#1e88e5','#3949ab','#8e24aa','#d81b60','#e53935','#f4511e','#fb8c00','#c0a000','#43a047','#00897b','#00acc1','#6d4c41','#546e7a','#263238'];
+const PALETTE=['#1E5FA8','#1F3A68','#5B3A8C','#AD1457','#C62828','#D35400','#B7791F','#5D7F1E','#2E7D32','#00796B','#00838F','#6D4C41','#455A64','#263238'];
 function hx(h){h=String(h).replace('#','');if(h.length==3)h=h.split('').map(c=>c+c).join('');return [0,2,4].map(i=>parseInt(h.substr(i,2),16)||0)}
 function mix(hex,to,p){const a=hx(hex),b=to==='w'?[255,255,255]:[0,0,0];return '#'+a.map((v,i)=>Math.round(v+(b[i]-v)*p).toString(16).padStart(2,'0')).join('')}
 function setVars(el,c){el.style.setProperty('--c',c);el.style.setProperty('--cd',mix(c,'k',.35));el.style.setProperty('--cl',mix(c,'w',.9));el.style.setProperty('--cm',mix(c,'w',.68))}
@@ -2795,7 +2795,7 @@ async function rdLoad(r){if(r.store==='r2')return await (await r2Req('GET',`read
 /* ================= الأغلفة الجاهزة A3 + المحرر ================= */
 const CSZ={a3l:{w:1587,h:1123,f:'a3',o:'landscape',n:'A3 أفقي',d:'أمامي + خلفي (ملزمة A4)',sp:1},a3p:{w:1123,h:1587,f:'a3',o:'portrait',n:'A3 عمودي',d:'غلاف واحد كبير'},a4l:{w:1123,h:794,f:'a4',o:'landscape',n:'A4 أفقي',d:'أمامي + خلفي (ملزمة A5)',sp:1},a4p:{w:794,h:1123,f:'a4',o:'portrait',n:'A4 عمودي',d:'غلاف أمامي'}};
 const CROLE={title:'اسم الملزمة',subject:'المادة',grade:'الصف',teacher:'اسم الأستاذ',phone:'رقم الهاتف',extra:'سطر إضافي',custom:'نص'};
-const CCOL=['#ffffff','#111827','#0b1f45','#1d4ed8','#0891b2','#0f766e','#16a34a','#65a30d','#ca8a04','#f59e0b','#ea580c','#e11d48','#be185d','#7c3aed','#64748b','#78350f'];
+const CCOL=['#ffffff','#111111','#1F3A68','#1E5FA8','#00838F','#00796B','#2E7D32','#5D7F1E','#B7791F','#E0A800','#D35400','#C62828','#AD1457','#5B3A8C','#455A64','#6D4C41'];
 let CV=null,CSEL=null,CUNDO=[],CREDO=[],CPANEL='',CEDIT=null;
 const cvKey=id=>'cv:'+id;
 async function cvList(){return (await DB.get('cvl'))||[]}
@@ -3299,7 +3299,7 @@ function openNumber(pre){NB=Object.assign({digits:'en',pos:'bc',shape:'circle',f
 const toAr=s=>String(s).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
 function nbText(i,N){const n=NB.digits==='ar'?toAr(i):String(i),T=NB.digits==='ar'?toAr(N):String(N);return NB.fmt==='page'?(NB.digits==='ar'?'صفحة '+n:'Page '+n):NB.fmt==='of'?(NB.digits==='ar'?n+' من '+T:n+' / '+T):NB.fmt==='dash'?'— '+n+' —':n}
 function nbRender(){const B=$('#ptB');const sel=(k,v)=>NB[k]===v?'on':'';
- const COL=['#ffffff','#111827','#1d4ed8','#e11d48','#16a34a','#f59e0b','#7c3aed','#0891b2','#be185d','#64748b'];
+ const COL=['#ffffff','#111111','#1E5FA8','#C62828','#2E7D32','#E0A800','#5B3A8C','#00796B','#AD1457','#455A64'];
  const P=[['tr','↗'],['tc','⬆'],['tl','↖'],['','',1],['','',1],['','',1],['br','↘'],['bc','⬇'],['bl','↙']];
  B.innerHTML=`${NB.file?`<div class="pfi"><canvas id="nbTh"></canvas><div class="inf2"><b>${esc(NB.file.name)}</b><small id="nbPg">⏳</small></div><label class="btn sm">تغيير<input type="file" accept="application/pdf,.pdf" hidden id="nbIn"></label></div>`
   :`<label class="pdrop"><i>📄</i>اضغط واختار ملف PDF<span>بعدها تختار شكل الترقيم وتشوفه قبل الحفظ</span><input type="file" accept="application/pdf,.pdf" hidden id="nbIn"></label>`}
@@ -4316,7 +4316,7 @@ const KEN_W={A:['Apple','apple'],B:['Ball','ball'],C:['Cat','cat'],D:['Duck','du
 const KNUM_AR=['صفر','واحد','اثنان','ثلاثة','أربعة','خمسة','ستة','سبعة','ثمانية','تسعة','عشرة'],KNUM_EN=['zero','one','two','three','four','five','six','seven','eight','nine','ten'];
 const KCNT=['apple','star','ball','fish','heart','balloon','flower','car','duck','sun','butterfly'];
 const KSHP=[['circle','دائرة','Circle'],['square','مربع','Square'],['triangle','مثلث','Triangle'],['rect','مستطيل','Rectangle'],['star','نجمة','Star'],['heart','قلب','Heart'],['oval','بيضوي','Oval'],['diamond','معين','Diamond']];
-const KCOL=['#f97316','#e11d48','#7c3aed','#2563eb','#0891b2','#16a34a','#ca8a04','#db2777','#4f46e5','#059669'];
+const KCOL=['#E65100','#C62828','#5B3A8C','#1E5FA8','#00838F','#2E7D32','#C79100','#AD1457','#283593','#00695C'];
 const KPRE=[['line','خط مستقيم'],['zig','خط متعرج'],['wave','أمواج'],['loop','حلقات'],['arc','جسور'],['step','درج'],['vline','خطوط عمودية'],['spiral','دوائر']];
 const kToAr=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
 const kc=i=>KCOL[((i%KCOL.length)+KCOL.length)%KCOL.length];
@@ -4442,7 +4442,7 @@ const FRAMES_K=[['k_rainbow','قوس قزح 🌈'],['k_stars','نجوم ⭐'],['
 function frList(){return S.kids?FRAMES_K.concat(FRAMES.filter(f=>['none','dashed','dotted','card','bubbles'].includes(f[0]))):FRAMES}
 function kFrame(id,c){
  const D=css=>`<div style="position:absolute;${css}"></div>`,B=(i,css)=>`<div style="position:absolute;inset:${i}px;${css}"></div>`;
- const RB=['#ef4444','#f97316','#facc15','#22c55e','#3b82f6','#8b5cf6'];
+ const RB=['#D32F2F','#EF6C00','#F9A825','#388E3C','#1976D2','#6A1B9A'];
  const around=(step,fn,noTop)=>{let s='',k=0;for(let x=40;x<=754;x+=step){s+=(noTop?'':fn(x,8,k++))+fn(x,1093,k++)}for(let y=40+step;y<=1083-step+1;y+=step){s+=fn(8,y,k++)+fn(764,y,k++)}return s};
  switch(id){
   case'k_rainbow':return RB.map((col,i)=>B(8+i*5,`border:5px solid ${col};border-radius:${40-i*4}px`)).join('');
@@ -5038,7 +5038,7 @@ async function libNew(id){const b=MLIB.books[id],g=MLIB.grades.find(x=>x.id===b.
 
 /* ---------- 1) العلامة المائية الاحترافية ---------- */
 const WMS=[['diag','✒️','كلمة مائلة'],['tile','🔁','متكررة'],['stamp','🔵','ختم دائري'],['band','🎗️','شريط مائل'],['edge','🧾','حواف الورقة'],['logo','🏷️','شعار / صورة']];
-const WMC=['#64748b','#111827','#0b1f45','#1e88e5','#0f766e','#16a34a','#e11d48','#be185d','#f59e0b','#7c3aed','#78350f'];
+const WMC=['#78909C','#111111','#1F3A68','#1E5FA8','#00796B','#2E7D32','#C62828','#AD1457','#E0A800','#5B3A8C','#6D4C41'];
 function wmDef(){return Object.assign({t:'',s:90,o:.1,c:'#64748b',r:-30,tile:0,cover:0,st:'',sub:'',font:'',img:null,sc:'all',pg:[]},S.wm||{})}
 function wmSt(w){return w.st||(w.tile?'tile':'diag')}
 function wmHas(w){return !!w&&(!!(w.t||'').trim()||(wmSt(w)==='logo'&&!!w.img))}
@@ -6868,7 +6868,7 @@ function psLine(l){// تحويل سطر واحد لأدوات البرنامج
  if(/^(?:القانون|قانون|العلاقة|المعادلة)\s[^:：]{1,40}[:：]\s*\S/.test(t)&&/[=×÷+−\-\/]/.test(t))return'[قانون] '+t;
  if(m=t.match(/^[○◘◄»→➔⇐⇦□☐♦◇★☆✦✧◉⦿⚫🔹🔸➜➝⬅◀◁▷»«·]\s*(.+)$/))return'- '+m[1];
  return raw}
-function pdfStruct(res){const PAL=['#1e88e5','#e53935','#43a047','#8e24aa','#fb8c00','#00897b','#3949ab','#d81b60','#6d4c41','#0097a7'];
+function pdfStruct(res){const PAL=['#1E5FA8','#C62828','#2E7D32','#5B3A8C','#D35400','#00796B','#1F3A68','#AD1457','#6D4C41','#00838F'];
  // 1) كل البلوكات ← سطور (مع الصور بمكانها)
  const SPL=/\s+(?=(?:أولاً|أولا|ثانياً|ثانيا|ثالثاً|ثالثا|رابعاً|رابعا|خامساً|خامسا|سادساً|سادسا)\s*[:\-–]|س\s*[0-9٠-٩]{1,3}\s*[\/:]|ج\s*[0-9٠-٩]{0,3}\s*\/)/;
  const items=[];res.blocks.forEach(b=>{if(b.type==='text')b.text.split('\n').forEach(l=>arLam(l).split(SPL).forEach(x=>items.push({l:x})));else items.push({b})});
@@ -6936,12 +6936,12 @@ async function withBgShift(fn){const has=(S.pageBg&&Object.keys(S.pageBg).length
 async function newChapterHere(){
  const nm=await ask('📑 فصل جديد',{icon:'📑',msg:'اكتب اسم الفصل (مثلاً: الحركة الدورانية)',input:'',ph:'اسم الفصل',yes:'التالي',no:'إلغاء'});if(nm===false||nm==null)return;
  const tt=await ask('📘 اسم الموضوع',{icon:'📘',msg:'اسم أول موضوع بهذا الفصل (تگدر تتركه فارغ)',input:'',ph:'اسم الموضوع',yes:'✅ إضافة',no:'إلغاء'});if(tt===false||tt==null)return;
- const a0=pageAnchor();const PAL0=['#1e88e5','#e53935','#43a047','#8e24aa','#fb8c00','#00897b','#3949ab','#d81b60'];
+ const a0=pageAnchor();const PAL0=['#1E5FA8','#C62828','#2E7D32','#5B3A8C','#D35400','#00796B','#1F3A68','#AD1457'];
  if(a0.ln<0&&a0.bi===0){S.topics.splice(a0.ti,0,{id:uid(),unit:String(nm).trim(),title:String(tt).trim()||String(nm).trim(),color:PAL0[(a0.ti+3)%PAL0.length],blocks:[{id:uid(),type:'text',text:ZW}]});save();try{renderTopics()}catch(e){}await renderPages()}
  else await withBgShift(async()=>{const a=pageAnchor();const t=S.topics[a.ti];const b=t.blocks[a.bi];
   const L=b.text===''?[]:b.text.split('\n');const at=a.ln<0?0:a.ln+1;const tail=L.splice(at);b.text=L.join('\n');
   const rest=[];if(tail.length)rest.push({id:uid(),type:'text',text:tail.join('\n').replace(/^(---\n)+/,'')});rest.push(...t.blocks.splice(a.bi+1));
-  const PAL=['#1e88e5','#e53935','#43a047','#8e24aa','#fb8c00','#00897b','#3949ab','#d81b60'];
+  const PAL=['#1E5FA8','#C62828','#2E7D32','#5B3A8C','#D35400','#00796B','#1F3A68','#AD1457'];
   const N={id:uid(),unit:String(nm).trim(),title:String(tt).trim()||String(nm).trim(),color:PAL[(a.ti+1)%PAL.length],blocks:[{id:uid(),type:'text',text:ZW}]};
   const add=[N];if(rest.length){N.blocks[0].text=ZW+'\n---';add.push({id:uid(),title:t.title,color:t.color,cont:1,blocks:rest})}
   S.topics.splice(a.ti+1,0,...add);if(!b.text&&t.blocks.length===1&&!rest.length){}
@@ -7265,6 +7265,29 @@ async function importDocxSame(file){let o=overlay('📘 جاري فتح ملف �
  b.onclick=()=>{if(sa()&&!mine()){window.open(location.origin+location.pathname,'_blank');if(typeof toast==='function')toast('🌐 انفتح البرنامج بالمتصفح — اضغط «💻 تنزيل البرنامج» هناك',5000);return}
   if(window.INST&&INST.open)INST.open();};
  window.addEventListener('appinstalled',upd);matchMedia('(display-mode: standalone)').addEventListener&&matchMedia('(display-mode: standalone)').addEventListener('change',upd)})();
+
+/* ================= 🖨️ ألوان الطباعة فقط (CMYK) — كل لون يتحول لأقرب لون يطلع بالحبر ================= */
+const PSC=new Map();
+function psHex(c){if(!c)return c;const k=String(c).trim();if(PSC.has(k))return PSC.get(k);let r,g,b,a=null,m;
+ if(m=k.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i)){let h=m[1];if(h.length===3)h=h.split('').map(x=>x+x).join('');r=parseInt(h.slice(0,2),16);g=parseInt(h.slice(2,4),16);b=parseInt(h.slice(4,6),16)}
+ else if(m=k.match(/^rgba?\(\s*([\d.]+)[ ,]+([\d.]+)[ ,]+([\d.]+)(?:\s*[,/]\s*([\d.]+%?))?\s*\)$/i)){r=+m[1];g=+m[2];b=+m[3];a=m[4]!=null?m[4]:null}else{PSC.set(k,k);return k}
+ r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,s=0,l=(mx+mn)/2;const d=mx-mn;
+ if(d>1e-6){s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?((g-b)/d+(g<b?6:0)):mx===g?(b-r)/d+2:(r-g)/d+4;h*=60}
+ let out=k;if(s>.08){
+  // حدود الحبر: الأزرق/البنفسجي/السماوي/الأخضر ما يطلعون فاقعين وفاتحين بنفس الوقت
+  let sm,lm;if(h>=180&&h<265){sm=.72;lm=.44}else if(h>=265&&h<320){sm=.6;lm=.40}else if(h>=75&&h<180){sm=.75;lm=.36}else if(h>=320||h<15){sm=.82;lm=.50}else if(h>=15&&h<45){sm=.9;lm=.52}else{sm=.92;lm=.55}
+  const L0=l,S0=s;if(l>.2&&l<.88){if(S0>.5&&l>lm&&l<.8){l=lm;if(s>sm)s=sm}else if(l>lm&&s>sm)s=sm}
+  if(s!==S0||l!==L0){const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q,f=t=>{t=(t%360+360)%360/360;let x=t;const T=v=>{v<0&&(v+=1);v>1&&(v-=1);return v<1/6?p+(q-p)*6*v:v<.5?q:v<2/3?p+(q-p)*(2/3-v)*6:p};return Math.round(T(x)*255)};
+   const R=f(h+120),G=f(h),B=f(h-120);out=a!=null?`rgba(${R},${G},${B},${a})`:'#'+[R,G,B].map(v=>v.toString(16).padStart(2,'0')).join('')}}
+ PSC.set(k,out);return out}
+const psStr=s=>String(s).replace(/#[0-9a-f]{6}\b|#[0-9a-f]{3}\b|rgba?\([^)]*\)/gi,m=>psHex(m));
+{const _sv=setVars;setVars=function(el,c){return _sv.call(this,el,psHex(c))}}
+function psNode(el){if(!el||el.nodeType!==1)return;const one=e=>{const st=e.getAttribute('style');if(st&&/#|rgb/i.test(st)&&!/url\(/i.test(st)){const n=psStr(st);if(n!==st)e.setAttribute('style',n)}
+  else if(st&&/url\(/i.test(st)){['color','background-color','border-color','border-top-color','border-bottom-color','border-left-color','border-right-color','outline-color','fill','stroke','--c','--cd','--cl','--cm','--k'].forEach(pp=>{const v=e.style.getPropertyValue(pp);if(v&&/#|rgb/i.test(v)){const n=psStr(v);if(n!==v)e.style.setProperty(pp,n)}})}
+  ['fill','stroke','stop-color','color'].forEach(at=>{const v=e.getAttribute&&e.getAttribute(at);if(v&&/#|rgb/i.test(v)){const n=psStr(v);if(n!==v)e.setAttribute(at,n)}})};
+ one(el);el.querySelectorAll('[style],[fill],[stroke],[stop-color],font[color]').forEach(one)}
+(function(){const go=()=>{const P=document.getElementById('pages');if(!P)return setTimeout(go,500);psNode(P);
+ new MutationObserver(ms=>{for(const m of ms)m.addedNodes.forEach(n=>{if(n.nodeType===1&&!n.classList.contains('mslk'))psNode(n)})}).observe(P,{childList:true,subtree:true})};go()})();
 
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
