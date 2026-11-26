@@ -7206,6 +7206,65 @@ async function importDocxSame(file){let o=overlay('📘 جاري فتح ملف �
   popup('✅','انفتح ملف الورد بنفس تصميمه',`${out.length} صفحة باسم <b>${esc(name)}</b>.<br>اضغط على أي صفحة وأضف كتابة أو صور فوقها.<br><small>💡 إذا طلع خط أو شكل مختلف عن الورد: من الورد احفظ الملف PDF وارفعه من «ملزمة PDF ← يبقى نفس تصميم الملف» — يطلع مطابق 100% وكل سطر قابل للتعديل.</small>`)}
  catch(e){try{o.remove()}catch(_){}box.remove();popup('⚠️','ما انفتح ملف الورد بنفس تصميمه',`${esc(e.message||String(e))}<br><br>الحل الأكيد: افتح الملف بالورد ← <b>حفظ باسم / مشاركة ← PDF</b>، وبعدين ارفعه من <b>«رفع ملزمة PDF ← يبقى نفس تصميم الملف»</b>.`)}}
 
+/* ================= 💻 تصميم اللابتوب: ملء الشاشة واحترافي ================= */
+(function(){const st=document.createElement('style');st.textContent=`
+@media (min-width:1024px) and (hover:hover) and (pointer:fine){
+ :root{--bnH:0px!important;--rail:96px}
+ body{background:linear-gradient(180deg,#eef2f8,#e6ebf3)!important;padding-left:var(--rail)!important}
+ .top{padding-left:26px!important;padding-right:26px!important;border-radius:0 0 0 22px!important}
+ .top .brand{max-width:none!important;margin:0!important;width:100%}
+ .top .brand .bt b{font-size:20px!important}
+ /* الشريط الجانبي بدل الشريط الجوه */
+ #bnav.bnav{position:fixed!important;top:0!important;bottom:0!important;left:0!important;right:auto!important;width:var(--rail)!important;height:auto!important;
+  flex-direction:column!important;justify-content:flex-start!important;align-items:stretch!important;gap:4px!important;padding:14px 8px 16px!important;border-radius:0!important;
+  background:linear-gradient(180deg,#0b1f45,#13306b)!important;box-shadow:4px 0 18px rgba(11,31,69,.18)!important;z-index:70!important;overflow-y:auto}
+ #bnav.bnav button{flex:0 0 auto!important;width:100%!important;min-height:66px!important;border-radius:14px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:4px!important;font-size:11.5px!important;white-space:normal!important;line-height:1.3!important;padding:6px 2px!important;transition:.15s}
+ #bnav.bnav button i{font-size:22px!important}
+ #bnav.bnav button:hover{background:rgba(255,255,255,.1)!important}
+ #bnav.bnav button.on{background:rgba(255,213,79,.16)!important}
+ #bnav.bnav button.on::after{display:none!important}
+ #bnav.bnav button[data-n="home"]{order:-1}
+ /* شاشة التصميم */
+ #vPreview.view{max-width:none!important;width:100%!important;box-sizing:border-box;padding:14px 26px 0!important;margin:0!important}
+ #vPreview .r1{gap:14px!important}#vPreview .pnav{margin-top:10px}
+ #vPreview .work{gap:20px!important;align-items:stretch!important;height:calc(100vh - 62px - 39px - 43px - 14px - 86px)!important;min-height:420px;margin-top:10px}
+ #vPreview .tpanel{flex:0 0 270px!important;width:270px!important;max-width:none!important;overflow-y:auto!important;padding-left:4px}
+ #vPreview .tpanel .tgrid{grid-template-columns:repeat(3,1fr)!important;gap:8px!important;padding:10px!important}
+ #vPreview .tpanel .tg{min-height:64px!important;border-radius:14px!important;font-size:12.5px!important}
+ #vPreview .tpanel .tgrid>.tg:last-child:nth-child(3n+1){grid-column:1/-1!important;min-height:44px!important;flex-direction:row!important}
+ #vPreview .tpanel .tg:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(11,31,69,.12)}
+ #vPreview .tpanel .th2{font-size:14px!important;padding:10px 12px!important}
+ #vPreview .tpanel .tban{min-height:74px!important;margin-top:10px!important;border-radius:16px!important}
+ #vPreview .tpanel .tban b{font-size:15px!important}
+ #vPreview .stage{flex:1 1 auto!important;min-width:0;border-radius:18px!important;background:#fff;box-shadow:0 6px 24px rgba(11,31,69,.10)!important}
+ #vPreview .stage #pages{flex:1 1 auto;overflow-y:auto!important;padding:22px 0 30px!important;background:linear-gradient(180deg,#f1f4f9,#e9edf4);border-radius:0 0 18px 18px}
+ #vPreview .stb{padding:6px 14px!important}
+ /* أزرار حفظ/تنزيل/معاينة */
+ #vPreview .abar,body.pscr #vPreview .abar{position:static!important;max-width:none!important;margin:12px 0 0 290px!important;grid-template-columns:1fr 1.4fr 1fr!important;background:transparent!important;box-shadow:none!important;padding:0!important}
+ #vPreview .ab3{padding:12px 6px!important;font-size:14.5px!important;border-radius:14px!important}
+ #vPreview .ab3:hover{filter:brightness(1.05);transform:translateY(-1px)}
+ /* الصفحات الثانية بالنص */
+ .view:not(#vPreview) .wrap{max-width:920px!important}
+ #obM .sheet,#popM .pop,#askM .pop{max-width:560px;margin-inline:auto}
+ body.fs{padding-left:0!important}body.fs #bnav{display:none!important}
+ body.fs:not(.pv):not(.kids) #fsBar,body.fs.kids:not(.pv) #fsBar{display:flex!important;flex-wrap:nowrap!important;justify-content:center!important;gap:4px!important;left:50%!important;right:auto!important;transform:translateX(-50%);width:auto!important;max-width:calc(100vw - 30px);overflow-x:auto;border-radius:18px!important;bottom:12px!important;padding:8px!important}
+ body.fs #fsBar>button{flex:0 0 auto!important;min-width:60px!important;min-height:54px!important;padding:4px 6px!important;font-size:11px!important}
+ #obM .sheet{border-radius:22px!important;bottom:auto!important;top:50%!important;transform:translateY(-50%)!important;max-height:86vh}
+}`;document.head.appendChild(st)})();
+
+/* ===== 💻 زر تنزيل البرنامج باللابتوب ===== */
+(function(){try{if(/[?&]src=app/.test(location.search))sessionStorage.setItem('mlz_app','1')}catch(e){}
+ const sa=()=>matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: window-controls-overlay)').matches||navigator.standalone===true;
+ const mine=()=>{try{return sessionStorage.getItem('mlz_app')==='1'}catch(e){return false}};
+ const st=document.createElement('style');st.textContent=`#railInst{display:none}
+ @media (min-width:1024px) and (hover:hover) and (pointer:fine){#bnav #railInst{display:flex!important;margin-top:auto!important;background:linear-gradient(135deg,#16a34a,#22c55e)!important;color:#fff!important;font-weight:900!important;box-shadow:0 6px 16px rgba(22,163,74,.35)}
+ #bnav #railInst.hid{display:none!important}}`;document.head.appendChild(st);
+ const nav=document.getElementById('bnav');if(!nav)return;const b=document.createElement('button');b.id='railInst';b.innerHTML='<i>💻</i>تنزيل البرنامج';nav.appendChild(b);
+ const upd=()=>{const s=sa();b.classList.toggle('hid',s&&mine());b.title=s&&!mine()?'افتح مصمم الملازم بالمتصفح حتى تنزّله':'نزّل البرنامج على اللابتوب'};upd();
+ b.onclick=()=>{if(sa()&&!mine()){window.open(location.origin+location.pathname,'_blank');if(typeof toast==='function')toast('🌐 انفتح البرنامج بالمتصفح — اضغط «💻 تنزيل البرنامج» هناك',5000);return}
+  if(window.INST&&INST.open)INST.open();};
+ window.addEventListener('appinstalled',upd);matchMedia('(display-mode: standalone)').addEventListener&&matchMedia('(display-mode: standalone)').addEventListener('change',upd)})();
+
 /* ===================== رفع ملزمة Word (.docx) وتصميمها بأدوات البرنامج ===================== */
 async function dxUnzip(buf){const u8=new Uint8Array(buf),dv=new DataView(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('مو ملف Word صحيح');
  const n=dv.getUint16(e+10,true);let p=dv.getUint32(e+16,true);const files={};const td=new TextDecoder();
